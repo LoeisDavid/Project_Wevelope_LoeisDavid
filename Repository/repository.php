@@ -1,8 +1,8 @@
 <?php
-include 'connection.php';
-include '../../Models/Customer.php';
-include '../../Models/Item.php';
-include '../../Models/Supplier.php';
+require_once __DIR__ . '/connection.php';
+require_once __DIR__ . '/../Models/Customer.php';
+require_once __DIR__ . '/../Models/Item.php';
+require_once __DIR__ . '/../Models/Supplier.php';
 
 // ---------------------- CUSTOMERS ----------------------
 function createCustomer($ref_no, $name) {

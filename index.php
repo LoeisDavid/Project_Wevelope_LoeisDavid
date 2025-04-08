@@ -2,9 +2,24 @@
 include 'Control/Control.php';
 
 // Ambil data dari masing‑masing repository
-$suppliers = readSuppliers();
-$items     = readItems();
-$customers = readCustomers();
+$suppliers = [];
+$items = [];
+$customers = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+  $type = $_GET['type'] ?? 'supplier';
+  $action = $_GET['action'] ?? 'read';
+  $suppliers = readSuppliers();
+  
+   // langsung assign array of Item object
+   $type = $_GET['type'] ?? 'customer';
+  $action = $_GET['action'] ?? 'read';
+  $customers = readCustomers();
+
+  $type = $_GET['type'] ?? 'item';
+  $action = $_GET['action'] ?? 'read';
+  $items = readItems();
+}
 ?>
 
 <!doctype html>
@@ -144,7 +159,9 @@ $customers = readCustomers();
       <!-- header & breadcrumb seperti semula -->
       <div class="app-content">
         <div class="container-fluid">
+
           <div class="row justify-content-center"><!-- center column -->
+          <div class="card-header text-center"><h1 class="card-title">Dashboard</h></div>
             <div class="col-lg-6">
               <div class="card">
                 <div class="card-header border-0 text-center">
