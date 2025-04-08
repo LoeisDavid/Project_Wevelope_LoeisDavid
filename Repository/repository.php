@@ -18,7 +18,7 @@ function readCustomers() {
     $customers = [];
 
     while ($row = $result->fetch_assoc()) {
-        $customers[] = new Customer($row['ID'], $row['REF_NO'], $row['NAME']);
+        $customers[] = new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
     }
 
     return $customers;
@@ -28,7 +28,7 @@ function readCustomerById($id) {
     global $conn;
     $result = $conn->query("SELECT * FROM Customers WHERE ID = $id");
     if ($row = $result->fetch_assoc()) {
-        return new Customer($row['ID'], $row['REF_NO'], $row['NAME']);
+        return new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
     }
     return null;
 }
@@ -57,7 +57,7 @@ function readSuppliers() {
     $suppliers = [];
 
     while ($row = $result->fetch_assoc()) {
-        $suppliers[] = new Supplier($row['ID'], $row['REF_NO'], $row['NAME']);
+        $suppliers[] = new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
     }
 
     return $suppliers;
@@ -67,7 +67,7 @@ function readSupplierById($id) {
     global $conn;
     $result = $conn->query("SELECT * FROM Suppliers WHERE ID = $id");
     if ($row = $result->fetch_assoc()) {
-        return new Supplier($row['ID'], $row['REF_NO'], $row['NAME']);
+        return new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
     }
     return null;
 }
@@ -96,7 +96,7 @@ function readItems() {
     $items = [];
 
     while ($row = $result->fetch_assoc()) {
-        $items[] = new Item($row['ID'], $row['REF_NO'], $row['NAME'], $row['PRICE']);
+        $items[] = new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']);
     }
 
     return $items;
@@ -106,7 +106,7 @@ function readItemById($id) {
     global $conn;
     $result = $conn->query("SELECT * FROM Items WHERE ID = $id");
     if ($row = $result->fetch_assoc()) {
-        return new Item($row['ID'], $row['REF_NO'], $row['NAME'], $row['PRICE']);
+        return new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']);
     }
     return null;
 }

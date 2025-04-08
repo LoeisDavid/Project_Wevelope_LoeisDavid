@@ -156,61 +156,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <!--end::Sidebar-->
     <!--begin::App Main-->
     <main class="app-main">
-      <!-- header & breadcrumb seperti semula -->
-      <div class="app-content">
-        <div class="container-fluid">
+  <!-- Content Header -->
+  <div class="app-content-header">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6"><h3 class="mb-0">Dashboard</h3></div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-end">
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /.Content Header -->
 
-          <div class="row justify-content-center"><!-- center column -->
-          <div class="card-header text-center"><h1 class="card-title">Dashboard</h></div>
-            <div class="col-lg-6">
-              <div class="card">
-                <div class="card-header border-0 text-center">
-                  <h3 class="card-title">Data Overview</h3>
-                </div>
-                <div class="card-body">
-                  <!-- Suppliers -->
-                  <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-                    <p class="text-success fs-2 mb-0">
-                      <i class="bi bi-people-fill"></i>
-                    </p>
-                    <p class="d-flex flex-column text-end mb-0">
-                      <span class="fw-bold fs-3">
-                        <?= count($suppliers) ?>
-                      </span>
-                      <span class="text-secondary">Suppliers</span>
-                    </p>
-                  </div>
-                  <!-- Items -->
-                  <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
-                    <p class="text-info fs-2 mb-0">
-                      <i class="bi bi-box-seam"></i>
-                    </p>
-                    <p class="d-flex flex-column text-end mb-0">
-                      <span class="fw-bold fs-3">
-                        <?= count($items) ?>
-                      </span>
-                      <span class="text-secondary">Items</span>
-                    </p>
-                  </div>
-                  <!-- Customers -->
-                  <div class="d-flex justify-content-between align-items-center mb-0">
-                    <p class="text-warning fs-2 mb-0">
-                      <i class="bi bi-people"></i>
-                    </p>
-                    <p class="d-flex flex-column text-end mb-0">
-                      <span class="fw-bold fs-3">
-                        <?= count($customers) ?>
-                      </span>
-                      <span class="text-secondary">Customers</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
+  <!-- Small Box Stat cards -->
+  <div class="app-content">
+    <div class="container-fluid">
+      <h5 class="mb-2">Overview</h5>
+      <div class="row">
+        <!-- Items -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box text-bg-primary">
+            <div class="inner">
+              <h3><?= count($items) ?></h3>
+              <p>Items</p>
             </div>
-          </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
-      </div><!-- /.app-content -->
-    </main>
+            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <!-- icon box-seam -->
+              <path d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+            </svg>
+            <a href="pages/html/tableItems.php" class="small-box-footer link-light">
+              More info <i class="bi bi-link-45deg"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Suppliers -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box text-bg-success">
+            <div class="inner">
+              <h3><?= count($suppliers) ?></h3>
+              <p>Suppliers</p>
+            </div>
+            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <!-- icon people-fill -->
+              <path d="M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/>
+              <path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72..."/>
+            </svg>
+            <a href="pages/html/tableSuppliers.php" class="small-box-footer link-light">
+              More info <i class="bi bi-link-45deg"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Customers -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box text-bg-warning">
+            <div class="inner">
+              <h3><?= count($customers) ?></h3>
+              <p>Customers</p>
+            </div>
+            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <!-- icon people -->
+              <path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72..."/>
+            </svg>
+            <a href="pages/html/tableCustomers.php" class="small-box-footer link-dark">
+              More info <i class="bi bi-link-45deg"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Optional: you bisa tambah satu box lagi di sini -->
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </div>
+  <!-- /.app-content -->
+</main>
     <!--end::App Main-->
     <!--begin::Footer-->
     <footer class="app-footer">
