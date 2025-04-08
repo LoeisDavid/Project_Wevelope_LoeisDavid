@@ -1,5 +1,5 @@
 <?php
-include '../Repository/repository.php';
+include '../../Repository/repository.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $type   = $_GET['type'] ?? null;
@@ -24,33 +24,45 @@ if ($method === 'POST') {
         echo "Invalid action.";
     }
 
+    // Redirect
+    if ($type === 'customer') {
+        header("Location: ../pages/html/inputCustomers.html");
+    } else if ($type === 'item') {
+        header("Location: ../pages/html/inputItems.html");
+    } else if ($type === 'supplier') {
+        header("Location: ../pages/html/inputSuppliers.html");
+    }
+
 } else if ($method === 'GET') {
 
     if ($type === 'customer' && $action === 'read') {
-        echo $id ? json_encode(readCustomerById($id)) : json_encode(readCustomers());
+        if ($id) {
+            return readCustomerById($id);
+        } else {
+            return readCustomers();
+        }
     } else if ($type === 'customer' && $action === 'delete') {
-        echo deleteCustomer($id) ? "Deleted." : "Error.";
+        return deleteCustomer($id) ? "Deleted." : "Error.";
     } else if ($type === 'supplier' && $action === 'read') {
-        echo $id ? json_encode(readSupplierById($id)) : json_encode(readSuppliers());
+        if ($id) {
+            return readSupplierById($id);
+        } else {
+            return readSuppliers();
+        }
     } else if ($type === 'supplier' && $action === 'delete') {
-        echo deleteSupplier($id) ? "Deleted." : "Error.";
+        return deleteSupplier($id) ? "Deleted." : "Error.";
     } else if ($type === 'item' && $action === 'read') {
-        echo $id ? json_encode(readItemById($id)) : json_encode(readItems());
+        if ($id) {
+            return readItemById($id);
+        } else {
+            return readItems();
+        }
     } else if ($type === 'item' && $action === 'delete') {
-        echo deleteItem($id) ? "Deleted." : "Error.";
+        return deleteItem($id) ? "Deleted." : "Error.";
     } else {
-        echo "Invalid action.";
+        return "Invalid action.";
     }
 
 } else {
     echo "Invalid request method.";
 }
-
-if($type === 'customer'){
-    header("Location: ../pages/html/inputCustomers.html");
-} else if($type === 'item'){
-    header("Location: ../pages/html/inputItems.html");
-} else if($type === 'supplier'){
-    header("Location: ../pages/html/inputSuppliers.html");
-}
-?>
