@@ -1,0 +1,26 @@
+<?php
+
+class Item {
+    private int $id;
+    private string $name;
+    private string $ref_no;
+    private float $price;
+
+    public function __construct(int $id = 0, string $name = "", string $ref_no = "", float $price = 0.0) {
+        $this->id = $id;
+        $this->name = $name;
+        $this->ref_no = $ref_no;
+        $this->price = $price;
+    }
+
+    public function getId(): int { return $this->id; }
+    public function getName(): string { return $this->name; }
+    public function getRefNo(): string { return $this->ref_no; }
+    public function getPrice(): float { return $this->price; }
+
+    public function setId(int $id): void { $this->id = $id; }
+    public function setName(string $name): void { $this->name = $name; }
+    public function setRefNo(string $ref_no): void { $this->ref_no = $ref_no; }
+    public function setPrice(float $price): void { $this->price = $price; }
+
+}
