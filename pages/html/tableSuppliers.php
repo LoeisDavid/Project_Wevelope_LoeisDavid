@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
           <!--begin::Sidebar Menu-->
           <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
             <li class="nav-item">
-              <a href="../../index3.html" class="nav-link">
+              <a href="../../index.php" class="nav-link">
                 <i class="nav-icon bi bi-speedometer"></i>
                 <p>
                   Dashboard
