@@ -1,5 +1,5 @@
 <?php
-include '../../Repository/repository.php';
+require_once __DIR__ . '/../Repository/repository.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $type   = $_GET['type'] ?? null;
