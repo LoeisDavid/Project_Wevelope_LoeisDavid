@@ -137,29 +137,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
               <div class="card mb-4">
                 <div class="card-header text-center"><h3 class="card-title">Suppliers Table</h3></div>
                 <div class="card-body text-center">
-                  <table class="table table-bordered mx-auto">
-                    <thead>
-                      <tr>
-                        <th style="width: 10px">ID</th>
-                        <th>Name</th>
-                        <th>REF NO</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-  <?php if ($items && count($items) > 0): ?>
-    <?php foreach ($items as $item): ?>
+                <table class="table table-bordered mx-auto">
+  <thead>
+    <tr>
+      <th style="width: 10px">ID</th>
+      <th>Name</th>
+      <th>REF NO</th>
+      <th style="width: 120px">Actions</th> <!-- kolom baru -->
+    </tr>
+  </thead>
+  <tbody>
+    <?php if (count($items) > 0): ?>
+      <?php foreach ($items as $item): ?>
+        <tr>
+          <td><?= htmlspecialchars($item->getId()) ?></td>
+          <td><?= htmlspecialchars($item->getName()) ?></td>
+          <td><?= htmlspecialchars($item->getRefNo()) ?></td>
+          <td class="text-center">
+            <!-- Tombol Edit -->
+            <a
+              href="inputSuppliers.html?id=<?= $item->getId() ?>"
+              class="btn btn-sm btn-warning me-1"
+              title="Edit Supplier"
+            >
+              <i class="bi bi-pencil-square"></i>
+            </a>
+            <!-- Tombol Delete -->
+            <a
+              href="?type=supplier&action=delete&id=<?= $item->getId() ?>"
+              class="btn btn-sm btn-danger"
+              onclick="return confirm('Yakin ingin menghapus supplier ini?');"
+              title="Delete Supplier"
+            >
+              <i class="bi bi-trash"></i>
+            </a>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    <?php else: ?>
       <tr>
-        <td><?= htmlspecialchars($item->getId()) ?></td>
-        <td><?= htmlspecialchars($item->getName()) ?></td>
-        <td><?= htmlspecialchars($item->getRefNo()) ?></td>
+        <td colspan="4">No suppliers found.</td>
       </tr>
-    <?php endforeach; ?>
-  <?php else: ?>
-    <tr><td colspan="4">No items found.</td></tr>
-  <?php endif; ?>
-</tbody>
-
-                  </table>
+    <?php endif; ?>
+  </tbody>
+</table>
                 </div>
               </div>
             </div>
