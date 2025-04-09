@@ -1,3 +1,13 @@
+<?php
+
+  $id = $_GET['id'];
+  $name = $_GET['name'];
+  $ref_no = $_GET['ref_no'];
+  $price = $_GET['price'];
+
+
+?>  
+
 <!doctype html>
 <html lang="en">
 <!--begin::Head-->
@@ -128,89 +138,98 @@
         </nav>
       </div>
     </aside>
-    <main class="app-main">
-      <!--begin::App Content Header-->
-      <div class="app-content-header">
-        <div class="card-header">
-          <div class="card-title">Items input</div>
-        </div>
-        <!--end::Header-->
-        <!--begin::Form-->
-        <form class="needs-validation" novalidate method="post" action="../../Control/Control.php?type=item&action=create">
-
-          <!--begin::Body-->
-          <div class="card-body">
+    <main class="app-main"><main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <!--begin::Container-->
+          <div class="container-fluid">
             <!--begin::Row-->
-            <div class="row g-3">
-              <!--begin::Col-->
-              <div class="col-md-6">
-                <label for="validationCustom01" class="form-label">Name Item</label>
-                <input type="text" class="form-control" id="validationCustom01" value="item" required name="name"/>
-                <div class="valid-feedback">Looks good!</div>
+            <div class="row">
+              <div class="col-sm-6"><h3 class="mb-0">Items Edit</h3></div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">General Form</li>
+                </ol>
               </div>
-              <!--end::Col-->
-              <!--begin::Col-->
-              <div class="col-md-6">
-                <label for="validationCustom02" class="form-label">REF Number</label>
-                <input type="text" class="form-control" id="validationCustom02" value="L001" required name="ref_no"/>
-                <div class="valid-feedback">Looks good!</div>
-              </div>
-              <!--end::Col-->
-              <!--begin::Col-->
-              <div class="col-md-6">
-                <label for="validationCustom01" class="form-label">Price</label>
-                <div class="input-group mb-3">
-                  <span class="input-group-text">Rp</span>
-                  <input type="text" class="form-control" id="validationCustom01" value="000000" required name="price"/>
-                  <span class="input-group-text">.00</span>
-                </div>
-                <div class="valid-feedback">Looks good!</div>
-              </div>
-              <!--end::Col-->
-              <!--begin::Col-->
-
-              <!--end::Col-->
             </div>
             <!--end::Row-->
           </div>
-          <!--end::Body-->
-          <!--begin::Footer-->
-          <div class="card-footer">
-            <button class="btn btn-info" type="submit" action="create">Submit form</button>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <!--begin::Container-->
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="card card-success card-outline mb-4">
+                  <!--begin::Header-->
+                  <!--end::Header-->
+                  <!--begin::Body-->
+                  <div class="card-body">
+  <form method="post" action="../../Control/Control.php?type=item&action=update">
+    <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>" />
+
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="basic-addon1">ID</span>
+      <input
+        type="text"
+        class="form-control"
+        name="id"
+        value="<?= htmlspecialchars($id) ?>"
+        disabled
+      />
+    </div>
+
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="NAME"
+        name="name"
+        value="<?= htmlspecialchars($name) ?>"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="ref_no" class="form-label">REF_NO</label>
+      <input
+        type="text"
+        class="form-control"
+        id="ref_no"
+        name="ref_no"
+        value="<?= htmlspecialchars($ref_no) ?>"
+        required
+      />
+    </div>
+
+    <div class="input-group mb-3">
+      <span class="input-group-text">Rp</span>
+      <input
+        type="number"
+        class="form-control"
+        name="price"
+        value="<?= htmlspecialchars($price) ?>"
+        required
+      />
+      <span class="input-group-text">.00</span>
+    </div>
+
+    <div class="card-footer">
+      <button type="submit" class="btn btn-success">Submit</button>
+    </div>
+  </form>
+</div>
+                  <!--end::Footer-->
+                </div>
+            <!--end::Row-->
           </div>
-          <!--end::Footer-->
-        </form>
-        <!--end::Form-->
-        <!--begin::JavaScript-->
-    
-        <script>
-          // Example starter JavaScript for disabling form submissions if there are invalid fields
-          (() => {
-            'use strict';
-
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            const forms = document.querySelectorAll('.needs-validation');
-
-            // Loop over them and prevent submission
-            Array.from(forms).forEach((form) => {
-              form.addEventListener(
-                'submit',
-                (event) => {
-                  if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                  }
-
-                  form.classList.add('was-validated');
-                },
-                false,
-              );
-            });
-          })();
-        </script>
-        <!--end::JavaScript-->
-      </div>
-    </main>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content-->
+      </main>
     <!--end::App Main-->
     <!--begin::Footer-->
     <footer class="app-footer">

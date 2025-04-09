@@ -35,7 +35,9 @@ function readCustomerById($id) {
 
 function updateCustomer($id, $ref_no, $name) {
     global $conn;
-    return $conn->query("UPDATE Customers SET REF_NO = '$ref_no', NAME = '$name' WHERE ID = $id");
+    $stmt = $conn->prepare("UPDATE Customers SET REF_NO = ?, NAME = ? WHERE ID = ?");
+    $stmt->bind_param("ssi", $ref_no, $name, $id);
+    return $stmt->execute();
 }
 
 function deleteCustomer($id) {
@@ -74,8 +76,11 @@ function readSupplierById($id) {
 
 function updateSupplier($id, $ref_no, $name) {
     global $conn;
-    return $conn->query("UPDATE Suppliers SET REF_NO = '$ref_no', NAME = '$name' WHERE ID = $id");
+    $stmt = $conn->prepare("UPDATE Suppliers SET REF_NO = ?, NAME = ? WHERE ID = ?");
+    $stmt->bind_param("ssi", $ref_no, $name, $id);
+    return $stmt->execute();
 }
+
 
 function deleteSupplier($id) {
     global $conn;
@@ -113,8 +118,11 @@ function readItemById($id) {
 
 function updateItem($id, $ref_no, $name, $price) {
     global $conn;
-    return $conn->query("UPDATE Items SET REF_NO = '$ref_no', NAME = '$name', PRICE = $price WHERE ID = $id");
+    $stmt = $conn->prepare("UPDATE Items SET REF_NO = ?, NAME = ?, PRICE = ? WHERE ID = ?");
+    $stmt->bind_param("ssdi", $ref_no, $name, $price, $id);
+    return $stmt->execute();
 }
+
 
 function deleteItem($id) {
     global $conn;

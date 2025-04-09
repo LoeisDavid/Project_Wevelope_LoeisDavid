@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             <td class="text-center">
                               <!-- Edit Button -->
                               <a
-                                href="inputItems.html?id=<?= $item->getId() ?>"
+                                href="editItems.php?method=get&id=<?= $item->getId() ?>&name=<?= $item->getName()?>&ref_no=<?= $item->getRefNo()?>&price=<?= $item->getPrice()?>"
                                 class="btn btn-sm btn-warning me-1"
                                 title="Edit Item"
                               >
