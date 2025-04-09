@@ -106,9 +106,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             <td><?= htmlspecialchars($item->getRefNo()) ?></td>
                             <td class="text-center">
                                 <!-- Tombol Edit -->
-                                <a href="inputCustomers.html?id=<?= $item->getId() ?>" class="btn btn-sm btn-warning me-1" title="Edit Customer">
-                                  <i class="bi bi-pencil-square"></i>
-                                </a>
+                                <a
+                                href="editCustomers.php?method=get&id=<?= $item->getId() ?>&name=<?= $item->getName()?>&ref_no=<?= $item->getRefNo()?>"
+                                class="btn btn-sm btn-warning me-1"
+                                title="Edit Customer"
+                              >
+                              <i class="bi bi-pencil-square"></i>
+                              </a>
                                 <!-- Tombol Delete -->
                                 <a href="?type=customer&action=delete&id=<?= $item->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus customer ini?');" title="Delete Customer">
                                   <i class="bi bi-trash"></i>
