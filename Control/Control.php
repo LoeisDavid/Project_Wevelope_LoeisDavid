@@ -12,33 +12,30 @@ if ($method === 'POST') {
         echo createCustomer($_POST['ref_no'], $_POST['name']) ? "Created." : "Error.";
     } else if ($type === 'customer' && $action === 'update') {
         echo updateCustomer($_POST['id'], $_POST['ref_no'], $_POST['name']) ? "Updated." : "Error.";
-        header("Location: ../pages/html/tableCustomers.php");
-        exit();
+    
     } else if ($type === 'supplier' && $action === 'create') {
         echo createSupplier($_POST['ref_no'], $_POST['name']) ? "Created." : "Error.";
     } else if ($type === 'supplier' && $action === 'update') {
         echo updateSupplier($_POST['id'], $_POST['ref_no'], $_POST['name']) ? "Updated." : "Error.";
-        header("Location: ../pages/html/tableSuppliers.php");
-        exit();
+
     } else if ($type === 'item' && $action === 'create') {
         echo createItem($_POST['ref_no'], $_POST['name'], $_POST['price']) ? "Created." : "Error.";
     } else if ($type === 'item' && $action === 'update') {
         echo updateItem($_POST['id'], $_POST['ref_no'], $_POST['name'], $_POST['price']) ? "Updated." : "Error.";
-        header("Location: ../pages/html/tableItems.php");
-        exit();
+
     } else {
         echo "Invalid action.";
     }
 
     // Redirect
     if ($type === 'customer') {
-        header("Location: ../pages/html/inputCustomers.html");
+        header("Location: ../pages/html/tableCustomers.php");
         exit();
     } else if ($type === 'item') {
-        header("Location: ../pages/html/inputItems.html");
+        header("Location: ../pages/html/tableItems.php");
         exit();
     } else if ($type === 'supplier') {
-        header("Location: ../pages/html/inputSuppliers.html");
+        header("Location: ../pages/html/tableSuppliers.php");
         exit();
     }
 

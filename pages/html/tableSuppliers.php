@@ -156,9 +156,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
           <td class="text-center">
             <!-- Tombol Edit -->
             <a
-              href="inputSuppliers.html?id=<?= $item->getId() ?>"
+              href="editSuppliers.php?method=get&id=<?= $item->getId() ?>&name=<?= $item->getName()?>&ref_no=<?= $item->getRefNo()?>"
               class="btn btn-sm btn-warning me-1"
-              title="Edit Supplier"
+              title="Edit Suppliers"
             >
               <i class="bi bi-pencil-square"></i>
             </a>
