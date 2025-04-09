@@ -41,7 +41,7 @@
 <!--end::Head-->
 <!--begin::Body-->
 
-<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
   <!--begin::App Wrapper-->
   <div class="app-wrapper">
     <!--begin::Header-->
