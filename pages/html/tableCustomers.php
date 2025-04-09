@@ -1,6 +1,17 @@
 <?php
 include '../../Control/Control.php';
 
+if (
+  isset($_GET['type'], $_GET['action'], $_GET['id']) &&
+  $_GET['type'] === 'customer' &&
+  $_GET['action'] === 'delete'
+) {
+  $id = (int) $_GET['id'];
+  deleteCustomer($id);                    // pastikan fungsi ini ada di Control.php / repository
+  header('Location: tableCustomers.php'); // redirect ulang
+  exit;
+}
+
 $items = []; // pastikan ini array kosong, bukan array berisi null
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -170,7 +181,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
     crossorigin="anonymous"></script>
   <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-  <script src="../js/adminlte.js"></script>
   <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
   <script const SELECTOR_SIDEBAR_WRAPPER='.sidebar-wrapper' ; const Default={ scrollbarTheme: 'os-theme-light' ,
     scrollbarAutoHide: 'leave' , scrollbarClickScroll: true, }; document.addEventListener('DOMContentLoaded', function

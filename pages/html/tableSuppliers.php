@@ -1,6 +1,17 @@
 <?php
 include '../../Control/Control.php';
 
+if (
+  isset($_GET['type'], $_GET['action'], $_GET['id']) &&
+  $_GET['type'] === 'supplier' &&
+  $_GET['action'] === 'delete'
+) {
+  $id = (int) $_GET['id'];
+  deleteSupplier($id);                    // pastikan fungsi ini ada di Control.php / repository
+  header('Location: tableSuppliers.php'); // redirect ulang
+  exit;
+}
+
 $items = []; // pastikan ini array kosong, bukan array berisi null
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
