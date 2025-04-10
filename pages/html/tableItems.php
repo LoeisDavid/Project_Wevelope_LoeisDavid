@@ -39,82 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
   <div class="app-wrapper">
-    <!-- Sidebar -->
-    <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-      <div class="sidebar-brand">
-        <span class="brand-text fw-light">WEVELOPE</span>
-      </div>
-      <div class="sidebar-wrapper">
-        <nav class="mt-2">
-          <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
-            <li class="nav-item">
-              <a href="../../index.php" class="nav-link">
-                <i class="nav-icon bi bi-speedometer"></i>
-                <p>Dashboard</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-table"></i>
-                <p>
-                  Tables Data
-                  <i class="nav-arrow bi bi-chevron-right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="tableItems.php" class="nav-link">
-                    <i class="nav-icon bi bi-circle"></i>
-                    <p>Data Items</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="tableCustomers.php" class="nav-link">
-                    <i class="nav-icon bi bi-circle"></i>
-                    <p>Data Customers</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="tableSuppliers.php" class="nav-link">
-                    <i class="nav-icon bi bi-circle"></i>
-                    <p>Data Suppliers</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item">
-              <a href="#" class="nav-link">
-                <i class="nav-icon bi bi-pencil-square"></i>
-                <p>
-                  Forms
-                  <i class="nav-arrow bi bi-chevron-right"></i>
-                </p>
-              </a>
-              <ul class="nav nav-treeview">
-                <li class="nav-item">
-                  <a href="inputItems.html" class="nav-link">
-                    <i class="nav-icon bi bi-circle"></i>
-                    <p>Input data Items</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="inputCustomers.html" class="nav-link">
-                    <i class="nav-icon bi bi-circle"></i>
-                    <p>Input data Customers</p>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a href="inputSuppliers.html" class="nav-link">
-                    <i class="nav-icon bi bi-circle"></i>
-                    <p>Input data Suppliers</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </aside>
+  <?php include __DIR__ . '/../widget/sidebar.php'; ?>
 
     <!-- Main Content -->
     <main class="app-main">
@@ -181,13 +106,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                             </td>
                           </tr>
                         <?php endforeach; ?>
-                      <?php else: ?>
-                        <tr>
-                          <td colspan="5">No items found.</td>
-                        </tr>
                       <?php endif; ?>
                     </tbody>
                   </table>
+                  <div class="text-start mt-3">
+  <a href="/../Project_Wevelope_LoeisDavid/pages/html/inputItems.php" class="btn btn-primary">
+    <i class="bi bi-plus-circle"></i> Create New
+  </a>
+</div>
                 </div>
               </div>
             </div>
