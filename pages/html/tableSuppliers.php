@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   </tbody>
 </table>
 <div class="text-start mt-3">
-  <a href="/../Project_Wevelope_LoeisDavid/pages/html/inputItems.php" class="btn btn-primary">
+  <a href="/../Project_Wevelope_LoeisDavid/pages/html/inputSuppliers.php" class="btn btn-primary">
     <i class="bi bi-plus-circle"></i> Create New
   </a>
 </div>
