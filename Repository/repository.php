@@ -7,10 +7,11 @@ require_once __DIR__ . '/../Models/Supplier.php';
 // ---------------------- CUSTOMERS ----------------------
 function createCustomer($ref_no, $name) {
     global $conn;
-    $conn->query("INSERT INTO Customers (REF_NO, NAME) VALUES ('$ref_no', '$name')");
-    $id = $conn->insert_id;
-    return new Customer($id, $ref_no, $name);
+    $stmt = $conn->prepare("INSERT INTO Customers (REF_NO, NAME) VALUES (?, ?)");
+    $stmt->bind_param("ss", $ref_no, $name);
+    return $stmt->execute(); // boolean
 }
+
 
 function readCustomers() {
     global $conn;
@@ -37,21 +38,25 @@ function updateCustomer($id, $ref_no, $name) {
     global $conn;
     $stmt = $conn->prepare("UPDATE Customers SET REF_NO = ?, NAME = ? WHERE ID = ?");
     $stmt->bind_param("ssi", $ref_no, $name, $id);
-    return $stmt->execute();
+    return $stmt->execute(); // boolean
 }
 
 function deleteCustomer($id) {
     global $conn;
-    return $conn->query("DELETE FROM Customers WHERE ID = $id");
+    $stmt = $conn->prepare("DELETE FROM Customers WHERE ID = ?");
+    $stmt->bind_param("i", $id);
+    return $stmt->execute(); // boolean
 }
+
 
 // ---------------------- SUPPLIERS ----------------------
 function createSupplier($ref_no, $name) {
     global $conn;
-    $conn->query("INSERT INTO Suppliers (REF_NO, NAME) VALUES ('$ref_no', '$name')");
-    $id = $conn->insert_id;
-    return new Supplier($id, $ref_no, $name);
+    $stmt = $conn->prepare("INSERT INTO Suppliers (REF_NO, NAME) VALUES (?, ?)");
+    $stmt->bind_param("ss", $ref_no, $name);
+    return $stmt->execute();
 }
+
 
 function readSuppliers() {
     global $conn;
@@ -84,16 +89,19 @@ function updateSupplier($id, $ref_no, $name) {
 
 function deleteSupplier($id) {
     global $conn;
-    return $conn->query("DELETE FROM Suppliers WHERE ID = $id");
+    $stmt = $conn->prepare("DELETE FROM Suppliers WHERE ID = ?");
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
 }
 
 // ---------------------- ITEMS ----------------------
 function createItem($ref_no, $name, $price) {
     global $conn;
-    $conn->query("INSERT INTO Items (REF_NO, NAME, PRICE) VALUES ('$ref_no', '$name', $price)");
-    $id = $conn->insert_id;
-    return new Item($id, $ref_no, $name, $price);
+    $stmt = $conn->prepare("INSERT INTO Items (REF_NO, NAME, PRICE) VALUES (?, ?, ?)");
+    $stmt->bind_param("ssd", $ref_no, $name, $price);
+    return $stmt->execute();
 }
+
 
 function readItems() {
     global $conn;
@@ -126,5 +134,8 @@ function updateItem($id, $ref_no, $name, $price) {
 
 function deleteItem($id) {
     global $conn;
-    return $conn->query("DELETE FROM Items WHERE ID = $id");
+    $stmt = $conn->prepare("DELETE FROM Items WHERE ID = ?");
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
 }
+

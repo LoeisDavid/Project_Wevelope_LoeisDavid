@@ -9,7 +9,13 @@ $id     = $_GET['id'] ?? null;
 if ($method === 'POST') {
 
     if ($type === 'customer' && $action === 'create') {
-        echo createCustomer($_POST['ref_no'], $_POST['name']) ? "Created." : "Error.";
+        if (createCustomer($_POST['ref_no'], $_POST['name'])) {
+            header("Location: ../pages/html/tableCustomers.php?success=" . urlencode("Customer berhasil ditambahkan!"));
+        } else {
+            header("Location: ../pages/html/tableCustomers.php?error=" . urlencode("Gagal menambahkan customer."));
+        }
+        exit();
+        
     } else if ($type === 'customer' && $action === 'update') {
         echo updateCustomer($_POST['id'], $_POST['ref_no'], $_POST['name']) ? "Updated." : "Error.";
     

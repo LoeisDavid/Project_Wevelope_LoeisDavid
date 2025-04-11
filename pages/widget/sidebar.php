@@ -3,9 +3,6 @@
 include __DIR__ . '/../../Control/Control.php';
 
 // Ambil data dari repository
-$items = readItems();
-$customers = readCustomers();
-$suppliers = readSuppliers();
 ?>
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
   <div class="sidebar-brand">
