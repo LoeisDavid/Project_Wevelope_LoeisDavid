@@ -1,6 +1,29 @@
 <?php
 include '../../Control/Control.php';
 
+if(isset($_SESSION['alert'])) {
+  $type = $_SESSION['alert']['type'];
+  $message = $_SESSION['alert']['message'];
+  echo "<div class='alert alert-{$type} alert-dismissible fade show' role='alert'>
+      {$message}
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+  
+  unset($_SESSION['alert']); // agar hanya tampil sekali
+}
+
+if(isset($_SESSION['alert_delete'])) {
+  $type = $_SESSION['alert_delete']['type'];
+  $message = $_SESSION['alert_delete']['message'];
+  echo "<div class='alert alert-{$type} alert-dismissible fade show' role='alert'>
+      {$message}
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+  
+  unset($_SESSION['alert_delete']); // agar hanya tampil sekali
+}
+
+
 if (
   isset($_GET['type'], $_GET['action'], $_GET['id']) &&
   $_GET['type'] === 'customer' &&
@@ -8,8 +31,6 @@ if (
 ) {
   $id = (int) $_GET['id'];
   deleteCustomer($id);                    // pastikan fungsi ini ada di Control.php / repository
-  header('Location: tableCustomers.php'); // redirect ulang
-  exit;
 }
 
 $items = []; // pastikan ini array kosong, bukan array berisi null

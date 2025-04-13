@@ -3,6 +3,29 @@
 
 include '../../Control/Control.php';
 
+if(isset($_SESSION['alert'])) {
+  $type = $_SESSION['alert']['type'];
+  $message = $_SESSION['alert']['message'];
+  echo "<div class='alert alert-{$type} alert-dismissible fade show' role='alert'>
+      {$message}
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+  
+  unset($_SESSION['alert']); // agar hanya tampil sekali
+}
+
+if(isset($_SESSION['alert_delete'])) {
+  $type = $_SESSION['alert_delete']['type'];
+  $message = $_SESSION['alert_delete']['message'];
+  echo "<div class='alert alert-{$type} alert-dismissible fade show' role='alert'>
+      {$message}
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+  
+  unset($_SESSION['alert_delete']); // agar hanya tampil sekali
+}
+
+
 // 1) Handle delete request for items
 if (
     isset($_GET['type'], $_GET['action'], $_GET['id']) &&
@@ -11,8 +34,6 @@ if (
 ) {
     $id = (int) $_GET['id'];
     deleteItem($id);                    // pastikan fungsi ini ada di Control.php / repository
-    header('Location: tableItems.php'); // redirect ulang
-    exit;
 }
 
 // 2) Fetch items

@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/../Repository/repository.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -6,71 +7,130 @@ $type   = $_GET['type'] ?? null;
 $action = $_GET['action'] ?? null;
 $id     = $_GET['id'] ?? null;
 
+if (!function_exists('setAlert')) {
+    function setAlert($type, $message, $isDelete = false) {
+        $_SESSION[$isDelete ? 'alert_delete' : 'alert'] = [
+            'type' => $type,
+            'message' => $message
+        ];
+    }
+}
+
+// === POST METHOD ===
 if ($method === 'POST') {
 
-    if ($type === 'customer' && $action === 'create') {
-        if (createCustomer($_POST['ref_no'], $_POST['name'])) {
-            header("Location: ../pages/html/tableCustomers.php?success=" . urlencode("Customer berhasil ditambahkan!"));
-        } else {
-            header("Location: ../pages/html/tableCustomers.php?error=" . urlencode("Gagal menambahkan customer."));
-        }
-        exit();
-        
-    } else if ($type === 'customer' && $action === 'update') {
-        echo updateCustomer($_POST['id'], $_POST['ref_no'], $_POST['name']) ? "Updated." : "Error.";
-    
-    } else if ($type === 'supplier' && $action === 'create') {
-        echo createSupplier($_POST['ref_no'], $_POST['name']) ? "Created." : "Error.";
-    } else if ($type === 'supplier' && $action === 'update') {
-        echo updateSupplier($_POST['id'], $_POST['ref_no'], $_POST['name']) ? "Updated." : "Error.";
+    // CUSTOMER
+    if ($type === 'customer') {
+        if ($action === 'create') {
+            $ref_no = $_POST['ref_no'];
+            if (readCustomerByRef_No($ref_no)) {
+                setAlert('danger', 'Gagal menambahkan customer. Ref No sudah digunakan.');
+            } else {
+                createCustomer($ref_no, $_POST['name']);
+                setAlert('success', 'Customer berhasil ditambahkan!');
+            }
+            header("Location: ../pages/html/tableCustomers.php");
+            exit();
 
-    } else if ($type === 'item' && $action === 'create') {
-        echo createItem($_POST['ref_no'], $_POST['name'], $_POST['price']) ? "Created." : "Error.";
-    } else if ($type === 'item' && $action === 'update') {
-        echo updateItem($_POST['id'], $_POST['ref_no'], $_POST['name'], $_POST['price']) ? "Updated." : "Error.";
+        } else if ($action === 'update') {
+            if (updateCustomer($_POST['id'], $_POST['ref_no'], $_POST['name'])) {
+                setAlert('success', 'Customer berhasil diperbarui!');
+            } else {
+                setAlert('danger', 'Gagal memperbarui customer.');
+            }
+            header("Location: ../pages/html/tableCustomers.php");
+            exit();
+        }
+
+    // SUPPLIER
+    } else if ($type === 'supplier') {
+        if ($action === 'create') {
+            $ref_no = $_POST['ref_no'];
+            if (readSupplierByRef_No($ref_no)) {
+                setAlert('danger', 'Gagal menambahkan supplier. Ref No sudah digunakan.');
+            } else {
+                createSupplier($ref_no, $_POST['name']);
+                setAlert('success', 'Supplier berhasil ditambahkan!');
+            }
+            header("Location: ../pages/html/tableSuppliers.php");
+            exit();
+
+        } else if ($action === 'update') {
+            if (updateSupplier($_POST['id'], $_POST['ref_no'], $_POST['name'])) {
+                setAlert('success', 'Supplier berhasil diperbarui!');
+            } else {
+                setAlert('danger', 'Gagal memperbarui supplier.');
+            }
+            header("Location: ../pages/html/tableSuppliers.php");
+            exit();
+        }
+
+    // ITEM
+    } else if ($type === 'item') {
+        if ($action === 'create') {
+            $ref_no = $_POST['ref_no'];
+            if (readItemByRef_No($ref_no)) {
+                setAlert('danger', 'Gagal menambahkan item. Ref No sudah digunakan.');
+            } else {
+                createItem($ref_no, $_POST['name'], $_POST['price']);
+                setAlert('success', 'Item berhasil ditambahkan!');
+            }
+            header("Location: ../pages/html/tableItems.php");
+            exit();
+
+        } else if ($action === 'update') {
+            if (updateItem($_POST['id'], $_POST['ref_no'], $_POST['name'], $_POST['price'])) {
+                setAlert('success', 'Item berhasil diperbarui!');
+            } else {
+                setAlert('danger', 'Gagal memperbarui item.');
+            }
+            header("Location: ../pages/html/tableItems.php");
+            exit();
+        }
 
     } else {
         echo "Invalid action.";
     }
 
-    // Redirect
-    if ($type === 'customer') {
-        header("Location: ../pages/html/tableCustomers.php");
-        exit();
-    } else if ($type === 'item') {
-        header("Location: ../pages/html/tableItems.php");
-        exit();
-    } else if ($type === 'supplier') {
-        header("Location: ../pages/html/tableSuppliers.php");
-        exit();
-    }
-
+// === GET METHOD ===
 } else if ($method === 'GET') {
 
-    if ($type === 'customer' && $action === 'read') {
-        if ($id) {
-            return readCustomerById($id);
-        } else {
-            return readCustomers();
+    // DELETE & READ ACTIONS
+    if ($action === 'delete') {
+        $success = false;
+        $redirectUrl = '';
+
+        if ($type === 'customer') {
+            $success = deleteCustomer($id);
+            $redirectUrl = '../html/tableCustomers.php';
+        } else if ($type === 'supplier') {
+            $success = deleteSupplier($id);
+            $redirectUrl = '../html/tableSuppliers.php';
+        } else if ($type === 'item') {
+            $success = deleteItem($id);
+            $redirectUrl = '../html/tableItems.php';
         }
-    } else if ($type === 'customer' && $action === 'delete') {
-        return deleteCustomer($id) ? "Deleted." : "Error.";
-    } else if ($type === 'supplier' && $action === 'read') {
-        if ($id) {
-            return readSupplierById($id);
+
+        if ($success) {
+            setAlert('success', ucfirst($type) . ' berhasil dihapus!', true);
         } else {
-            return readSuppliers();
+            setAlert('danger', 'Gagal menghapus ' . $type . '.', true);
         }
-    } else if ($type === 'supplier' && $action === 'delete') {
-        return deleteSupplier($id) ? "Deleted." : "Error.";
-    } else if ($type === 'item' && $action === 'read') {
-        if ($id) {
-            return readItemById($id);
+
+        header("Location: $redirectUrl");
+        exit();
+
+    } else if ($action === 'read') {
+        if ($type === 'customer') {
+            return $id ? readCustomerById($id) : readCustomers();
+        } else if ($type === 'supplier') {
+            return $id ? readSupplierById($id) : readSuppliers();
+        } else if ($type === 'item') {
+            return $id ? readItemById($id) : readItems();
         } else {
-            return readItems();
+            return "Invalid type.";
         }
-    } else if ($type === 'item' && $action === 'delete') {
-        return deleteItem($id) ? "Deleted." : "Error.";
+
     } else {
         return "Invalid action.";
     }
