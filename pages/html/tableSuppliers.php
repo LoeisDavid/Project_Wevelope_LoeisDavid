@@ -1,28 +1,6 @@
 <?php
 include '../../Control/Control.php';
 
-if(isset($_SESSION['alert'])) {
-  $type = $_SESSION['alert']['type'];
-  $message = $_SESSION['alert']['message'];
-  echo "<div class='alert alert-{$type} alert-dismissible fade show' role='alert'>
-      {$message}
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-      </div>";
-  
-  unset($_SESSION['alert']); // agar hanya tampil sekali
-}
-
-if(isset($_SESSION['alert_delete'])) {
-  $type = $_SESSION['alert_delete']['type'];
-  $message = $_SESSION['alert_delete']['message'];
-  echo "<div class='alert alert-{$type} alert-dismissible fade show' role='alert'>
-      {$message}
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-      </div>";
-  
-  unset($_SESSION['alert_delete']); // agar hanya tampil sekali
-}
-
 
 if (
   isset($_GET['type'], $_GET['action'], $_GET['id']) &&
@@ -43,8 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $items = readSuppliers(); // langsung assign array of Item object
     }
 }
-
-session_destroy(); 
 ?>
 
 
@@ -65,6 +41,22 @@ session_destroy();
     <main class="app-main">
       <div class="app-content-header">
         <div class="container-fluid">
+          <!-- Alert Session Message -->
+<?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['alert_delete']); ?>
+<?php endif; ?>
           <div class="row">
             <div class="col-sm-6"><h3 class="mb-0">Suppliers Table</h3></div>
             <div class="col-sm-6">

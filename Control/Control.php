@@ -1,5 +1,8 @@
 <?php
-session_start();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once __DIR__ . '/../Repository/repository.php';
 require_once __DIR__ . '/../Models/Customer.php';
 require_once __DIR__ . '/../Models/Item.php';
@@ -35,7 +38,7 @@ if (!function_exists('createRefNo')) {
             // Tentukan ref_no berdasarkan angka yang sedang diproses
             if ($angka < 10) {
                 $ref_no = $prefix . "00" . $angka;
-            } elseif ($angka < 100) {
+            } elseif ($angka < 100) {   
                 $ref_no = $prefix . "0" . $angka;
             } else {
                 $ref_no = $prefix . $angka;
@@ -70,7 +73,16 @@ if (!function_exists('createRefNo')) {
 // === POST METHOD ===
 if ($method === 'POST') {
 
-    $ref_no = createRefNo($_POST['name'],$type);
+    $name = $_POST['name'] ?? NULL;
+    $price = $_POST['price'] ?? NULL;
+    $id = $_POST['id'] ?? NULL;
+
+
+    if(!$_POST['ref_no']){
+        $ref_no = createRefNo($_POST['name'],$type);
+    } else {
+        $ref_no=$_POST['ref_no'];
+    }
 
     // CUSTOMER
     if ($type === 'customer') {
@@ -79,21 +91,26 @@ if ($method === 'POST') {
         if ($action === 'create') {
             if (readCustomerByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan customer. Ref No sudah digunakan.');
+                header("Location: ../pages/html/inputCustomers.php?name=$name&ref_no=$ref_no");
+                
+            exit();
             } else {
                 createCustomer($ref_no, $_POST['name']);
                 setAlert('success', 'Customer berhasil ditambahkan!');
-            }
-            header("Location: ../pages/html/tableCustomers.php");
+                header("Location: ../pages/html/tableCustomers.php");
             exit();
+            }
 
         } else if ($action === 'update') {
             if (updateCustomer($_POST['id'], $ref_no, $_POST['name'])) {
                 setAlert('success', 'Customer berhasil diperbarui!');
+                header("Location: ../pages/html/tableCustomers.php");
+            exit();
             } else {
                 setAlert('danger', 'Gagal memperbarui customer.');
-            }
-            header("Location: ../pages/html/tableCustomers.php");
+                header("Location: ../pages/html/editCustomers.php?name=$name&ref_no=$ref_no&id=$id");
             exit();
+            }
         }
 
     // SUPPLIER
@@ -101,21 +118,25 @@ if ($method === 'POST') {
         if ($action === 'create') {
             if (readSupplierByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan supplier. Ref No sudah digunakan.');
+                header("Location: ../pages/html/inputSuppliers.php?name=$name&ref_no=$ref_no");
+            exit();
             } else {
                 createSupplier($ref_no, $_POST['name']);
                 setAlert('success', 'Supplier berhasil ditambahkan!');
-            }
-            header("Location: ../pages/html/tableSuppliers.php");
+                header("Location: ../pages/html/tableSuppliers.php");
             exit();
+            }
 
         } else if ($action === 'update') {
             if (updateSupplier($_POST['id'], $ref_no, $_POST['name'])) {
                 setAlert('success', 'Supplier berhasil diperbarui!');
+                header("Location: ../pages/html/tableSuppliers.php");
+            exit();
             } else {
                 setAlert('danger', 'Gagal memperbarui supplier.');
-            }
-            header("Location: ../pages/html/tableSuppliers.php");
+                header("Location: ../pages/html/editSuppliers.php?name=$name&ref_no=$ref_no&id=$id");
             exit();
+            }
         }
 
     // ITEM
@@ -123,21 +144,25 @@ if ($method === 'POST') {
         if ($action === 'create') {
             if (readItemByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan item. Ref No sudah digunakan.');
+                header("Location: ../pages/html/inputItems.php?name=$name&r=ref_no=$ref_no&price=$price");
+            exit();
             } else {
                 createItem($ref_no, $_POST['name'], $_POST['price']);
                 setAlert('success', 'Item berhasil ditambahkan!');
-            }
-            header("Location: ../pages/html/tableItems.php");
+                header("Location: ../pages/html/tableItems.php");
             exit();
+            }
 
         } else if ($action === 'update') {
             if (updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price'])) {
                 setAlert('success', 'Item berhasil diperbarui!');
+                header("Location: ../pages/html/tableItems.php");
+            exit();
             } else {
                 setAlert('danger', 'Gagal memperbarui item.');
-            }
-            header("Location: ../pages/html/tableItems.php");
+                header("Location: ../pages/html/editItems.php?name=$name&ref_no=$ref_no&price=$price&id=$id");
             exit();
+            }
         }
 
     } else {

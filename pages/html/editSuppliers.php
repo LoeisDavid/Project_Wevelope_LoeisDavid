@@ -4,7 +4,7 @@
   $name = $_GET['name'];
   $ref_no = $_GET['ref_no'];
 
-?>  
+?>
 
 <!doctype html>
 <html lang="en">
@@ -48,6 +48,22 @@
     <!--end::Sidebar-->
     <!--begin::App Main-->
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
+                        <!-- Alert Session Message -->
+<?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['alert_delete']); ?>
+          <?php endif; ?>
     <main class="app-main"><main class="app-main">
         <!--begin::App Content Header-->
         <div class="app-content-header">
@@ -111,7 +127,7 @@
         id="ref_no"
         name="ref_no"
         value="<?= htmlspecialchars($ref_no) ?>"
-        disabled
+        required
       />
     </div>
 

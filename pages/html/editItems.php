@@ -1,12 +1,12 @@
 <?php
 
+
   $id = $_GET['id'];
   $name = $_GET['name'];
   $ref_no = $_GET['ref_no'];
   $price = $_GET['price'];
 
-
-?>  
+  ?> 
 
 <!doctype html>
 <html lang="en">
@@ -51,6 +51,22 @@
     <!--begin::App Main-->
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
     <main class="app-main"><main class="app-main">
+                          <!-- Alert Session Message -->
+<?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <?php unset($_SESSION['alert_delete']); ?>
+          <?php endif; ?>
         <!--begin::App Content Header-->
         <div class="app-content-header">
           <!--begin::Container-->
@@ -113,7 +129,7 @@
         id="ref_no"
         name="ref_no"
         value="<?= htmlspecialchars($ref_no) ?>"
-        disabled
+        required
       />
     </div>
 
