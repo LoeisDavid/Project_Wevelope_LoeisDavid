@@ -26,33 +26,51 @@ if (!function_exists('setAlert')) {
     }
 }
 
-
 if (!function_exists('createRefNo')) {
-    function createRefNo($name): string {
-        $angka = 1;
-        $ref_no= $name[0] . "00" . $angka;
-
-        while(readCustomerByRef_No($ref_no)!= null){
-            $angka++;
-
+    function createRefNo($name, $type): string {
+        $prefix = strtoupper($name[0]); // Ambil huruf pertama nama
+        $angka = 1; // Mulai angka dari 1
+    
+        while (true) {
+            // Tentukan ref_no berdasarkan angka yang sedang diproses
             if ($angka < 10) {
-                $ref_no= $name[0] . "00" . $angka;
+                $ref_no = $prefix . "00" . $angka;
             } elseif ($angka < 100) {
-                $ref_no= $name[0] . "0" . $angka;
+                $ref_no = $prefix . "0" . $angka;
             } else {
-                $ref_no= $name[0] . $angka;
+                $ref_no = $prefix . $angka;
             }
-        }
+    
+            // Cek apakah ref_no ini sudah dipakai customer
+            if ($type === 'customer') {
+                $data = readCustomerByRef_No($ref_no);
+            } elseif ($type === 'supplier') {
+                $data = readSupplierByRef_No($ref_no);
+            } elseif ($type === 'item') {
+                $data = readItemByRef_No($ref_no);
+            }
 
+            // Debugging - log ref_no yang sedang dicoba
+            echo "Mencoba ref_no: $ref_no<br>";
+            
+            if (!$data) {
+                break; // Jika ref_no belum digunakan, keluar dari loop
+            }
+
+            $angka++; // Jika sudah digunakan, coba angka berikutnya
+        }
+    
         return $ref_no;
     }
 }
 
 
+
+
 // === POST METHOD ===
 if ($method === 'POST') {
 
-    $ref_no = createRefNo($_POST['name']);
+    $ref_no = createRefNo($_POST['name'],$type);
 
     // CUSTOMER
     if ($type === 'customer') {
