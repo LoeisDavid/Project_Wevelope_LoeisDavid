@@ -5,6 +5,8 @@ include 'Control/Control.php';
 $suppliers = readSuppliers();
 $customers = readCustomers();
 $items = readItems();
+
+session_destroy(); 
 ?>
 
 <!doctype html>

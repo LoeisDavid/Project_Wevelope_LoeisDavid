@@ -61,12 +61,6 @@
                 <div class="valid-feedback">Looks good!</div>
               </div>
               <!--end::Col-->
-              <!--begin::Col-->
-              <div class="col-md-6">
-                <label for="validationCustom02" class="form-label">REF Number</label>
-                <input type="text" class="form-control" id="validationCustom02" value="LD01" required name="ref_no"/>
-                <div class="valid-feedback">Looks good!</div>
-              </div>
 
               <!--end::Col-->
               <!--begin::Col-->

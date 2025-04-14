@@ -113,7 +113,7 @@
         id="ref_no"
         name="ref_no"
         value="<?= htmlspecialchars($ref_no) ?>"
-        required
+        disabled
       />
     </div>
 

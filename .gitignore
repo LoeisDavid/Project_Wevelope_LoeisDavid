@@ -1,12 +1,3 @@
 # Abaikan file .env (file rahasia)
 .env
-
-# Abaikan folder vendor (hasil composer install)
-vendor/
-
-# Abaikan file log
-*.log
-
-# Abaikan semua file yang namanya sama
-.DS_Store
-Thumbs.db
+env.php

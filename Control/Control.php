@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once __DIR__ . '/../Repository/repository.php';
+require_once __DIR__ . '/../Models/Customer.php';
+require_once __DIR__ . '/../Models/Item.php';
+require_once __DIR__ . '/../Models/Supplier.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $type   = $_GET['type'] ?? null;
@@ -16,13 +19,39 @@ if (!function_exists('setAlert')) {
     }
 }
 
+
+if (!function_exists('createRefNo')) {
+    function createRefNo($name): string {
+        $angka = 1;
+        $ref_no= $name[0] . "00" . $angka;
+
+        while(readCustomerByRef_No($ref_no)!= null){
+            $angka++;
+
+            if ($angka < 10) {
+                $ref_no= $name[0] . "00" . $angka;
+            } elseif ($angka < 100) {
+                $ref_no= $name[0] . "0" . $angka;
+            } else {
+                $ref_no= $name[0] . $angka;
+            }
+        }
+
+        return $ref_no;
+    }
+}
+
+
 // === POST METHOD ===
 if ($method === 'POST') {
 
+    $ref_no = createRefNo($_POST['name']);
+
     // CUSTOMER
     if ($type === 'customer') {
+
+        
         if ($action === 'create') {
-            $ref_no = $_POST['ref_no'];
             if (readCustomerByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan customer. Ref No sudah digunakan.');
             } else {
@@ -33,7 +62,7 @@ if ($method === 'POST') {
             exit();
 
         } else if ($action === 'update') {
-            if (updateCustomer($_POST['id'], $_POST['ref_no'], $_POST['name'])) {
+            if (updateCustomer($_POST['id'], $ref_no, $_POST['name'])) {
                 setAlert('success', 'Customer berhasil diperbarui!');
             } else {
                 setAlert('danger', 'Gagal memperbarui customer.');
@@ -45,7 +74,6 @@ if ($method === 'POST') {
     // SUPPLIER
     } else if ($type === 'supplier') {
         if ($action === 'create') {
-            $ref_no = $_POST['ref_no'];
             if (readSupplierByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan supplier. Ref No sudah digunakan.');
             } else {
@@ -56,7 +84,7 @@ if ($method === 'POST') {
             exit();
 
         } else if ($action === 'update') {
-            if (updateSupplier($_POST['id'], $_POST['ref_no'], $_POST['name'])) {
+            if (updateSupplier($_POST['id'], $ref_no, $_POST['name'])) {
                 setAlert('success', 'Supplier berhasil diperbarui!');
             } else {
                 setAlert('danger', 'Gagal memperbarui supplier.');
@@ -68,7 +96,6 @@ if ($method === 'POST') {
     // ITEM
     } else if ($type === 'item') {
         if ($action === 'create') {
-            $ref_no = $_POST['ref_no'];
             if (readItemByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan item. Ref No sudah digunakan.');
             } else {
@@ -79,7 +106,7 @@ if ($method === 'POST') {
             exit();
 
         } else if ($action === 'update') {
-            if (updateItem($_POST['id'], $_POST['ref_no'], $_POST['name'], $_POST['price'])) {
+            if (updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price'])) {
                 setAlert('success', 'Item berhasil diperbarui!');
             } else {
                 setAlert('danger', 'Gagal memperbarui item.');
@@ -138,3 +165,4 @@ if ($method === 'POST') {
 } else {
     echo "Invalid request method.";
 }
+
