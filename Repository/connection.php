@@ -1,19 +1,21 @@
 <?php
-
-require __DIR__ . '/../vendor/autoload.php';
-
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../'); // arahkan ke root
-$dotenv->load();
+require_once(__DIR__ . '/../env.php');
 
 
-$host = $_ENV['DB_HOST'];
-$user = $_ENV['DB_USER'];
-$pass = $_ENV['DB_PASS'];
-$db   = $_ENV['DB_DATABASE'];
+// Load env dari file
+loadEnv(__DIR__ . '/../.env');
 
-$conn = mysqli_connect($host, $user, $pass, $db);
+// Ambil nilai dari env
+$host = getenv('DB_HOST');
+$port = getenv('DB_PORT');
+$db   = getenv('DB_DATABASE');
+$user = getenv('DB_USER');
+$pass = getenv('DB_PASS');
 
-if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+// Buat koneksi ke MySQL
+$conn = new mysqli($host, $user, $pass, $db, $port);
+
+// Cek koneksi
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
 }
-?>

@@ -43,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $items = readCustomers(); // langsung assign array of Customer object
     }
 }
+
+session_destroy(); 
 ?>
 
 <!doctype html>

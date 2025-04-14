@@ -43,6 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $items = readSuppliers(); // langsung assign array of Item object
     }
 }
+
+session_destroy(); 
 ?>
 
 
@@ -132,6 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </main>
       <footer class="app-footer">

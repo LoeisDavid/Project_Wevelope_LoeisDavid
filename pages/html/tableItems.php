@@ -45,6 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $items = readItems();
     }
 }
+
+session_destroy(); 
 ?>
 <!doctype html>
 <html lang="en">
