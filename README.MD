@@ -1,11 +1,12 @@
-Ini adalah syntax Mardown. Silakan dipelajari.
+## Cara Menginstall
 
-# Heading 1
+1. **Clone Repository**  
+   Jalankan perintah berikut untuk meng-clone repository ke lokal Anda:
+   ```bash
+`https://github.com/LoeisDavid/Project_Wevelope_LoeisDavid.git`
 
-# Cara Menginstall
-
-1. git clone ke local anda
-2. buka folder yang telah kalian clone
+2. buka git bash ketik `cd lokasiFile/Project_Wevelope_LoeisDavid`
 3. Buka file `.env`
 4. Lalu isi `$pass=(password database)`. 
-5. buka dan jalankan file `db.sql`
+5. Setelah mengedit `.env`, jalankan file `db.sql` untuk membuat struktur database yang diperlukan:
+`mysql -u username -p < db.sql`
