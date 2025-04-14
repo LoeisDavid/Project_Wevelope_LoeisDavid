@@ -85,7 +85,7 @@ session_destroy();
                   <h3><?= count($itemCustomers) ?></h3>
                   <p>Items Customers</p>
                 </div>
-                <a href="pages/html/tableCustomers.php" class="small-box-footer link-dark">More info <i class="bi bi-link-45deg"></i></a>
+                <a href="pages/html/tableItemCustomers.php" class="small-box-footer link-dark">More info <i class="bi bi-link-45deg"></i></a>
               </div>
             </div>
           </div>
