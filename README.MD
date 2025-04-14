@@ -6,8 +6,8 @@
    ```https://github.com/LoeisDavid/Project_Wevelope_LoeisDavid.git```
 
 
-2. buka git bash ketik `cd lokasiFile/Project_Wevelope_LoeisDavid`
-3. Buka file `.env`
-4. Lalu isi `$pass=(password database)`. 
-5. Setelah mengedit `.env`, jalankan file `db.sql` untuk membuat struktur database yang diperlukan:
-`mysql -u username -p < db.sql`
+## Konfigurasi Database
+1. Buka `env.php.example`
+2. Buka konfigurasi isi file tersebut sesuai dengan database anda
+3. buka terminal ketik `mysql -u root -p` setelah itu masukkan `password` kalian
+4. salin isi `db.sql` ke teriminal kalian
