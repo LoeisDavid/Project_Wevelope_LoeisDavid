@@ -50,6 +50,15 @@ include __DIR__ . '/../../Control/Control.php';
           </a>
         </li>
 
+        <li class="nav-item">
+          <a href="<?= BASE_URL ?>/pages/html/tableItemCustomers.php" class="nav-link">
+            <i class="nav-icon bi bi-table"></i>
+            <p>
+              Item Customers
+            </p>
+          </a>
+        </li>
+
       </ul>
     </nav>
   </div>

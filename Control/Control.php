@@ -7,6 +7,7 @@ require_once __DIR__ . '/../Repository/repository.php';
 require_once __DIR__ . '/../Models/Customer.php';
 require_once __DIR__ . '/../Models/Item.php';
 require_once __DIR__ . '/../Models/Supplier.php';
+require_once __DIR__ . '/../Models/ItemCustomer.php';
 
 if (!defined('BASE_URL')) {
     $script_name = $_SERVER['SCRIPT_NAME'];
@@ -76,8 +77,28 @@ if ($method === 'POST') {
         $ref_no = $_POST['ref_no'];
     }
 
+    if ($type === 'itemcustomer') {
+        if ($action === 'create') {
+            
+                createItemCustomer($_POST['item_id'], $_POST['customer_id'], $_POST['price']);
+                setAlert('success', 'Item Customer berhasil ditambahkan!');
+                header("Location: ../pages/html/tableItemCustomers.php");
+                exit();
+            
+        } else if ($action === 'update') {
+            if (updateItemCustomer($_POST['id'], $_POST['item_id'], $_POST['customer_id'], $_POST['price'])) {
+                setAlert('success', 'Item Customer berhasil diperbarui!');
+                header("Location: ../pages/html/tableItemCustomers.php");
+                exit();
+            } else {
+                setAlert('danger', 'Gagal memperbarui item customer.');
+                header("Location: ../pages/html/editItemCustomers.php?name=$name&ref_no=$ref_no&price=$price&id=$id");
+                exit();
+            }
+        }
+    }
     // CUSTOMER
-    if ($type === 'customer') {
+    else if ($type === 'customer') {
         if ($action === 'create') {
             if (readCustomerByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan customer. Ref No sudah digunakan.');
@@ -168,6 +189,9 @@ if ($method === 'POST') {
         } else if ($type === 'item') {
             $success = deleteItem($id);
             $redirectUrl = '../html/tableItems.php';
+        } else if ($type === 'itemcustomer') {
+            $success = deleteItemCustomer($id);
+            $redirectUrl = '../html/tableItemCustomers.php';
         }
 
         if ($success) {
@@ -186,6 +210,8 @@ if ($method === 'POST') {
             return $id ? readSupplierById($id) : readSuppliers();
         } else if ($type === 'item') {
             return $id ? readItemById($id) : readItems();
+        } else if ($type === 'itemcustomer') {
+            return $id ? readItemCustomerById($id) : readItemCustomers();
         } else {
             return "Invalid type.";
         }
@@ -203,6 +229,9 @@ if ($method === 'POST') {
         } else if ($type === 'item') {
             $redirectUrl = '../html/tableItems.php';
             $results = searchItems($query);  // Menambahkan fungsi search untuk items
+        } else if ($type === 'itemcustomer') {
+            $redirectUrl = '../html/tableItemCustomers.php';
+            $results = searchItemCustomers($query);  // Fungsi search untuk item customer
         }
 
         header("Location: $redirectUrl");

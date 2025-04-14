@@ -3,6 +3,7 @@ require_once __DIR__ . '/connection.php';
 require_once __DIR__ . '/../Models/Customer.php';
 require_once __DIR__ . '/../Models/Item.php';
 require_once __DIR__ . '/../Models/Supplier.php';
+require_once __DIR__ . '/../Models/ItemCustomer.php';
 
 // ---------------------- CUSTOMERS ----------------------
 function createCustomer($ref_no, $name) {
@@ -223,6 +224,75 @@ function deleteItem($id) {
     }
 }
 
+// ---------------------- ITEMS_CUSTOMERS ----------------------
+function createItemCustomer($item_id, $customer_id, $harga) {
+    global $conn;
+    try {
+        $stmt = $conn->prepare("INSERT INTO items_customers (Item, Customer, Harga) VALUES (?, ?, ?)");
+        $stmt->bind_param("iii", $item_id, $customer_id, $harga);
+        return $stmt->execute();
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function readItemCustomers() {
+    global $conn;
+    try {
+        $result = $conn->query("SELECT * FROM items_customers");
+        $entries = [];
+        while ($row = $result->fetch_assoc()) {
+            // Menggunakan data dari $row untuk membuat objek ItemCustomer
+            $itemCustomer = new ItemCustomer($row['ID'], $row['Item'], $row['Customer'], $row['Harga']);
+            $entries[] = $itemCustomer; // Menyimpan objek ke array
+        }
+        return $entries; // Mengembalikan array berisi objek ItemCustomer
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
+function readItemCustomerById($id) {
+    global $conn;
+    try {
+        $stmt = $conn->prepare("SELECT * FROM items_customers WHERE ID = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            // Membuat objek ItemCustomer dan mengisinya dengan data dari query
+            return new ItemCustomer($row['ID'], $row['Item'], $row['Customer'], $row['Harga']);
+        }
+    } catch (Exception $e) {
+        return null; // Jika terjadi error atau data tidak ditemukan, return null
+    }
+    return null;
+}
+
+
+function updateItemCustomer($id, $item_id, $customer_id, $harga) {
+    global $conn;
+    try {
+        $stmt = $conn->prepare("UPDATE items_customers SET Item = ?, Customer = ?, Harga = ? WHERE ID = ?");
+        $stmt->bind_param("iiii", $item_id, $customer_id, $harga, $id);
+        return $stmt->execute();
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function deleteItemCustomer($id) {
+    global $conn;
+    try {
+        $stmt = $conn->prepare("DELETE FROM items_customers WHERE ID = ?");
+        $stmt->bind_param("i", $id);
+        return $stmt->execute();
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+
 // Function to search for customers based on ID, REF_NO, or NAME
 function searchCustomers($query) {
     global $conn;
@@ -291,3 +361,28 @@ function searchItems($query) {
         return [];
     }
 }
+
+// Function to search for items_customers based on Item ID, Customer ID, or Harga// Function to search for items_customers based on Item ID, Customer ID, or Harga
+function searchItemCustomers($query) {
+    global $conn;
+    try {
+        $query = "%" . $query . "%"; // Menambahkan wildcard % untuk LIKE
+        $stmt = $conn->prepare("SELECT * FROM items_customers WHERE Item LIKE ? OR Customer LIKE ? OR Harga LIKE ?");
+        
+        // Bind parameter: Item, Customer, and Harga (semuanya sebagai string)
+        $stmt->bind_param("sss", $query, $query, $query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $entries = [];
+        while ($row = $result->fetch_assoc()) {
+            // Membuat objek ItemCustomer dan menyimpannya ke array entries
+            $itemCustomer = new ItemCustomer($row['ID'], $row['Item'], $row['Customer'], $row['Harga']);
+            $entries[] = $itemCustomer;
+        }
+        return $entries;
+    } catch (Exception $e) {
+        return [];
+    }
+}
+

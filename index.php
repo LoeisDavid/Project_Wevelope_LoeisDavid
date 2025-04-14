@@ -5,6 +5,7 @@ include 'Control/Control.php';
 $suppliers = readSuppliers();
 $customers = readCustomers();
 $items = readItems();
+$itemCustomers = readItemCustomers();
 
 session_destroy(); 
 ?>
@@ -74,6 +75,15 @@ session_destroy();
                 <div class="inner">
                   <h3><?= count($customers) ?></h3>
                   <p>Customers</p>
+                </div>
+                <a href="pages/html/tableCustomers.php" class="small-box-footer link-dark">More info <i class="bi bi-link-45deg"></i></a>
+              </div>
+            </div>
+            <div class="col-lg-3 col-6">
+              <div class="small-box text-bg-warning">
+                <div class="inner">
+                  <h3><?= count($itemCustomers) ?></h3>
+                  <p>Items Customers</p>
                 </div>
                 <a href="pages/html/tableCustomers.php" class="small-box-footer link-dark">More info <i class="bi bi-link-45deg"></i></a>
               </div>
