@@ -3,7 +3,7 @@
 1. **Clone Repository**  
    Jalankan perintah berikut untuk meng-clone repository ke lokal Anda
    Untuk meng-clone repository, buka terminal atau Git Bash, lalu jalankan perintah berikut:
-   ```https://github.com/LoeisDavid/Project_Wevelope_LoeisDavid.git```bash
+   ```https://github.com/LoeisDavid/Project_Wevelope_LoeisDavid.git```
 
 
 2. buka git bash ketik `cd lokasiFile/Project_Wevelope_LoeisDavid`

@@ -5,6 +5,13 @@ require_once __DIR__ . '/../Models/Customer.php';
 require_once __DIR__ . '/../Models/Item.php';
 require_once __DIR__ . '/../Models/Supplier.php';
 
+
+if (!defined('BASE_URL')) {
+    $script_name = $_SERVER['SCRIPT_NAME'];
+    $project_folder = explode("/", trim($script_name, "/"))[0];
+    define("BASE_URL", "/" . $project_folder);
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 $type   = $_GET['type'] ?? null;
 $action = $_GET['action'] ?? null;

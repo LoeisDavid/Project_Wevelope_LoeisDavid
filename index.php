@@ -55,7 +55,7 @@ session_destroy();
                   <h3><?= count($items) ?></h3>
                   <p>Items</p>
                 </div>
-                <a href="/../Project_Wevelope_LoeisDavid/pages/html/tableItems.php" class="small-box-footer link-light">More info <i class="bi bi-link-45deg"></i></a>
+                <a href="pages/html/tableItems.php" class="small-box-footer link-light">More info <i class="bi bi-link-45deg"></i></a>
               </div>
             </div>
             <!-- Suppliers -->
@@ -65,7 +65,7 @@ session_destroy();
                   <h3><?= count($suppliers) ?></h3>
                   <p>Suppliers</p>
                 </div>
-                <a href="/../Project_Wevelope_LoeisDavid/pages/html/tableSuppliers.php" class="small-box-footer link-light">More info <i class="bi bi-link-45deg"></i></a>
+                <a href="pages/html/tableSuppliers.php" class="small-box-footer link-light">More info <i class="bi bi-link-45deg"></i></a>
               </div>
             </div>
             <!-- Customers -->
@@ -75,7 +75,7 @@ session_destroy();
                   <h3><?= count($customers) ?></h3>
                   <p>Customers</p>
                 </div>
-                <a href="/../Project_Wevelope_LoeisDavid/pages/html/tableCustomers.php" class="small-box-footer link-dark">More info <i class="bi bi-link-45deg"></i></a>
+                <a href="pages/html/tableCustomers.php" class="small-box-footer link-dark">More info <i class="bi bi-link-45deg"></i></a>
               </div>
             </div>
           </div>

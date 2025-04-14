@@ -14,7 +14,7 @@ include __DIR__ . '/../../Control/Control.php';
 
         <!-- Dashboard -->
         <li class="nav-item">
-          <a href="/../Project_Wevelope_LoeisDavid/index.php" class="nav-link">
+          <a href="<?= BASE_URL ?>/index.php" class="nav-link" class="nav-link">
             <i class="nav-icon bi bi-speedometer"></i>
             <p>Dashboard</p>
           </a>
@@ -22,7 +22,7 @@ include __DIR__ . '/../../Control/Control.php';
 
         <!-- Items -->
         <li class="nav-item">
-          <a href="/../Project_Wevelope_LoeisDavid/pages/html/tableItems.php" class="nav-link">
+          <a href="<?= BASE_URL ?>/pages/html/tableItems.php" class="nav-link">
             <i class="nav-icon bi bi-table"></i>
             <p>
               Items
@@ -32,7 +32,7 @@ include __DIR__ . '/../../Control/Control.php';
 
         <!-- Customers -->
         <li class="nav-item">
-          <a href="/../Project_Wevelope_LoeisDavid/pages/html/tableCustomers.php" class="nav-link">
+          <a href="<?= BASE_URL ?>/pages/html/tableCustomers.php" class="nav-link">
             <i class="nav-icon bi bi-people"></i>
             <p>
               Customers
@@ -42,7 +42,7 @@ include __DIR__ . '/../../Control/Control.php';
 
         <!-- Suppliers -->
         <li class="nav-item">
-          <a href="/../Project_Wevelope_LoeisDavid/pages/html/tableSuppliers.php" class="nav-link">
+          <a href="<?= BASE_URL ?>/pages/html/tableSuppliers.php" class="nav-link">
             <i class="nav-icon bi bi-people-fill"></i>
             <p>
               Suppliers
