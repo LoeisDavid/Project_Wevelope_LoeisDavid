@@ -13,15 +13,26 @@ if (
 $items = []; // pastikan ini array kosong, bukan array berisi null
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $type = $_GET['type'] ?? 'customer';
-    $action = $_GET['action'] ?? 'read';
+  $type = $_GET['type'] ?? 'customer';
+  $action = $_GET['action'] ?? 'read'; // default action adalah 'read'
+  $keyword = $_GET['keyword'] ?? ''; // Ambil keyword dari form pencarian
 
-    if ($type === 'customer' && $action === 'read') {
-        $items = readCustomers(); // langsung assign array of Customer object
-    }
+  // Jika ada keyword, set action menjadi 'search'
+  if (!empty($keyword)) {
+      $action = 'search';
+  }
+
+  // Sesuaikan aksi berdasarkan action
+  if ($type === 'customer') {
+      if ($action === 'search') {
+          // Cari berdasarkan keyword
+          $items = searchCustomers($keyword);
+      } else {
+          // Jika tidak ada keyword, tampilkan semua data (read)
+          $items = readCustomers();
+      }
+  }
 }
-
-session_destroy(); 
 ?>
 
 <!doctype html>
@@ -76,6 +87,18 @@ session_destroy();
               <div class="card mb-4">
                 <div class="card-header text-center"><h3 class="card-title">Customers Table</h3></div>
                 <div class="card-body text-center">
+                <form method="GET" class="mb-3 d-flex justify-content-end">
+                    <input type="hidden" name="type" value="supplier">
+                    <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
+                    <input
+                      type="text"
+                      name="keyword"
+                      class="form-control w-auto me-2"
+                      placeholder="Search supplier..."
+                      value="<?= htmlspecialchars($keyword) ?>"
+                    >
+                    <button type="submit" class="btn btn-secondary">Search</button>
+                  </form>
                   <table class="table table-bordered mx-auto">
                     <thead>
                       <tr>

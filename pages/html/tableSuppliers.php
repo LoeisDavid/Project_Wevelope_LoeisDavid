@@ -1,6 +1,29 @@
 <?php
 include '../../Control/Control.php';
 
+$items = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+  $type = $_GET['type'] ?? 'supplier';
+  $action = $_GET['action'] ?? 'read'; // default action adalah 'read'
+  $keyword = $_GET['keyword'] ?? ''; // Ambil keyword dari form pencarian
+
+  // Jika ada keyword, set action menjadi 'search'
+  if (!empty($keyword)) {
+      $action = 'search';
+  }
+
+  // Sesuaikan aksi berdasarkan action
+  if ($type === 'supplier') {
+      if ($action === 'search') {
+          // Cari berdasarkan keyword
+          $items = searchSuppliers($keyword);
+      } else {
+          // Jika tidak ada keyword, tampilkan semua data (read)
+          $items = readSuppliers();
+      }
+  }
+}
 
 if (
   isset($_GET['type'], $_GET['action'], $_GET['id']) &&
@@ -9,17 +32,6 @@ if (
 ) {
   $id = (int) $_GET['id'];
   deleteSupplier($id);                    // pastikan fungsi ini ada di Control.php / repository
-}
-
-$items = []; // pastikan ini array kosong, bukan array berisi null
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $type = $_GET['type'] ?? 'supplier';
-    $action = $_GET['action'] ?? 'read';
-
-    if ($type === 'supplier' && $action === 'read') {
-        $items = readSuppliers(); // langsung assign array of Item object
-    }
 }
 ?>
 
@@ -75,6 +87,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
               <div class="card mb-4">
                 <div class="card-header text-center"><h3 class="card-title">Suppliers Table</h3></div>
                 <div class="card-body text-center">
+                <form method="GET" class="mb-3 d-flex justify-content-end">
+                    <input type="hidden" name="type" value="supplier">
+                    <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
+                    <input
+                      type="text"
+                      name="keyword"
+                      class="form-control w-auto me-2"
+                      placeholder="Search supplier..."
+                      value="<?= htmlspecialchars($keyword) ?>"
+                    >
+                    <button type="submit" class="btn btn-secondary">Search</button>
+                  </form>
                 <table class="table table-bordered mx-auto">
   <thead>
     <tr>

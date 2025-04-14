@@ -15,16 +15,28 @@ if (
 }
 
 // 2) Fetch items
-$items = [];
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $type   = $_GET['type']   ?? 'item';
-    $action = $_GET['action'] ?? 'read';
-    if ($type === 'item' && $action === 'read') {
-        $items = readItems();
-    }
+  $type = $_GET['type'] ?? 'item';
+  $action = $_GET['action'] ?? 'read'; // default action adalah 'read'
+  $keyword = $_GET['keyword'] ?? ''; // Ambil keyword dari form pencarian
+
+  // Jika ada keyword, set action menjadi 'search'
+  if (!empty($keyword)) {
+      $action = 'search';
+  }
+
+  // Sesuaikan aksi berdasarkan action
+  if ($type === 'item') {
+      if ($action === 'search') {
+          // Cari berdasarkan keyword
+          $items = searchItems($keyword);
+      } else {
+          // Jika tidak ada keyword, tampilkan semua data (read)
+          $items = readItems();
+      }
+  }
 }
 
-session_destroy(); 
 ?>
 <!doctype html>
 <html lang="en">
@@ -84,6 +96,18 @@ session_destroy();
                   <h3 class="card-title">Items Table</h3>
                 </div>
                 <div class="card-body text-center">
+                <form method="GET" class="mb-3 d-flex justify-content-end">
+                    <input type="hidden" name="type" value="supplier">
+                    <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
+                    <input
+                      type="text"
+                      name="keyword"
+                      class="form-control w-auto me-2"
+                      placeholder="Search supplier..."
+                      value="<?= htmlspecialchars($keyword) ?>"
+                    >
+                    <button type="submit" class="btn btn-secondary">Search</button>
+                  </form>
                   <table class="table table-bordered mx-auto">
                     <thead>
                       <tr>

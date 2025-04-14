@@ -222,3 +222,72 @@ function deleteItem($id) {
         return false;
     }
 }
+
+// Function to search for customers based on ID, REF_NO, or NAME
+function searchCustomers($query) {
+    global $conn;
+    try {
+        $query = "%" . $query . "%"; // Menambahkan wildcard % untuk LIKE
+        $stmt = $conn->prepare("SELECT * FROM Customers WHERE ID = ? OR REF_NO LIKE ? OR NAME LIKE ?");
+        
+        // Bind parameter: ID (integer), REF_NO and NAME (string)
+        $idQuery = is_numeric($query) ? (int)$query : 0;
+        $stmt->bind_param("iss", $idQuery, $query, $query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $customers = [];
+        while ($row = $result->fetch_assoc()) {
+            $customers[] = new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
+        }
+        return $customers;
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
+// Function to search for suppliers based on ID, REF_NO, or NAME
+function searchSuppliers($query) {
+    global $conn;
+    try {
+        $query = "%" . $query . "%"; // Menambahkan wildcard % untuk LIKE
+        $stmt = $conn->prepare("SELECT * FROM Suppliers WHERE ID = ? OR REF_NO LIKE ? OR NAME LIKE ?");
+        
+        // Bind parameter: ID (integer), REF_NO and NAME (string)
+        $idQuery = is_numeric($query) ? (int)$query : 0;
+        $stmt->bind_param("iss", $idQuery, $query, $query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $suppliers = [];
+        while ($row = $result->fetch_assoc()) {
+            $suppliers[] = new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
+        }
+        return $suppliers;
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
+// Function to search for items based on ID, REF_NO, or NAME
+function searchItems($query) {
+    global $conn;
+    try {
+        $query = "%" . $query . "%"; // Menambahkan wildcard % untuk LIKE
+        $stmt = $conn->prepare("SELECT * FROM Items WHERE ID = ? OR REF_NO LIKE ? OR NAME LIKE ?");
+        
+        // Bind parameter: ID (integer), REF_NO and NAME (string)
+        $idQuery = is_numeric($query) ? (int)$query : 0;
+        $stmt->bind_param("iss", $idQuery, $query, $query);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $items = [];
+        while ($row = $result->fetch_assoc()) {
+            $items[] = new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']);
+        }
+        return $items;
+    } catch (Exception $e) {
+        return [];
+    }
+}

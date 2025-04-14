@@ -8,7 +8,6 @@ require_once __DIR__ . '/../Models/Customer.php';
 require_once __DIR__ . '/../Models/Item.php';
 require_once __DIR__ . '/../Models/Supplier.php';
 
-
 if (!defined('BASE_URL')) {
     $script_name = $_SERVER['SCRIPT_NAME'];
     $project_folder = explode("/", trim($script_name, "/"))[0];
@@ -53,9 +52,6 @@ if (!function_exists('createRefNo')) {
                 $data = readItemByRef_No($ref_no);
             }
 
-            // Debugging - log ref_no yang sedang dicoba
-            echo "Mencoba ref_no: $ref_no<br>";
-            
             if (!$data) {
                 break; // Jika ref_no belum digunakan, keluar dari loop
             }
@@ -67,9 +63,6 @@ if (!function_exists('createRefNo')) {
     }
 }
 
-
-
-
 // === POST METHOD ===
 if ($method === 'POST') {
 
@@ -77,99 +70,88 @@ if ($method === 'POST') {
     $price = $_POST['price'] ?? NULL;
     $id = $_POST['id'] ?? NULL;
 
-
-    if(!$_POST['ref_no']){
-        $ref_no = createRefNo($_POST['name'],$type);
+    if (!$_POST['ref_no']) {
+        $ref_no = createRefNo($_POST['name'], $type);
     } else {
-        $ref_no=$_POST['ref_no'];
+        $ref_no = $_POST['ref_no'];
     }
 
     // CUSTOMER
     if ($type === 'customer') {
-
-        
         if ($action === 'create') {
             if (readCustomerByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan customer. Ref No sudah digunakan.');
                 header("Location: ../pages/html/inputCustomers.php?name=$name&ref_no=$ref_no");
-                
-            exit();
+                exit();
             } else {
                 createCustomer($ref_no, $_POST['name']);
                 setAlert('success', 'Customer berhasil ditambahkan!');
                 header("Location: ../pages/html/tableCustomers.php");
-            exit();
+                exit();
             }
-
         } else if ($action === 'update') {
             if (updateCustomer($_POST['id'], $ref_no, $_POST['name'])) {
                 setAlert('success', 'Customer berhasil diperbarui!');
                 header("Location: ../pages/html/tableCustomers.php");
-            exit();
+                exit();
             } else {
                 setAlert('danger', 'Gagal memperbarui customer.');
                 header("Location: ../pages/html/editCustomers.php?name=$name&ref_no=$ref_no&id=$id");
-            exit();
+                exit();
             }
         }
-
     // SUPPLIER
     } else if ($type === 'supplier') {
         if ($action === 'create') {
             if (readSupplierByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan supplier. Ref No sudah digunakan.');
                 header("Location: ../pages/html/inputSuppliers.php?name=$name&ref_no=$ref_no");
-            exit();
+                exit();
             } else {
                 createSupplier($ref_no, $_POST['name']);
                 setAlert('success', 'Supplier berhasil ditambahkan!');
                 header("Location: ../pages/html/tableSuppliers.php");
-            exit();
+                exit();
             }
-
         } else if ($action === 'update') {
             if (updateSupplier($_POST['id'], $ref_no, $_POST['name'])) {
                 setAlert('success', 'Supplier berhasil diperbarui!');
                 header("Location: ../pages/html/tableSuppliers.php");
-            exit();
+                exit();
             } else {
                 setAlert('danger', 'Gagal memperbarui supplier.');
                 header("Location: ../pages/html/editSuppliers.php?name=$name&ref_no=$ref_no&id=$id");
-            exit();
+                exit();
             }
         }
-
     // ITEM
     } else if ($type === 'item') {
         if ($action === 'create') {
             if (readItemByRef_No($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan item. Ref No sudah digunakan.');
-                header("Location: ../pages/html/inputItems.php?name=$name&r=ref_no=$ref_no&price=$price");
-            exit();
+                header("Location: ../pages/html/inputItems.php?name=$name&ref_no=$ref_no&price=$price");
+                exit();
             } else {
                 createItem($ref_no, $_POST['name'], $_POST['price']);
                 setAlert('success', 'Item berhasil ditambahkan!');
                 header("Location: ../pages/html/tableItems.php");
-            exit();
+                exit();
             }
-
         } else if ($action === 'update') {
             if (updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price'])) {
                 setAlert('success', 'Item berhasil diperbarui!');
                 header("Location: ../pages/html/tableItems.php");
-            exit();
+                exit();
             } else {
                 setAlert('danger', 'Gagal memperbarui item.');
                 header("Location: ../pages/html/editItems.php?name=$name&ref_no=$ref_no&price=$price&id=$id");
-            exit();
+                exit();
             }
         }
-
     } else {
         echo "Invalid action.";
     }
 
-// === GET METHOD ===
 } else if ($method === 'GET') {
 
     // DELETE & READ ACTIONS
@@ -208,6 +190,24 @@ if ($method === 'POST') {
             return "Invalid type.";
         }
 
+    } else if ($action === 'search') {
+        $query = $_GET['query'] ?? '';
+        $results = [];
+
+        if ($type === 'customer') {
+            $redirectUrl = '../html/tableCustomers.php';
+            $results = searchCustomers($query);  // Menambahkan fungsi search untuk customers
+        } else if ($type === 'supplier') {
+            $redirectUrl = '../html/tableSuppliers.php';
+            $results = searchSuppliers($query);  // Menambahkan fungsi search untuk suppliers
+        } else if ($type === 'item') {
+            $redirectUrl = '../html/tableItems.php';
+            $results = searchItems($query);  // Menambahkan fungsi search untuk items
+        }
+
+        header("Location: $redirectUrl");
+        exit();
+
     } else {
         return "Invalid action.";
     }
@@ -215,4 +215,3 @@ if ($method === 'POST') {
 } else {
     echo "Invalid request method.";
 }
-
