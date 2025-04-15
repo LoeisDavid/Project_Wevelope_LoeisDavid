@@ -11,35 +11,38 @@ if (
   $_SESSION['alert_delete'] = [
     'type' => 'success',
     'message' => 'Invoice berhasil dihapus.',
-  ];                // pastikan fungsi ini ada di Control.php / repository
-} 
+  ];
+}
 
-$items = [];
+// Ambil semua invoice
+$items = readInvoices();
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $type = $_GET['type'] ?? 'invoice';
-  $action = $_GET['action'] ?? 'read'; // default action adalah 'read'
-  $keyword = $_GET['keyword'] ?? ''; // Ambil keyword dari form pencarian
-
-  // Jika ada keyword, set action menjadi 'search'
-  if (!empty($keyword)) {
-      $action = 'search';
-  }
-
-  // Sesuaikan aksi berdasarkan action
-  if ($type === 'invoice') {
-      if ($action === 'search') {
-          // Cari berdasarkan keyword
-          $items = searchInvoices($keyword);
-      } else {
-          // Jika tidak ada keyword, tampilkan semua data (read)
-          $items = readInvoices();
-      }
+// Hapus invoice yang tidak memiliki item di iteminv
+foreach ($items as $inv) {
+  $itemInvs = readItemInvByInvoice($inv->getId());
+  if (empty($itemInvs)) {
+    deleteInvoice($inv->getId());
   }
 }
 
+// Cek apakah ada request GET untuk pencarian atau aksi lainnya
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+  $type = $_GET['type'] ?? 'invoice';
+  $action = $_GET['action'] ?? 'read';
+  $keyword = $_GET['keyword'] ?? '';
 
+  if (!empty($keyword)) {
+    $action = 'search';
+  }
 
+  if ($type === 'invoice') {
+    if ($action === 'search') {
+      $items = searchInvoices($keyword);
+    } else {
+      $items = readInvoices(); // Ambil lagi data terbaru setelah penghapusan
+    }
+  }
+}
 
 ?>
 
