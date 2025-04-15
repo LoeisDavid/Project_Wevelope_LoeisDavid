@@ -59,6 +59,14 @@ include __DIR__ . '/../../Control/Control.php';
           </a>
         </li>
 
+        <li class="nav-item">
+          <a href="<?= BASE_URL ?>/pages/html/tableInvoice.php" class="nav-link">
+            <i class="nav-icon bi bi-table"></i>
+            <p>
+              Invoice
+            </p>
+          </a>
+        </li>
       </ul>
     </nav>
   </div>

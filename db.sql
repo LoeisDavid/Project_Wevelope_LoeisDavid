@@ -34,3 +34,27 @@ CREATE TABLE items_customers (
     FOREIGN KEY (Item) REFERENCES Items(ID) ON DELETE CASCADE,
     FOREIGN KEY (Customer) REFERENCES Customers(ID) ON DELETE CASCADE
 );
+
+-- Tabel invoice
+CREATE TABLE invoice (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Tgl_Inv DATE NOT NULL,
+    ID_Customer INT NOT NULL,
+    FOREIGN KEY (ID_Customer) REFERENCES customers(ID)
+);
+
+-- Tabel itemInv
+CREATE TABLE itemInv (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Item INT NOT NULL,
+    ID_Invoice INT NOT NULL,
+    Harga DOUBLE,
+    Qty INT,
+    Total DOUBLE,
+    FOREIGN KEY (ID_Item) REFERENCES items(ID),
+    FOREIGN KEY (ID_Invoice) REFERENCES invoice(ID)
+);
+
+
+
+
