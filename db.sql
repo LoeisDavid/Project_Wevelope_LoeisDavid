@@ -38,21 +38,22 @@ CREATE TABLE items_customers (
 -- Tabel invoice
 CREATE TABLE invoice (
     ID INT AUTO_INCREMENT PRIMARY KEY,
-    Tgl_Inv DATE NOT NULL,
-    ID_Customer INT NOT NULL,
+    KODE VARCHAR(100) UNIQUE,
+    DATE DATE,
+    CUSTOMER_ID INT NOT NULL,
     FOREIGN KEY (ID_Customer) REFERENCES customers(ID)
 );
 
 -- Tabel itemInv
 CREATE TABLE itemInv (
     ID INT AUTO_INCREMENT PRIMARY KEY,
-    ID_Item INT NOT NULL,
-    ID_Invoice INT NOT NULL,
-    Harga DOUBLE,
-    Qty INT,
-    Total DOUBLE,
-    FOREIGN KEY (ID_Item) REFERENCES items(ID),
-    FOREIGN KEY (ID_Invoice) REFERENCES invoice(ID)
+    INVOICE_ID INT NOT NULL,
+    ITEM_ID INT NOT NULL,
+    QTY INT,
+    PRICE DOUBLE,
+    TOTAL DOUBLE,
+    FOREIGN KEY (ITEM_ID) REFERENCES items(ID),
+    FOREIGN KEY (INVOICE_ID) REFERENCES invoice(ID)
 );
 
 
