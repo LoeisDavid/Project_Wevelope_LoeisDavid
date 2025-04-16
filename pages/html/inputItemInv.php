@@ -3,7 +3,7 @@
 include '../../Control/Control.php';
 
 $items = readItems();
-$kode = $_GET['kode'] ?? '';
+$kode = readInvoiceById($_GET['invoice'])->getKode();
 $invoice = $_GET['invoice'] ?? '';
 $customerId = $_GET['customer'] ?? '';
 $tanggal = $_GET['date'] ?? '';
@@ -13,10 +13,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $itemId = $_POST['item'] ?? '';
   $qty = $_POST['qty'] ?? '';
-  $harga = $_POST['harga'] ?? '';
+  $harga = $_POST['harga'] ?? null;
 
   if ($itemId && $qty && $invoice) {
-    if(!$harga){
+    if($harga === ""){
       $harga= readItemById($itemId)->getPrice();
     }
       createItemInv($invoice, $itemId, $qty, $harga);
@@ -95,6 +95,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <div class="card-header text-center"><h4>Input Invoice</h4></div>
           <div class="card-body">
           <form method="POST">
+          <div class="mb-3">
+                    <label class="form-label">KODE INVOICE</label>
+                    <input type="number" name="id" class="form-control" value="<?= $kode ?>" disabled>
+                  </div>
   <div class="mb-3">
     <label for="item" class="form-label">Pilih Item</label>
     <select name="item" id="item" class="form-select" required>

@@ -2,7 +2,7 @@
 
 include '../../Control/Control.php';
 
-$id = $_GET['id'] ?? 0;
+$id = $_GET['invoice'] ?? 0;
 
 // Ambil data invoice dan item
 $invoice = readInvoiceById($id);
@@ -51,7 +51,7 @@ $total = 0;
   <table>
     <thead>
       <tr>
-        <th>ID</th>
+        <th>REF NO</th>
         <th>Nama Barang</th>
         <th>Qty</th>
         <th>Harga</th>
@@ -64,7 +64,7 @@ $total = 0;
         $total += $subTotal;
       ?>
         <tr>
-          <td><?= htmlspecialchars($item->getItemId()) ?></td>
+          <td><?= htmlspecialchars(readItemById($item->getItemId())->getRefNo()) ?></td>
           <td><?= htmlspecialchars(readItemById($item->getItemId())->getName()) ?></td>
           <td class="right"><?= $item->getQty() ?></td>
           <td class="right"><?= number_format($item->getPrice(), 0, ',', '.') ?></td>

@@ -195,19 +195,22 @@ if ($method === 'POST') {
     $kode = $_POST['kode'] ?? 0;
 
     if ($action === 'create') {
-        if (!createInvoice($customer_id, $date, $kode)) {
+        if(!readInvoiceByKode($kode)) {
+            createInvoice($customer_id, $date, $kode);setAlert('success', 'invoice berhasil ditambahkan!');
+            header("Location: ../pages/html/tableInvoice.php");
+        exit();
+            
+        } else {
             setAlert('danger', 'Gagal menambahkan invoice.');
             header("Location: ../pages/html/inputInvoices.php?date=$date&customer_id=$customer_id&kode=$kode");
             exit();
-        } else {
-            setAlert('success', 'invoice berhasil ditambahkan!');
-            header("Location: ../pages/html/tableInvoice.php");
-        exit();
         }
 
         
     } else if ($action === 'update') {
-        if (updateInvoice($_GET['id'], $customer_id, $date, $kode)) {
+        $id= $_GET['id'];
+        if(!readInvoiceByKode($kode)) {
+            updateInvoice($_GET['id'], $customer_id, $date, $kode);
             setAlert('success', 'Invoice berhasil diperbarui!');
             header("Location: ../pages/html/tableInvoice.php");
             exit();
@@ -217,9 +220,12 @@ if ($method === 'POST') {
             exit();
         }
     }
+    } 
+    
+    
 
 // ITEMINV
-} else if ($type === 'iteminv') {
+ else if ($type === 'iteminv') {
     $item_id = $_POST['item_id'] ?? NULL;
     $invoice_id = $_POST['invoice_id'] ?? NULL;
     $qty = $_POST['qty'] ?? 0;

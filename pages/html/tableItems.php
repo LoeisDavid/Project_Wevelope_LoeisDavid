@@ -93,17 +93,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
                 <div class="card-header text-center">
-                  <h3 class="card-title">Items Table</h3>
+                  <h3 class="card-title">Data Item tersimpan</h3>
                 </div>
                 <div class="card-body text-center">
                 <form method="GET" class="mb-3 d-flex justify-content-end">
-                    <input type="hidden" name="type" value="supplier">
+                    <input type="hidden" name="type" value="item">
                     <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
                     <input
                       type="text"
                       name="keyword"
                       class="form-control w-auto me-2"
-                      placeholder="Search supplier..."
+                      placeholder="Search item..."
                       value="<?= htmlspecialchars($keyword) ?>"
                     >
                     <button type="submit" class="btn btn-secondary">Search</button>

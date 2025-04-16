@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
           <div class="row">
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
-                <div class="card-header text-center"><h3 class="card-title">Invoices Table</h3></div>
+                <div class="card-header text-center"><h3 class="card-title">Data Invoices tersimpan</h3></div>
                 <div class="card-body text-center">
                 <form method="GET" class="mb-3 d-flex justify-content-end">
                     <input type="hidden" name="type" value="invoice">
@@ -148,16 +148,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     title="Delete Invoice"
   >
     <i class="bi bi-trash"></i>
-  </a>
-
-  <!-- Tombol Print -->
-  <a
-    href="printInvoice.php?id=<?= $item->getId() ?>"
-    target="_blank"
-    class="btn btn-sm btn-secondary"
-    title="Print Invoice"
-  >
-    <i class="bi bi-printer"></i>
   </a>
 </div>
 
