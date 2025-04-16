@@ -72,11 +72,13 @@ function readItemInvByInvoice($invoiceId) {
         $stmt->bind_param("i", $invoiceId);
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            return new ItemInv($row['ID'], $row['INVOICE_ID'], $row['ITEM_ID'], $row['QTY'], $row['PRICE'], $row['TOTAL']);
+        $entries = [];
+        while ($row = $result->fetch_assoc()) {
+            $entries[] = new ItemInv($row['ID'], $row['INVOICE_ID'], $row['ITEM_ID'], $row['QTY'], $row['PRICE'], $row['TOTAL']);
         }
+        return $entries;
     } catch (Exception $e) {
-        return null;
+        return [];
     }
 }
 
@@ -220,12 +222,10 @@ function updateInvoice($id, $customerId, $tanggal, $kode) {
 global $conn;
 
 $itemInv = readItemInvByInvoice($id);
-deleteItemInvByInvId($itemInv->getId());
     try {
         $stmt = $conn->prepare("UPDATE invoice SET CUSTOMER_ID = ?, DATE = ?, KODE = ? WHERE ID = ?");
         $stmt->bind_param("issi", $customerId, $tanggal,$kode, $id);
         $stmt->execute();
-        createItemInv($itemInv->getInvoiceId(),$itemInv->getItemId(),$itemInv->getQty(),$itemInv->getPrice());
         return true;
     } catch (Exception $e) {
         return false;
@@ -234,8 +234,12 @@ deleteItemInvByInvId($itemInv->getId());
 
 function deleteInvoice($id) {
     global $conn;
-    $invoice = readInvoiceById($id);
-    deleteItemInvByInvId($invoice->getId());
+    $invoice = readItemInvByInvoice($id);
+    if(!empty($invoice)){
+        for ($i= 0; $i<sizeof($invoice); $i++) {
+            deleteItemInvByInvId($invoice[$i]->getId());
+        }
+    }
     try {
         $stmt = $conn->prepare("DELETE FROM invoice WHERE ID = ?");
         $stmt->bind_param("i", $id);

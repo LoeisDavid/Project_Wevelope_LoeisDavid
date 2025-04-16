@@ -4,7 +4,7 @@ include '../../Control/Control.php';
 
 $customers = readCustomers(); // ambil semua customer
 $id = $_GET['id'];
-$itemInvs = readItemInvByInvoice($id); // ambil item berdasarkan ID invoice
+$itemInvs = readItemInvById($id); // ambil item berdasarkan ID invoice
 $items = readItems(); // ambil daftar barang
 
 ?>

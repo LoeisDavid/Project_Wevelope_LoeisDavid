@@ -1,27 +1,27 @@
 <?php
 include '../../Control/Control.php';
 
+// Ambil semua invoice
+$items = readItemInvByInvoice($_GET['invoice']);
+$invoice = $_GET['invoice'];
+
+// Hapus invoice yang tidak memiliki item di iteminv
 if (
   isset($_GET['type'], $_GET['action'], $_GET['id']) &&
-  $_GET['type'] === 'invoice' &&
+  $_GET['type'] === 'iteminv' &&
   $_GET['action'] === 'delete'
 ) {
   $id = (int) $_GET['id'];
-  deleteInvoice($id);    
+  deleteItemInv($id);    
   $_SESSION['alert_delete'] = [
     'type' => 'success',
     'message' => 'Invoice berhasil dihapus.',
   ];
 }
 
-// Ambil semua invoice
-$items = readInvoices();
-
-// Hapus invoice yang tidak memiliki item di iteminv
-
 // Cek apakah ada request GET untuk pencarian atau aksi lainnya
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $type = $_GET['type'] ?? 'invoice';
+  $type = $_GET['type'] ?? 'iteminv';
   $action = $_GET['action'] ?? 'read';
   $keyword = $_GET['keyword'] ?? '';
 
@@ -29,14 +29,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $action = 'search';
   }
 
-  if ($type === 'invoice') {
+  if ($type === 'iteminv') {
     if ($action === 'search') {
-      $items = searchInvoices($keyword);
+      $items = searchItemInvs($keyword);
     } else {
-      $items = readInvoices(); // Ambil lagi data terbaru setelah penghapusan
+      $items = readItemInvByInvoice($_GET['invoice']); // Ambil lagi data terbaru setelah penghapusan
     }
   }
 }
+
+// 
+$it = [count($items)];
+
+
+
+for ($i = 0; $i < count($items); $i++) { 
+  $it[$i] = readItemById($items[$i]->getItemId());
+}
+
 
 ?>
 
@@ -75,11 +85,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   <?php unset($_SESSION['alert_delete']); ?>
 <?php endif; ?>
           <div class="row">
-            <div class="col-sm-6"><h3 class="mb-0">Invoices Table</h3></div>
+            <div class="col-sm-6"><h3 class="mb-0">Item Inv Table</h3></div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item"><a href="../../index.php">Dashboard</a></li>
-                <li class="breadcrumb-item active">Invoices</li>
+                <li class="breadcrumb-item active">Item Inv</li>
               </ol>
             </div>
           </div>
@@ -90,90 +100,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
           <div class="row">
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
-                <div class="card-header text-center"><h3 class="card-title">Invoices Table</h3></div>
+                <div class="card-header text-center"><h3 class="card-title">Item Inv Table</h3></div>
                 <div class="card-body text-center">
                 <form method="GET" class="mb-3 d-flex justify-content-end">
-                    <input type="hidden" name="type" value="invoice">
+                    <input type="hidden" name="type" value="iteminv">
                     <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
                     <input
                       type="text"
                       name="keyword"
                       class="form-control w-auto me-2"
-                      placeholder="Search invoice..."
+                      placeholder="Search Item Inv..."
                       value="<?= htmlspecialchars($keyword) ?>"
                     >
                     <button type="submit" class="btn btn-secondary">Search</button>
                   </form>
                 <table class="table table-bordered mx-auto">
-  <thead>
-    <tr>
-      <th style="width: 10px">KODE</th>
-      <th>TANGGAL</th>
-      <th>CUSTOMERS</th>
-      <th style="width: 120px">Actions</th> <!-- kolom baru -->
-    </tr>
-  </thead>
-  <tbody>
-    <?php if (count($items) > 0): ?>
-      <?php foreach ($items as $item): ?>
-        <tr>
-          <td><?= htmlspecialchars($item->getKode()) ?></td>
-          <td><?= htmlspecialchars($item->getDate()) ?></td>
-          <td><?= htmlspecialchars(readCustomerById($item->getCustomerId())->getName()) ?></td>
-          <td class="text-center">
-          <div class="d-flex justify-content-center gap-1">
-  <!-- Tombol View -->
-  <a
-    href="tableItemInv.php?invoice=<?= $item->getId() ?>"
-    class="btn btn-sm btn-info"
-    title="Lihat Detail Invoice"
-  >
-    <i class="bi bi-eye"></i>
-  </a>
+                  <thead>
+                                  <tr>
+                                    <th style="width: 10px">ID</th>
+                                    <th>NAMA</th>
+                                    <th>QTY</th>
+                                    <th>PRICE</th>
+                                    <th>TOTAL</th>
+                                    <th style="width: 120px">Actions</th> <!-- kolom baru -->
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <?php if (count($items) > 0): ?>
+                                    <?php for ($i=0; $i<count($items); $i++): ?>
+                                      <tr>
+                                        <td><?= htmlspecialchars($items[$i]->getId()) ?></td>
+                                        <td><?= htmlspecialchars($it[$i]->getName()) ?></td>
+                                        <td><?= htmlspecialchars($items[$i]->getQty()) ?></td>
+                                        <td><?= htmlspecialchars($items[$i]->getPrice()) ?></td>
+                                        <td><?= htmlspecialchars($items[$i]->getQty()*$items[$i]->getPrice()) ?></td>
+                                        <td class="text-center">
+                                <div class="d-flex justify-content-center gap-1">
+                                  <!-- Tombol Edit -->
+                                  <a
+                                    href="editItemInv.php?method=get&id=<?= $items[$i]->getId() ?>&invoice=<?= $invoice?>>"
+                                    class="btn btn-sm btn-warning"
+                                    title="Edit ItemInv"
+                                  >
+                                    <i class="bi bi-pencil-square"></i>
+                                  </a>
 
-  <!-- Tombol Edit -->
-  <a
-    href="editInvoices.php?method=get&id=<?= $item->getId() ?>&kode=<?= $item->getKode()?>&customer=<?= $item->getCustomerId()?>"
-    class="btn btn-sm btn-warning"
-    title="Edit Invoices"
-  >
-    <i class="bi bi-pencil-square"></i>
-  </a>
-
-  <!-- Tombol Delete -->
-  <a
-    href="?type=invoice&action=delete&id=<?= $item->getId() ?>"
-    class="btn btn-sm btn-danger"
-    onclick="return confirm('Yakin ingin menghapus invoice ini?');"
-    title="Delete Invoice"
-  >
-    <i class="bi bi-trash"></i>
-  </a>
-
-  <!-- Tombol Print -->
-  <a
-    href="printInvoice.php?id=<?= $item->getId() ?>"
-    target="_blank"
-    class="btn btn-sm btn-secondary"
-    title="Print Invoice"
-  >
-    <i class="bi bi-printer"></i>
-  </a>
-</div>
-
-
-        </tr>        
-      <?php endforeach; ?>
-      
-      </tr>
-    <?php endif; ?>
-  </tbody>
-</table>
-<div class="text-start mt-3">
-  <a href="inputInvoices.php" class="btn btn-primary">
-    <i class="bi bi-plus-circle"></i> Create New
-  </a>
-</div>
+                                  <!-- Tombol Delete -->
+                                  <a
+                                    href="?type=iteminv&action=delete&id=<?= $items[$i]->getId() ?>&invoice=<?= $invoice?>"
+                                    class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Yakin ingin menghapus invoice ini?');"
+                                    title="Delete Invoice"
+                                  >
+                                    <i class="bi bi-trash"></i>
+                                  </a>
+                                </div>
+                              </td>
+                            </tr>        
+                          <?php endfor; ?>
+                        </tr>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+                    <div class="text-start mt-3">
+                    <a href="inputItemInv.php?invoice=<?= $invoice?>" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create New
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

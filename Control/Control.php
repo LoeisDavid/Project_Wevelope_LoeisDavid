@@ -195,10 +195,17 @@ if ($method === 'POST') {
     $kode = $_POST['kode'] ?? 0;
 
     if ($action === 'create') {
-        createInvoice($date, $customer_id, $kode);
-        setAlert('success', 'Invoice berhasil ditambahkan!');
-        header("Location: ../pages/html/tableInvoices.php");
+        if (!createInvoice($customer_id, $date, $kode)) {
+            setAlert('danger', 'Gagal menambahkan invoice.');
+            header("Location: ../pages/html/inputInvoices.php?date=$date&customer_id=$customer_id&kode=$kode");
+            exit();
+        } else {
+            setAlert('success', 'invoice berhasil ditambahkan!');
+            header("Location: ../pages/html/tableInvoice.php");
         exit();
+        }
+
+        
     } else if ($action === 'update') {
         if (updateInvoice($_GET['id'], $customer_id, $date, $kode)) {
             setAlert('success', 'Invoice berhasil diperbarui!');
@@ -226,12 +233,12 @@ if ($method === 'POST') {
         }
         createItemInv($invoiceId, $item_id , $qty, $price);
         setAlert('success', 'Item dalam Invoice berhasil ditambahkan!');
-        header("Location: ../pages/html/tableInvoice.php");
+        header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
         exit();
     } else if ($action === 'update') {
         if (updateItemInv($_GET['id'],$invoice_id, $item_id, $qty, $price)) {
             setAlert('success', 'Item dalam Invoice berhasil diperbarui!');
-            header("Location: ../pages/html/tableInvoice.php");
+            header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
             exit();
         } else {
             setAlert('danger', 'Gagal memperbarui item invoice.');

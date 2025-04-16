@@ -9,22 +9,19 @@ $customerId = $_GET['customer'] ?? '';
 $tanggal = $_GET['date'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-   // Ambil kode invoice dari form
-   $invoice = new Invoice(null, $kode, $tanggal, $customerId);
-   createInvoice($invoice->getCustomerId(), $invoice->getDate(), $invoice->getKode()); // Ubah method createInvoice sesuai dengan parameter
-  $invoices = readInvoiceByKode($kode); // Ambil invoice berdasarkan kode
+   // Ambil kode invoice dari form // Ubah method createInvoice sesuai dengan parameter // Ambil invoice berdasarkan kode
 
   $itemId = $_POST['item'] ?? '';
   $qty = $_POST['qty'] ?? '';
   $harga = $_POST['harga'] ?? '';
 
-  if ($itemId && $qty && $invoices) {
+  if ($itemId && $qty && $invoice) {
     if(!$harga){
       $harga= readItemById($itemId)->getPrice();
     }
-      createItemInv($invoices->getId(), $itemId, $qty, $harga);
+      createItemInv($invoice, $itemId, $qty, $harga);
       $_SESSION['alert'] = ['type' => 'success', 'message' => 'Item berhasil ditambahkan ke invoice'];
-      header("Location: tableInvoice.php");
+      header("Location: tableItemInv.php?invoice=$invoice");
       exit;
   } else {
       $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Mohon isi semua field'];
@@ -73,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!--begin::App Wrapper-->
   <div class="app-wrapper">
     <!--begin::Header-->
+    <?php include __DIR__ . '/../widget/sidebar.php'; ?>
     <!--end::Sidebar-->
     <!--begin::App Main-->
                         <!-- Alert Session Message -->

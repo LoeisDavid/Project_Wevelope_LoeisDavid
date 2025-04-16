@@ -14,9 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($customerId && $tanggal && $kode) { // Pastikan kode juga terisi
               // Buat invoice dengan kode, tanggal, dan customerId
 
-        $_SESSION['alert'] = ['type' => 'success', 'message' => 'Invoice berhasil ditambahkan'];
-        header("Location: inputItemInv.php?kode=$kode&method=post&date=$tanggal&customer=$customerId");
-        exit;
+              // var_dump($customerId, $tanggal, $kode);die();
+
+              if (!createInvoice($customerId, $tanggal, $kode)) {
+                setAlert('danger', 'Gagal menambahkan invoice.');
+                header("Location: ../html/inputInvoices.php?date=$date&customer_id=$customer_id&kode=$kode");
+                exit();
+            } else {
+                setAlert('success', 'invoice berhasil ditambahkan!');
+                header("Location: ../html/tableInvoice.php");
+            exit();
+            }
+    
     } else {
         $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Mohon isi semua field'];
     }
