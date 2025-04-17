@@ -209,7 +209,8 @@ if ($method === 'POST') {
         
     } else if ($action === 'update') {
         $id= $_GET['id'];
-        if(!readInvoiceByKode($kode)) {
+        // var_dump(readInvoiceByKode($kode), $id);die();
+        if(!readInvoiceByKode($kode) || readInvoiceByKode($kode)->getId() == $id) {
             updateInvoice($_GET['id'], $customer_id, $date, $kode);
             setAlert('success', 'Invoice berhasil diperbarui!');
             header("Location: ../pages/html/tableInvoice.php");

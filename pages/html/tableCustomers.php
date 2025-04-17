@@ -147,10 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       </div>
     </main>
 
-    <footer class="app-footer">
-      <div class="float-end d-none d-sm-inline">Anything you want</div>
-      <strong>&copy; 2014-2024 <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a></strong> All rights reserved.
-    </footer>
+    <?php include __DIR__ . '/../widget/footer.php'; ?>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"></script>

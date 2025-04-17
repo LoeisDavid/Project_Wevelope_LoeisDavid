@@ -107,7 +107,7 @@ $subTotal = 0;
   </a> Customer: <?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?></h3></div>
                 
   <div class="card-header d-flex justify-content-start gap-2 flex-wrap">
-  <a href="inputItemInv.php?invoice=<?= $invoice ?>" class="btn btn-warning">
+  <a href="editInvoices.php?method=get&id=<?= $inv->getId() ?>&kode=<?= $inv->getKode()?>&customer=<?= $inv->getCustomerId()?>" class="btn btn-warning">
     <i class="bi bi-pencil-square"></i> Edit Invoice
   </a>
   <a href="printInvoice.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
@@ -191,11 +191,7 @@ $subTotal = 0;
       </div>  
     </main>
 
-    <footer class="app-footer">
-      <div class="float-end d-none d-sm-inline">Anything you want</div>
-      <strong>Copyright &copy; 2014-2024 <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.</strong>
-      All rights reserved.
-    </footer>
+    <?php include __DIR__ . '/../widget/footer.php'; ?>
   </div>
 
   <!-- Scripts -->

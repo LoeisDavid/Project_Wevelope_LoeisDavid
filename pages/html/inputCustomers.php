@@ -79,14 +79,14 @@ $ref_no = $_GET['ref_no'] ?? null;
             <div class="row g-3">
               <!--begin::Col-->
               <div class="col-md-6">
-                <label for="validationCustom01" class="form-label">REF NO</label>
+                <label for="validationCustom01" class="form-label">Name Customer</label>
                 <input type="text" class="form-control" id="validationCustom01" value="<?= $name?>" required name="name"/>
                 <div class="valid-feedback">Looks good!</div>
               </div>
               <!--end::Col-->
               <!--begin::Col-->
               <div class="col-md-6">
-                <label for="validationCustom01" class="form-label">Name Supplier</label>
+                <label for="validationCustom01" class="form-label">REF NO</label>
                 <input type="text" class="form-control"  value="<?= $ref_no?>" id="validationCustom01" name="ref_no"/>
                 <div class="valid-feedback">Looks good!</div>
               </div>
@@ -134,18 +134,7 @@ $ref_no = $_GET['ref_no'] ?? null;
     </main>
     <!--end::App Main-->
     <!--begin::Footer-->
-    <footer class="app-footer">
-      <!--begin::To the end-->
-      <div class="float-end d-none d-sm-inline">Anything you want</div>
-      <!--end::To the end-->
-      <!--begin::Copyright-->
-      <strong>
-        Copyright &copy; 2014-2024&nbsp;
-        <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.
-      </strong>
-      All rights reserved.
-      <!--end::Copyright-->
-    </footer>
+    <?php include __DIR__ . '/../widget/footer.php'; ?>
     <!--end::Footer-->
   </div>
   <!--end::App Wrapper-->
