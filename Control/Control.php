@@ -17,7 +17,7 @@ if (!defined('BASE_URL')) {
     // $script_name = $_SERVER['SCRIPT_NAME'];
     // $project_folder = explode("/", trim($script_name, "/"))[0];
 
-    define("BASE_URL", $project_folder);
+    define("BASE_URL", "/".getBaseUrl(). $name_project);
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -51,11 +51,11 @@ if (!function_exists('createRefNo')) {
     
             // Cek apakah ref_no ini sudah dipakai customer
             if ($type === 'customer') {
-                $data = readCustomerByRef_No($ref_no);
+                $data = readCustomerByRefNo($ref_no);
             } elseif ($type === 'supplier') {
-                $data = readSupplierByRef_No($ref_no);
+                $data = readSupplierByRefNo($ref_no);
             } elseif ($type === 'item') {
-                $data = readItemByRef_No($ref_no);
+                $data = readItemByRefNo($ref_no);
             }
 
             if (!$data) {
@@ -109,7 +109,7 @@ if ($method === 'POST') {
             $ref_no = $_POST['ref_no'];
         }
         if ($action === 'create') {
-            if (readCustomerByRef_No($ref_no)) {
+            if (readCustomerByRefNo($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan customer. Ref No sudah digunakan.');
                 header("Location: ../pages/html/inputCustomers.php?name=$name&ref_no=$ref_no");
                 exit();
@@ -138,7 +138,7 @@ if ($method === 'POST') {
             $ref_no = $_POST['ref_no'];
         }
         if ($action === 'create') {
-            if (readSupplierByRef_No($ref_no)) {
+            if (readSupplierByRefNo($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan supplier. Ref No sudah digunakan.');
                 header("Location: ../pages/html/inputSuppliers.php?name=$name&ref_no=$ref_no");
                 exit();
@@ -167,7 +167,7 @@ if ($method === 'POST') {
             $ref_no = $_POST['ref_no'];
         }
         if ($action === 'create') {
-            if (readItemByRef_No($ref_no)) {
+            if (readItemByRefNo($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan item. Ref No sudah digunakan.');
                 header("Location: ../pages/html/inputItems.php?name=$name&ref_no=$ref_no&price=$price");
                 exit();

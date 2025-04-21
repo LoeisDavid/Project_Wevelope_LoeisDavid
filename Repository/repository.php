@@ -299,6 +299,32 @@ function updateCustomer($id, $ref_no, $name) {
     ], ['ID' => $id])->rowCount();
 }
 
+function readCustomerByRefNo($refNo) {
+    global $database;
+    $row = $database->get('customers', '*', ['REF_NO' => $refNo]);
+    if ($row) {
+        return new Customer($row['ID'], $row['NAME'], $row['REF_NO'], $row['ADDRESS']);
+    }
+    return null;
+}
+
+function searchCustomers($query) {
+    global $database;
+    $rows = $database->select('customers', '*', [
+        'OR' => [
+            'REF_NO[~]' => $query,
+            'NAME[~]'   => $query
+        ]
+    ]);
+
+    $customers = [];
+    foreach ($rows as $row) {
+        $customers[] = new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
+    }
+    return $customers;
+}
+
+
 function deleteCustomer($id) {
     global $database;
     // delete related item_customers and invoices
@@ -335,6 +361,32 @@ function readSuppliers() {
     }
     return $suppliers;
 }
+
+function readSupplierByRefNo($refNo) {
+    global $database;
+    $row = $database->get('suppliers', '*', ['REF_NO' => $refNo]);
+    if ($row) {
+        return new Supplier($row['ID'], $row['NAME'], $row['REF_NO'], $row['ADDRESS']);
+    }
+    return null;
+}
+
+function searchSuppliers($query) {
+    global $database;
+    $rows = $database->select('suppliers', '*', [
+        'OR' => [
+            'REF_NO[~]' => $query,
+            'NAME[~]'   => $query
+        ]
+    ]);
+
+    $suppliers = [];
+    foreach ($rows as $row) {
+        $suppliers[] = new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
+    }
+    return $suppliers;
+}
+
 
 function readSupplierById($id) {
     global $database;
@@ -380,6 +432,16 @@ function readItems() {
     return $items;
 }
 
+function readItemByRefNo($refNo) {
+    global $database;
+    $row = $database->get('items', '*', ['REF_NO' => $refNo]);
+    if ($row) {
+        return new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']);
+    }
+    return null;
+}
+
+
 function readItemById($id) {
     global $database;
     $row = $database->get('Items', '*', ['ID' => $id]);
@@ -394,6 +456,23 @@ function updateItem($id, $ref_no, $name, $price) {
         'PRICE'  => $price
     ], ['ID' => $id])->rowCount();
 }
+
+function searchItems($query) {
+    global $database;
+    $rows = $database->select('items', '*', [
+        'OR' => [
+            'REF_NO[~]' => $query,
+            'NAME[~]'   => $query
+        ]
+    ]);
+
+    $items = [];
+    foreach ($rows as $row) {
+        $items[] = new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']);
+    }
+    return $items;
+}
+
 
 function deleteItem($id) {
     global $database;
