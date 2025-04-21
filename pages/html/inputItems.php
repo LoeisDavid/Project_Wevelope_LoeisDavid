@@ -47,6 +47,7 @@ $price = $_GET['price'] ?? null;
     <!--begin::Header-->
     <!--end::Sidebar-->
     <!--begin::App Main-->
+    <?php include __DIR__ . '/../widget/header.php'; ?>
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
                         <!-- Alert Session Message -->
 <?php if (isset($_SESSION['alert'])): ?>

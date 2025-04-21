@@ -46,6 +46,7 @@ $ref_no = $_GET['ref_no'] ?? null;
   <div class="app-wrapper">
     <!--begin::Header-->
     <!--end::Sidebar-->
+    <?php include __DIR__ . '/../widget/header.php'; ?>
     <!--begin::App Main-->
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
                         <!-- Alert Session Message -->

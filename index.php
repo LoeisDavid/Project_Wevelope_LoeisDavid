@@ -27,8 +27,11 @@ session_destroy();
   <link rel="stylesheet" href="pages/css/adminlte.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.css" crossorigin="anonymous" />
 </head>
-<body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
+<body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary sidebar-open app-loaded">
   <div class="app-wrapper">
+
+    <?php include __DIR__ . '/pages/widget/header.php'; ?>
+    
     <!-- Sidebar include -->
     <?php include __DIR__ . '/pages/widget/sidebar.php'; ?>
 
@@ -104,10 +107,7 @@ session_destroy();
     </main>
 
     <!-- Footer -->
-    <footer class="app-footer">
-      <div class="float-end d-none d-sm-inline">Anything you want</div>
-      <strong>Copyright &copy; 2014-2024 <a href="https://adminlte.io" class="text-decoration-none">AdminLTE.io</a>.</strong> All rights reserved.
-    </footer>
+    <?php include __DIR__ . '/pages/widget/sidebar.php'; ?>
   </div>
 
   <!-- Scripts -->

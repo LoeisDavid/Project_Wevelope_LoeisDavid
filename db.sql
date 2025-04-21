@@ -1,5 +1,3 @@
-create database projectMagang1;
-use projectMagang1;
 
 -- Tabel items
 CREATE TABLE items (

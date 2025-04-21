@@ -1,20 +1,20 @@
 <?php
 // sidebar.php
-include __DIR__ . '/../../Control/Control.php';
-
-// Ambil data dari repository
+include_once __DIR__ . '/../../Control/Control.php';
 ?>
+
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
   <div class="sidebar-brand">
     <span class="brand-text fw-light">WEVELOPE</span>
   </div>
   <div class="sidebar-wrapper">
+    <div class="os-size-observer"><div class="os-size-observer-listener">::before</div></div>
     <nav class="mt-2">
       <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
 
         <!-- Dashboard -->
         <li class="nav-item">
-          <a href="<?= BASE_URL ?>/index.php" class="nav-link" class="nav-link">
+          <a href="<?= BASE_URL ?>/index.php" class="nav-link">
             <i class="nav-icon bi bi-speedometer"></i>
             <p>Dashboard</p>
           </a>
@@ -24,9 +24,7 @@ include __DIR__ . '/../../Control/Control.php';
         <li class="nav-item">
           <a href="<?= BASE_URL ?>/pages/html/tableItems.php" class="nav-link">
             <i class="nav-icon bi bi-table"></i>
-            <p>
-              Items
-            </p>
+            <p>Items</p>
           </a>
         </li>
 
@@ -34,9 +32,7 @@ include __DIR__ . '/../../Control/Control.php';
         <li class="nav-item">
           <a href="<?= BASE_URL ?>/pages/html/tableCustomers.php" class="nav-link">
             <i class="nav-icon bi bi-people"></i>
-            <p>
-              Customers
-            </p>
+            <p>Customers</p>
           </a>
         </li>
 
@@ -44,29 +40,26 @@ include __DIR__ . '/../../Control/Control.php';
         <li class="nav-item">
           <a href="<?= BASE_URL ?>/pages/html/tableSuppliers.php" class="nav-link">
             <i class="nav-icon bi bi-people-fill"></i>
-            <p>
-              Suppliers
-            </p>
+            <p>Suppliers</p>
           </a>
         </li>
 
+        <!-- Item Customers -->
         <li class="nav-item">
           <a href="<?= BASE_URL ?>/pages/html/tableItemCustomers.php" class="nav-link">
             <i class="nav-icon bi bi-table"></i>
-            <p>
-              Item Customers
-            </p>
+            <p>Item Customers</p>
           </a>
         </li>
 
+        <!-- Invoice -->
         <li class="nav-item">
           <a href="<?= BASE_URL ?>/pages/html/tableInvoice.php" class="nav-link">
             <i class="nav-icon bi bi-table"></i>
-            <p>
-              Invoice
-            </p>
+            <p>Invoice</p>
           </a>
         </li>
+        
       </ul>
     </nav>
   </div>

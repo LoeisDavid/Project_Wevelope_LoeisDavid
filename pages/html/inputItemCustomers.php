@@ -74,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <!--begin::Header-->
     <!--end::Sidebar-->
     <!--begin::App Main-->
+    <?php include __DIR__ . '/../widget/header.php'; ?>
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
                         <!-- Alert Session Message -->
 <?php if (isset($_SESSION['alert'])): ?>

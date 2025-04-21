@@ -1,748 +1,505 @@
 <?php
-require_once __DIR__ . '/connection.php';
-require_once __DIR__ . '/../Models/Customer.php';
-require_once __DIR__ . '/../Models/Item.php';
-require_once __DIR__ . '/../Models/Supplier.php';
-require_once __DIR__ . '/../Models/ItemCustomer.php';
-require_once __DIR__ . '/../Models/Invoice.php';
-require_once __DIR__ . '/../Models/ItemInv.php';
+// CRUD functions refactored to use Medoo
+// Assumes $database (instance of Medoo) is already initialized and in scope
+
+require_once __DIR__ . '/connection.php'; // atau path sesuai struktur folder kamu
+
 
 // ---------------------- ItemInv ----------------------
 function createItemInv($invoiceId, $itemId, $qty, $price) {
-    global $conn;
-    try {
-        // Menghitung total harga
-        $total = $qty * $price;
-        $stmt = $conn->prepare("INSERT INTO iteminv (INVOICE_ID, ITEM_ID, QTY, PRICE, TOTAL) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("iiidd", $invoiceId, $itemId, $qty, $price, $total);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    $total = $qty * $price;
+    $data = [
+        'INVOICE_ID' => $invoiceId,
+        'ITEM_ID'    => $itemId,
+        'QTY'        => $qty,
+        'PRICE'      => $price,
+        'TOTAL'      => $total
+    ];
+    return (bool) $database->insert('iteminv', $data);
 }
 
 function readItemInvs() {
-    global $conn;
-    try {
-        $result = $conn->query("SELECT * FROM iteminv");
-        $entries = [];
-        while ($row = $result->fetch_assoc()) {
-            $entries[] = new ItemInv($row['ID'], $row['INVOICE_ID'], $row['ITEM_ID'], $row['QTY'], $row['PRICE'], $row['TOTAL']);
-        }
-        return $entries;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $rows = $database->select('iteminv', '*');
+    $entries = [];
+    foreach ($rows as $row) {
+        $entries[] = new ItemInv(
+            $row['ID'],
+            $row['INVOICE_ID'],
+            $row['ITEM_ID'],
+            $row['QTY'],
+            $row['PRICE'],
+            $row['TOTAL']
+        );
     }
+    return $entries;
 }
 
 function readItemInvById($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM iteminv WHERE ID = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            return new ItemInv($row['ID'], $row['INVOICE_ID'], $row['ITEM_ID'], $row['QTY'], $row['PRICE'], $row['TOTAL']);
-        }
-    } catch (Exception $e) {}
+    global $database;
+    $row = $database->get('iteminv', '*', ['ID' => $id]);
+    if ($row) {
+        return new ItemInv(
+            $row['ID'],
+            $row['INVOICE_ID'],
+            $row['ITEM_ID'],
+            $row['QTY'],
+            $row['PRICE'],
+            $row['TOTAL']
+        );
+    }
     return null;
 }
 
-function readItemInvByItemId($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM iteminv WHERE ITEM_ID = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $entries = [];
-        while ($row = $result->fetch_assoc()) {
-            $entries[] = new ItemInv($row['ID'], $row['INVOICE_ID'], $row['ITEM_ID'], $row['QTY'], $row['PRICE'], $row['TOTAL']);
-        }
-        return $entries;
-    } catch (Exception $e) {}
-    return null;
+function readItemInvByItemId($itemId) {
+    global $database;
+    $rows = $database->select('iteminv', '*', ['ITEM_ID' => $itemId]);
+    $entries = [];
+    foreach ($rows as $row) {
+        $entries[] = new ItemInv(
+            $row['ID'],
+            $row['INVOICE_ID'],
+            $row['ITEM_ID'],
+            $row['QTY'],
+            $row['PRICE'],
+            $row['TOTAL']
+        );
+    }
+    return $entries;
 }
 
 function readItemInvByInvoice($invoiceId) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM iteminv WHERE INVOICE_ID = ?");
-        $stmt->bind_param("i", $invoiceId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $entries = [];
-        while ($row = $result->fetch_assoc()) {
-            $entries[] = new ItemInv($row['ID'], $row['INVOICE_ID'], $row['ITEM_ID'], $row['QTY'], $row['PRICE'], $row['TOTAL']);
-        }
-        return $entries;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $rows = $database->select('iteminv', '*', ['INVOICE_ID' => $invoiceId]);
+    $entries = [];
+    foreach ($rows as $row) {
+        $entries[] = new ItemInv(
+            $row['ID'],
+            $row['INVOICE_ID'],
+            $row['ITEM_ID'],
+            $row['QTY'],
+            $row['PRICE'],
+            $row['TOTAL']
+        );
     }
+    return $entries;
 }
 
 function updateItemInv($id, $invoiceId, $itemId, $qty, $price) {
-    global $conn;
-    try {
-        // Menghitung total harga
-        $total = $qty * $price;
-        $stmt = $conn->prepare("UPDATE iteminv SET INVOICE_ID = ?, ITEM_ID = ?, QTY = ?, PRICE = ?, TOTAL = ? WHERE ID = ?");
-        $stmt->bind_param("iiiddi", $invoiceId, $itemId, $qty, $price, $total, $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    $total = $qty * $price;
+    $data = [
+        'INVOICE_ID' => $invoiceId,
+        'ITEM_ID'    => $itemId,
+        'QTY'        => $qty,
+        'PRICE'      => $price,
+        'TOTAL'      => $total
+    ];
+    return (bool) $database->update('iteminv', $data, ['ID' => $id])->rowCount();
 }
 
 function deleteItemInv($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("DELETE FROM iteminv WHERE ID = ?");
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->delete('iteminv', ['ID' => $id]);
 }
 
-function deleteItemInvByInvId($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("DELETE FROM iteminv WHERE INVOICE_ID = ?");
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+function deleteItemInvByInvId($invoiceId) {
+    global $database;
+    return (bool) $database->delete('iteminv', ['INVOICE_ID' => $invoiceId]);
 }
 
-function deleteItemInvByItemId($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("DELETE FROM iteminv WHERE ITEM_ID = ?");
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+function deleteItemInvByItemId($itemId) {
+    global $database;
+    return (bool) $database->delete('iteminv', ['ITEM_ID' => $itemId]);
 }
 
 function searchItemInvs($query) {
-    global $conn;
-    try {
-        $queryStr = "%" . $query . "%";
-        $stmt = $conn->prepare("SELECT * FROM iteminv WHERE INVOICE_ID LIKE ? OR ITEM_ID LIKE ? OR QTY LIKE ? OR PRICE LIKE ?");
-        $stmt->bind_param("ssss", $queryStr, $queryStr, $queryStr, $queryStr);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $entries = [];
-        while ($row = $result->fetch_assoc()) {
-            $entries[] = new ItemInv($row['ID'], $row['INVOICE_ID'], $row['ITEM_ID'], $row['QTY'], $row['PRICE'], $row['TOTAL']);
-        }
-        return $entries;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $queryStr = "%$query%";
+    $rows = $database->select(
+        'iteminv',
+        '*',
+        [
+            'OR' => [
+                'INVOICE_ID[~]' => $queryStr,
+                'ITEM_ID[~]'    => $queryStr,
+                'QTY[~]'        => $queryStr,
+                'PRICE[~]'      => $queryStr
+            ]
+        ]
+    );
+    $entries = [];
+    foreach ($rows as $row) {
+        $entries[] = new ItemInv(
+            $row['ID'],
+            $row['INVOICE_ID'],
+            $row['ITEM_ID'],
+            $row['QTY'],
+            $row['PRICE'],
+            $row['TOTAL']
+        );
     }
+    return $entries;
 }
-
 
 // ---------------------- Invoice ----------------------
 function createInvoice($customerId, $tanggal, $kode) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("INSERT INTO invoice (CUSTOMER_ID, DATE, KODE) VALUES (?, ?, ?)");
-        $stmt->bind_param("iss", $customerId, $tanggal, $kode);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    $data = [
+        'CUSTOMER_ID' => $customerId,
+        'DATE'        => $tanggal,
+        'KODE'        => $kode
+    ];
+    return (bool) $database->insert('invoice', $data);
 }
 
 function readInvoices() {
-    global $conn;
-    try {
-        $result = $conn->query("SELECT * FROM invoice");
-        $invoices = [];
-        while ($row = $result->fetch_assoc()) {
-            $invoices[] = new Invoice($row['ID'], $row['KODE'], $row['DATE'], $row['CUSTOMER_ID']);
-        }
-        return $invoices;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $rows = $database->select('invoice', '*');
+    $invoices = [];
+    foreach ($rows as $row) {
+        $invoices[] = new Invoice(
+            $row['ID'],
+            $row['KODE'],
+            $row['DATE'],
+            $row['CUSTOMER_ID']
+        );
     }
+    return $invoices;
 }
 
 function readInvoiceById($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM invoice WHERE ID = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            return new Invoice($row['ID'], $row['KODE'], $row['DATE'], $row['CUSTOMER_ID']);
-        }
-    } catch (Exception $e) {}
+    global $database;
+    $row = $database->get('invoice', '*', ['ID' => $id]);
+    if ($row) {
+        return new Invoice(
+            $row['ID'],
+            $row['KODE'],
+            $row['DATE'],
+            $row['CUSTOMER_ID']
+        );
+    }
     return null;
 }
 
 function readInvoiceByKode($kode) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM invoice WHERE KODE = ?");
-        $stmt->bind_param("i", $kode);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            return new Invoice($row['ID'], $row['KODE'], $row['DATE'], $row['CUSTOMER_ID']);
-        }
-    } catch (Exception $e) {}
+    global $database;
+    $row = $database->get('invoice', '*', ['KODE' => $kode]);
+    if ($row) {
+        return new Invoice(
+            $row['ID'],
+            $row['KODE'],
+            $row['DATE'],
+            $row['CUSTOMER_ID']
+        );
+    }
     return null;
 }
 
 function readInvoiceByCustomer($customerId) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM invoice WHERE CUSTOMER_ID = ?");
-        $stmt->bind_param("i", $customerId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $invoices = [];
-        while ($row = $result->fetch_assoc()) {
-            $invoices[] = new Invoice($row['ID'], $row['KODE'], $row['DATE'], $row['CUSTOMER_ID']);
-        }
-        return $invoices;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $rows = $database->select('invoice', '*', ['CUSTOMER_ID' => $customerId]);
+    $invoices = [];
+    foreach ($rows as $row) {
+        $invoices[] = new Invoice(
+            $row['ID'],
+            $row['KODE'],
+            $row['DATE'],
+            $row['CUSTOMER_ID']
+        );
     }
+    return $invoices;
 }
 
 function updateInvoice($id, $customerId, $tanggal, $kode) {
-global $conn;
-
-$itemInv = readItemInvByInvoice($id);
-    try {
-        $stmt = $conn->prepare("UPDATE invoice SET CUSTOMER_ID = ?, DATE = ?, KODE = ? WHERE ID = ?");
-        $stmt->bind_param("issi", $customerId, $tanggal,$kode, $id);
-        $stmt->execute();
-        return true;
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    $data = [
+        'CUSTOMER_ID' => $customerId,
+        'DATE'        => $tanggal,
+        'KODE'        => $kode
+    ];
+    return (bool) $database->update('invoice', $data, ['ID' => $id])->rowCount();
 }
 
 function deleteInvoice($id) {
-    global $conn;
-    $invoice = readItemInvByInvoice($id);
-    if(!empty($invoice)){
-        for ($i= 0; $i<sizeof($invoice); $i++) {
-            deleteItemInvByInvId($invoice[$i]->getId());
-        }
-    }
-    try {
-        $stmt = $conn->prepare("DELETE FROM invoice WHERE ID = ?");
-        $stmt->bind_param("i", $id);
-        $success = $stmt->execute();
-        
-        // if (!$success) {
-        //     echo "Gagal hapus: " . $stmt->error;
-        // } else {
-        //     echo "Berhasil hapus invoice ID: $id";
-        // }
-        return $success;
-    } catch (Exception $e) {
-        // echo "Exception: " . $e->getMessage();
-        return false;
-    }
+    global $database;
+    // delete related iteminv records
+    deleteItemInvByInvId($id);
+    return (bool) $database->delete('invoice', ['ID' => $id]);
 }
-
 
 function searchInvoices($query) {
-    global $conn;
-    try {
-        $queryStr = "%" . $query . "%";
-        $idQuery = is_numeric($query) ? (int)$query : 0;
-        $stmt = $conn->prepare("SELECT * FROM invoice WHERE ID = ? OR CUSTOMER_ID LIKE ? OR DATE LIKE ?");
-        $stmt->bind_param("iss", $idQuery, $queryStr, $queryStr);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $invoices = [];
-        while ($row = $result->fetch_assoc()) {
-            $invoices[] = new Invoice($row['ID'], $row['KODE'], $row['DATE'], $row['CUSTOMER_ID']);
-        }
-        return $invoices;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $queryStr = "%$query%";
+    $idQuery  = is_numeric($query) ? (int)$query : 0;
+    $rows = $database->select(
+        'invoice', '*',
+        [
+            'OR' => [
+                'ID'            => $idQuery,
+                'CUSTOMER_ID[~]' => $queryStr,
+                'DATE[~]'        => $queryStr
+            ]
+        ]
+    );
+    $invoices = [];
+    foreach ($rows as $row) {
+        $invoices[] = new Invoice(
+            $row['ID'],
+            $row['KODE'],
+            $row['DATE'],
+            $row['CUSTOMER_ID']
+        );
     }
+    return $invoices;
 }
 
-
-
-// ---------------------- CUSTOMERS ----------------------
+// ---------------------- Customers ----------------------
 function createCustomer($ref_no, $name) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("INSERT INTO Customers (REF_NO, NAME) VALUES (?, ?)");
-        $stmt->bind_param("ss", $ref_no, $name);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->insert('Customers', [
+        'REF_NO' => $ref_no,
+        'NAME'   => $name
+    ]);
 }
 
 function readCustomers() {
-    global $conn;
-    try {
-        $result = $conn->query("SELECT * FROM Customers");
-        $customers = [];
-        while ($row = $result->fetch_assoc()) {
-            $customers[] = new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
-        }
-        return $customers;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $rows = $database->select('Customers', '*');
+    $customers = [];
+    foreach ($rows as $row) {
+        $customers[] = new Customer(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO']
+        );
     }
+    return $customers;
 }
 
 function readCustomerById($id) {
-    global $conn;
-    try {
-        $result = $conn->query("SELECT * FROM Customers WHERE ID = $id");
-        if ($row = $result->fetch_assoc()) {
-            return new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
-        }
-    } catch (Exception $e) {}
-    return null;
-}
-
-function readCustomerByRef_No($ref_no) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM Customers WHERE REF_NO = ?");
-        $stmt->bind_param("s", $ref_no);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            return new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
-        }
-    } catch (Exception $e) {}
+    global $database;
+    $row = $database->get('Customers', '*', ['ID' => $id]);
+    if ($row) {
+        return new Customer(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO']
+        );
+    }
     return null;
 }
 
 function updateCustomer($id, $ref_no, $name) {
-
-    // $itemCustomer = readItemCustomerByCustomerId($id);
-    // if($itemCustomer !== null){
-    //     for($i=0; $i<count($itemCustomer); $i++){
-    //         deleteItemCustomer($itemCustomer[$i]->getId());
-    //     }
-        
-    // }
-
-    // $invoice = readInvoiceByCustomer($id);
-    // if($invoice !== null){
-    //     for($i=0; $i<count($invoice); $i++){
-    //     deleteInvoice($invoice[$i]->getId());
-    // }
-    // }
-
-    global $conn;
-    try {
-        $stmt = $conn->prepare("UPDATE Customers SET REF_NO = ?, NAME = ? WHERE ID = ?");
-        $stmt->bind_param("ssi", $ref_no, $name, $id);
-        $stmt->execute();
-
-        // for($i=0; $i<count($itemCustomer); $i++){
-        //     createItemCustomer($itemCustomer[$i]->getItem(), $id,$itemCustomer[$i]->getHarga());
-        // }
-        // for($i=0; $i<count($invoice); $i++){
-        //     createInvoice($invoice[$i]->getCustomerId(), $invoice[$i]->getDate(),$invoice[$i]->getKode());
-        // }
-        return true;
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->update('Customers', [
+        'REF_NO' => $ref_no,
+        'NAME'   => $name
+    ], ['ID' => $id])->rowCount();
 }
 
 function deleteCustomer($id) {
-
+    global $database;
+    // delete related item_customers and invoices
     $itemCustomers = readItemCustomerByCustomerId($id);
-    for( $i = 0; $i < count($itemCustomers); $i++ ) {
-    
-        deleteItemCustomer($itemCustomers[$i]->getId());
+    foreach ($itemCustomers as $ic) {
+        deleteItemCustomer($ic->getId());
     }
-
-    $invoice = readInvoiceByCustomer($id);
-    for( $i = 0; $i < count($invoice); $i++ ) {
-        deleteInvoice($invoice[$i]->getId());
+    $invoices = readInvoiceByCustomer($id);
+    foreach ($invoices as $inv) {
+        deleteInvoice($inv->getId());
     }
-
-    global $conn;
-    try {
-        $stmt = $conn->prepare("DELETE FROM Customers WHERE ID = ?");
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    return (bool) $database->delete('Customers', ['ID' => $id]);
 }
 
-// ---------------------- SUPPLIERS ----------------------
+// ---------------------- Suppliers ----------------------
 function createSupplier($ref_no, $name) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("INSERT INTO Suppliers (REF_NO, NAME) VALUES (?, ?)");
-        $stmt->bind_param("ss", $ref_no, $name);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->insert('Suppliers', [
+        'REF_NO' => $ref_no,
+        'NAME'   => $name
+    ]);
 }
 
 function readSuppliers() {
-    global $conn;
-    try {
-        $result = $conn->query("SELECT * FROM Suppliers");
-        $suppliers = [];
-        while ($row = $result->fetch_assoc()) {
-            $suppliers[] = new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
-        }
-        return $suppliers;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $rows = $database->select('Suppliers', '*');
+    $suppliers = [];
+    foreach ($rows as $row) {
+        $suppliers[] = new Supplier(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO']
+        );
     }
+    return $suppliers;
 }
 
 function readSupplierById($id) {
-    global $conn;
-    try {
-        $result = $conn->query("SELECT * FROM Suppliers WHERE ID = $id");
-        if ($row = $result->fetch_assoc()) {
-            return new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
-        }
-    } catch (Exception $e) {}
-    return null;
-}
-
-function readSupplierByRef_No($ref_no) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM Suppliers WHERE REF_NO = ?");
-        $stmt->bind_param("s", $ref_no);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            return new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
-        }
-    } catch (Exception $e) {}
-    return null;
+    global $database;
+    $row = $database->get('Suppliers', '*', ['ID' => $id]);
+    return $row ? new Supplier($row['ID'], $row['NAME'], $row['REF_NO']) : null;
 }
 
 function updateSupplier($id, $ref_no, $name) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("UPDATE Suppliers SET REF_NO = ?, NAME = ? WHERE ID = ?");
-        $stmt->bind_param("ssi", $ref_no, $name, $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->update('Suppliers', [
+        'REF_NO' => $ref_no,
+        'NAME'   => $name
+    ], ['ID' => $id])->rowCount();
 }
 
 function deleteSupplier($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("DELETE FROM Suppliers WHERE ID = ?");
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->delete('Suppliers', ['ID' => $id]);
 }
 
-// ---------------------- ITEMS ----------------------
+// ---------------------- Items ----------------------
 function createItem($ref_no, $name, $price) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("INSERT INTO Items (REF_NO, NAME, PRICE) VALUES (?, ?, ?)");
-        $stmt->bind_param("ssd", $ref_no, $name, $price);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->insert('Items', [
+        'REF_NO' => $ref_no,
+        'NAME'   => $name,
+        'PRICE'  => $price
+    ]);
 }
 
 function readItems() {
-    global $conn;
-    try {
-        $result = $conn->query("SELECT * FROM Items");
-        $items = [];
-        while ($row = $result->fetch_assoc()) {
-            $items[] = new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']);
-        }
-        return $items;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $rows = $database->select('Items', '*');
+    $items = [];
+    foreach ($rows as $row) {
+        $items[] = new Item(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO'],
+            $row['PRICE']
+        );
     }
+    return $items;
 }
 
 function readItemById($id) {
-    global $conn;
-    try {
-        $result = $conn->query("SELECT * FROM Items WHERE ID = $id");
-        if ($row = $result->fetch_assoc()) {
-            return new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']);
-        }
-    } catch (Exception $e) {}
-    return null;
-}
-
-function readItemByRef_No($ref_no) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM Items WHERE REF_NO = ?");
-        $stmt->bind_param("s", $ref_no);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            return new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']);
-        }
-    } catch (Exception $e) {}
-    return null;
+    global $database;
+    $row = $database->get('Items', '*', ['ID' => $id]);
+    return $row ? new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']) : null;
 }
 
 function updateItem($id, $ref_no, $name, $price) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("UPDATE Items SET REF_NO = ?, NAME = ?, PRICE = ? WHERE ID = ?");
-        $stmt->bind_param("ssdi", $ref_no, $name, $price, $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->update('Items', [
+        'REF_NO' => $ref_no,
+        'NAME'   => $name,
+        'PRICE'  => $price
+    ], ['ID' => $id])->rowCount();
 }
 
 function deleteItem($id) {
-
+    global $database;
+    // delete related item_customers, iteminv and invoices
     $itemCustomers = readItemCustomerByItemId($id);
-    for ($i = 0; $i < count($itemCustomers); $i++) {
-        deleteItemCustomer($itemCustomers[$i]->getId());
+    foreach ($itemCustomers as $ic) {
+        deleteItemCustomer($ic->getId());
     }
-
-    $itemInv = readItemInvByItemId($id);
-    for ($i = 0; $i < count($itemInv); $i++) {
-        deleteItemInv( $itemInv[$i]->getId() );
-        deleteInvoice( $itemInv[$i]->getInvoiceId() );
+    $itemInvs = readItemInvByItemId($id);
+    foreach ($itemInvs as $ii) {
+        deleteItemInv($ii->getId());
     }
-
-    global $conn;
-    try {
-        $stmt = $conn->prepare("DELETE FROM Items WHERE ID = ?");
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    return (bool) $database->delete('Items', ['ID' => $id]);
 }
 
-// ---------------------- ITEMS_CUSTOMERS ----------------------
+// ---------------------- Items_Customers ----------------------
 function createItemCustomer($item_id, $customer_id, $harga) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("INSERT INTO items_customers (Item, Customer, Harga) VALUES (?, ?, ?)");
-        $stmt->bind_param("iii", $item_id, $customer_id, $harga);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->insert('items_customers', [
+        'Item'     => $item_id,
+        'Customer' => $customer_id,
+        'Harga'    => $harga
+    ]);
 }
 
 function readItemCustomers() {
-    global $conn;
-    try {
-        $result = $conn->query("SELECT * FROM items_customers");
-        $entries = [];
-        while ($row = $result->fetch_assoc()) {
-            // Menggunakan data dari $row untuk membuat objek ItemCustomer
-            $itemCustomer = new ItemCustomer($row['ID'], $row['Item'], $row['Customer'], $row['Harga']);
-            $entries[] = $itemCustomer; // Menyimpan objek ke array
-        }
-        return $entries; // Mengembalikan array berisi objek ItemCustomer
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $rows = $database->select('items_customers', '*');
+    $entries = [];
+    foreach ($rows as $row) {
+        $entries[] = new ItemCustomer(
+            $row['ID'],
+            $row['Item'],
+            $row['Customer'],
+            $row['Harga']
+        );
     }
+    return $entries;
 }
 
 function readItemCustomerById($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM items_customers WHERE ID = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($row = $result->fetch_assoc()) {
-            // Membuat objek ItemCustomer dan mengisinya dengan data dari query
-            return new ItemCustomer($row['ID'], $row['Item'], $row['Customer'], $row['Harga']);
-        }
-    } catch (Exception $e) {
-        return null; // Jika terjadi error atau data tidak ditemukan, return null
-    }
-    return null;
+    global $database;
+    $row = $database->get('items_customers', '*', ['ID' => $id]);
+    return $row ? new ItemCustomer($row['ID'], $row['Item'], $row['Customer'], $row['Harga']) : null;
 }
 
-function readItemCustomerByCustomerId($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM items_customers WHERE Customer = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $entries = [];
-        while ($row = $result->fetch_assoc()) {
-            // Menggunakan data dari $row untuk membuat objek ItemCustomer
-            $itemCustomer = new ItemCustomer($row['ID'], $row['Item'], $row['Customer'], $row['Harga']);
-            $entries[] = $itemCustomer; // Menyimpan objek ke array
-        }
-        return $entries;
-    } catch (Exception $e) {
-        return null; // Jika terjadi error atau data tidak ditemukan, return null
+function readItemCustomerByCustomerId($customerId) {
+    global $database;
+    $rows = $database->select('items_customers', '*', ['Customer' => $customerId]);
+    $entries = [];
+    foreach ($rows as $row) {
+        $entries[] = new ItemCustomer(
+            $row['ID'],
+            $row['Item'],
+            $row['Customer'],
+            $row['Harga']
+        );
     }
+    return $entries;
 }
 
-function readItemCustomerByItemId($id) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("SELECT * FROM items_customers WHERE Item = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $entries = [];
-        while ($row = $result->fetch_assoc()) {
-            // Menggunakan data dari $row untuk membuat objek ItemCustomer
-            $itemCustomer = new ItemCustomer($row['ID'], $row['Item'], $row['Customer'], $row['Harga']);
-            $entries[] = $itemCustomer; // Menyimpan objek ke array
-        }
-        return $entries;
-    } catch (Exception $e) {
-        return null; // Jika terjadi error atau data tidak ditemukan, return null
+function readItemCustomerByItemId($itemId) {
+    global $database;
+    $rows = $database->select('items_customers', '*', ['Item' => $itemId]);
+    $entries = [];
+    foreach ($rows as $row) {
+        $entries[] = new ItemCustomer(
+            $row['ID'],
+            $row['Item'],
+            $row['Customer'],
+            $row['Harga']
+        );
     }
+    return $entries;
 }
 
 function updateItemCustomer($id, $item_id, $customer_id, $harga) {
-    global $conn;
-    try {
-        $stmt = $conn->prepare("UPDATE items_customers SET Item = ?, Customer = ?, Harga = ? WHERE ID = ?");
-        $stmt->bind_param("iiii", $item_id, $customer_id, $harga, $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->update('items_customers', [
+        'Item'     => $item_id,
+        'Customer' => $customer_id,
+        'Harga'    => $harga
+    ], ['ID' => $id])->rowCount();
 }
 
 function deleteItemCustomer($id) {
-
-    global $conn;
-    try {
-        $stmt = $conn->prepare("DELETE FROM items_customers WHERE ID = ?");
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
-    } catch (Exception $e) {
-        return false;
-    }
+    global $database;
+    return (bool) $database->delete('items_customers', ['ID' => $id]);
 }
 
-
-// Function to search for customers based on ID, REF_NO, or NAME
-function searchCustomers($query) {
-    global $conn;
-    try {
-        $query = "%" . $query . "%"; // Menambahkan wildcard % untuk LIKE
-        $stmt = $conn->prepare("SELECT * FROM Customers WHERE ID = ? OR REF_NO LIKE ? OR NAME LIKE ?");
-        
-        // Bind parameter: ID (integer), REF_NO and NAME (string)
-        $idQuery = is_numeric($query) ? (int)$query : 0;
-        $stmt->bind_param("iss", $idQuery, $query, $query);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $customers = [];
-        while ($row = $result->fetch_assoc()) {
-            $customers[] = new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
-        }
-        return $customers;
-    } catch (Exception $e) {
-        return [];
-    }
-}
-
-// Function to search for suppliers based on ID, REF_NO, or NAME
-function searchSuppliers($query) {
-    global $conn;
-    try {
-        $query = "%" . $query . "%"; // Menambahkan wildcard % untuk LIKE
-        $stmt = $conn->prepare("SELECT * FROM Suppliers WHERE ID = ? OR REF_NO LIKE ? OR NAME LIKE ?");
-        
-        // Bind parameter: ID (integer), REF_NO and NAME (string)
-        $idQuery = is_numeric($query) ? (int)$query : 0;
-        $stmt->bind_param("iss", $idQuery, $query, $query);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $suppliers = [];
-        while ($row = $result->fetch_assoc()) {
-            $suppliers[] = new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
-        }
-        return $suppliers;
-    } catch (Exception $e) {
-        return [];
-    }
-}
-
-// Function to search for items based on ID, REF_NO, or NAME
-function searchItems($query) {
-    global $conn;
-    try {
-        $query = "%" . $query . "%"; // Menambahkan wildcard % untuk LIKE
-        $stmt = $conn->prepare("SELECT * FROM Items WHERE ID = ? OR REF_NO LIKE ? OR NAME LIKE ?");
-        
-        // Bind parameter: ID (integer), REF_NO and NAME (string)
-        $idQuery = is_numeric($query) ? (int)$query : 0;
-        $stmt->bind_param("iss", $idQuery, $query, $query);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $items = [];
-        while ($row = $result->fetch_assoc()) {
-            $items[] = new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']);
-        }
-        return $items;
-    } catch (Exception $e) {
-        return [];
-    }
-}
-
-// Function to search for items_customers based on Item ID, Customer ID, or Harga// Function to search for items_customers based on Item ID, Customer ID, or Harga
 function searchItemCustomers($query) {
-    global $conn;
-    try {
-        $query = "%" . $query . "%"; // Menambahkan wildcard % untuk LIKE
-        $stmt = $conn->prepare("SELECT * FROM items_customers WHERE Item LIKE ? OR Customer LIKE ? OR Harga LIKE ?");
-        
-        // Bind parameter: Item, Customer, and Harga (semuanya sebagai string)
-        $stmt->bind_param("sss", $query, $query, $query);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $entries = [];
-        while ($row = $result->fetch_assoc()) {
-            // Membuat objek ItemCustomer dan menyimpannya ke array entries
-            $itemCustomer = new ItemCustomer($row['ID'], $row['Item'], $row['Customer'], $row['Harga']);
-            $entries[] = $itemCustomer;
-        }
-        return $entries;
-    } catch (Exception $e) {
-        return [];
+    global $database;
+    $queryStr = "%$query%";
+    $rows = $database->select(
+        'items_customers', '*',
+        ['OR' => [
+            'Item[~]'     => $queryStr,
+            'Customer[~]' => $queryStr,
+            'Harga[~]'    => $queryStr
+        ]]
+    );
+    $entries = [];
+    foreach ($rows as $row) {
+        $entries[] = new ItemCustomer(
+            $row['ID'], $row['Item'], $row['Customer'], $row['Harga']
+        );
     }
+    return $entries;
 }
-

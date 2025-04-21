@@ -49,6 +49,7 @@ if (
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
   <div class="app-wrapper">
+  <?php include __DIR__ . '/../widget/header.php'; ?>
   <?php include __DIR__ . '/../widget/sidebar.php'; ?>
     <main class="app-main">
       <div class="app-content-header">

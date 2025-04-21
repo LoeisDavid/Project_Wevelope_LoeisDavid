@@ -70,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!--begin::App Wrapper-->
   <div class="app-wrapper">
     <!--begin::Header-->
+    <?php include __DIR__ . '/../widget/header.php'; ?>
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
     <!--end::Sidebar-->
     <!--begin::App Main-->

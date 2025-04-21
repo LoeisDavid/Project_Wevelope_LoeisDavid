@@ -47,6 +47,7 @@
   <!--begin::App Wrapper-->
   <div class="app-wrapper">
     <!--begin::Header-->
+    <?php include __DIR__ . '/../widget/header.php'; ?>
     <!--end::Sidebar-->
     <!--begin::App Main-->
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
