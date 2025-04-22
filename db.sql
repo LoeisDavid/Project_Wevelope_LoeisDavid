@@ -1,4 +1,3 @@
-
 -- Tabel items
 CREATE TABLE items (
     ID INT NOT NULL AUTO_INCREMENT,
@@ -24,13 +23,14 @@ CREATE TABLE suppliers (
     PRIMARY KEY (ID)
 );
 
+-- Tabel relasi items dan customers
 CREATE TABLE items_customers (
     ID INT AUTO_INCREMENT PRIMARY KEY,
     Item INT NOT NULL,
     Customer INT NOT NULL,
     Harga INT NOT NULL,
-    FOREIGN KEY (Item) REFERENCES Items(ID) ON DELETE CASCADE,
-    FOREIGN KEY (Customer) REFERENCES Customers(ID) ON DELETE CASCADE
+    FOREIGN KEY (Item) REFERENCES items(ID) ON DELETE CASCADE,
+    FOREIGN KEY (Customer) REFERENCES customers(ID) ON DELETE CASCADE
 );
 
 -- Tabel invoice
@@ -39,10 +39,10 @@ CREATE TABLE invoice (
     KODE VARCHAR(100) UNIQUE,
     DATE DATE,
     CUSTOMER_ID INT NOT NULL,
-    FOREIGN KEY (ID_Customer) REFERENCES customers(ID)
+    FOREIGN KEY (CUSTOMER_ID) REFERENCES customers(ID)
 );
 
--- Tabel itemInv
+-- Tabel itemInv (detail invoice)
 CREATE TABLE itemInv (
     ID INT AUTO_INCREMENT PRIMARY KEY,
     INVOICE_ID INT NOT NULL,
@@ -53,7 +53,3 @@ CREATE TABLE itemInv (
     FOREIGN KEY (ITEM_ID) REFERENCES items(ID),
     FOREIGN KEY (INVOICE_ID) REFERENCES invoice(ID)
 );
-
-
-
-
