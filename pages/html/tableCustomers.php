@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="../css/adminlte.css" />
 </head>
-<body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
+<body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary sidebar-open app-loadedy">
   <div class="app-wrapper">
   <?php include __DIR__ . '/../widget/header.php'; ?>
   <?php include __DIR__ . '/../widget/sidebar.php'; ?>
@@ -89,13 +89,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 <div class="card-header text-center"><h3 class="card-title">Customers Table</h3></div>
                 <div class="card-body text-center">
                 <form method="GET" class="mb-3 d-flex justify-content-end">
-                    <input type="hidden" name="type" value="supplier">
+                    <input type="hidden" name="type" value="customer">
                     <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
                     <input
                       type="text"
                       name="keyword"
                       class="form-control w-auto me-2"
-                      placeholder="Search supplier..."
+                      placeholder="Search customer..."
                       value="<?= htmlspecialchars($keyword) ?>"
                     >
                     <button type="submit" class="btn btn-secondary">Search</button>

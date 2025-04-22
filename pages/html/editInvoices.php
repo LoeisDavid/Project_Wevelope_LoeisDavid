@@ -4,6 +4,7 @@ include '../../Control/Control.php';
 
 $customers = readCustomers(); // ambil semua customer
 
+$kondisi = $_GET['kondisi'] ?? null;
 $id = $_GET['id'];
 $invoice = readInvoiceById($id);
 $tanggal = $invoice->getDate();
@@ -52,10 +53,14 @@ $customer = readCustomerById($invoice->getCustomerId());
   <div class="app-wrapper">
     <!--begin::Header-->
     <!--end::Sidebar-->
+    <?php include __DIR__ . '/../widget/header.php'; ?>
     <!--begin::App Main-->
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
                         <!-- Alert Session Message -->
-<?php if (isset($_SESSION['alert'])): ?>
+
+          <main class="app-main">
+
+          <?php if (isset($_SESSION['alert'])): ?>
   <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
     <?= $_SESSION['alert']['message'] ?>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -70,12 +75,12 @@ $customer = readCustomerById($invoice->getCustomerId());
   </div>
   <?php unset($_SESSION['alert_delete']); ?>
           <?php endif; ?>
-          <main class="app-main">
+
       <div class="container mt-4">
         <div class="card mx-auto" style="max-width: 600px;">
           <div class="card-header text-center"><h4>Edit Invoice</h4></div>
           <div class="card-body">
-            <form method="post" action="../../Control/Control.php?type=invoice&action=update&id=<?=$id?>">
+            <form method="post" action="../../Control/Control.php?type=invoice&action=update&id=<?=$id?>&kondisi=<?= $kondisi?>">
               <div class="mb-3">
                 <label for="kode" class="form-label">Kode Invoice</label>
                 <input type="text" name="kode" id="kode" class="form-control" required placeholder="Masukkan Kode Invoice" value="<?=$kode?>">

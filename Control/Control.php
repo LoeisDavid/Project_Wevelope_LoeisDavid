@@ -120,14 +120,23 @@ if ($method === 'POST') {
                 exit();
             }
         } else if ($action === 'update') {
-            if (updateCustomer($_POST['id'], $ref_no, $_POST['name'])) {
+            if(readCustomerById(intval($_POST['id']))->getRefNo() == $ref_no) {
+                updateCustomer($_POST['id'], $ref_no, $_POST['name']);
                 setAlert('success', 'Customer berhasil diperbarui!');
                 header("Location: ../pages/html/tableCustomers.php");
                 exit();
             } else {
-                setAlert('danger', 'Gagal memperbarui customer.');
+                if (!readCustomerByRefNo($ref_no)) {
+                    updateCustomer($_POST['id'], $ref_no, $_POST['name']);
+                setAlert('success', 'Customer berhasil diperbarui!');
+                header("Location: ../pages/html/tableCustomers.php");
+                exit();
+                } else {
+                    setAlert('danger', 'Gagal memperbarui customer.');
                 header("Location: ../pages/html/editCustomers.php?name=$name&ref_no=$ref_no&id=$id");
                 exit();
+                }
+                
             }
         }
     // SUPPLIER
@@ -149,14 +158,23 @@ if ($method === 'POST') {
                 exit();
             }
         } else if ($action === 'update') {
-            if (updateSupplier($_POST['id'], $ref_no, $_POST['name'])) {
+            if(readSupplierById(intval($_POST['id']))->getRefNo() == $ref_no) {
+                updateSupplier($_POST['id'], $ref_no, $_POST['name']);
                 setAlert('success', 'Supplier berhasil diperbarui!');
                 header("Location: ../pages/html/tableSuppliers.php");
                 exit();
             } else {
-                setAlert('danger', 'Gagal memperbarui supplier.');
+                if (!readSupplierByRefNo($ref_no)) {
+                    updateSupplier($_POST['id'], $ref_no, $_POST['name']);
+                    setAlert('success', 'Supplier berhasil diperbarui!');
+                    header("Location: ../pages/html/tableSuppliers.php");
+                    exit();
+                } else {
+                    setAlert('danger', 'Gagal memperbarui supplier.');
                 header("Location: ../pages/html/editSuppliers.php?name=$name&ref_no=$ref_no&id=$id");
                 exit();
+                }
+                
             }
         }
     // ITEM
@@ -178,14 +196,24 @@ if ($method === 'POST') {
                 exit();
             }
         } else if ($action === 'update') {
-            if (updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price'])) {
+
+            if(readItemById(intval($_POST['id']))->getRefNo() == $ref_no) {
+                updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price']);
                 setAlert('success', 'Item berhasil diperbarui!');
                 header("Location: ../pages/html/tableItems.php");
                 exit();
             } else {
-                setAlert('danger', 'Gagal memperbarui item.');
+                if (!readItemByRefNo($ref_no)) {
+                    updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price']);
+                    setAlert('success', 'Item berhasil diperbarui!');
+                header("Location: ../pages/html/tableItems.php");
+                exit();
+                } else {
+                    setAlert('danger', 'Gagal memperbarui item.');
                 header("Location: ../pages/html/editItems.php?name=$name&ref_no=$ref_no&price=$price&id=$id");
                 exit();
+                }
+                
             }
         }
     } // INVOICE
@@ -193,6 +221,9 @@ if ($method === 'POST') {
     $date = $_POST['date'] ?? NULL;
     $customer_id = $_POST['customer_id'] ?? NULL;
     $kode = $_POST['kode'] ?? 0;
+
+    $kondisi = $_GET['kondisi'] ?? NULL;
+    $id = $_GET['id'];
 
     if ($action === 'create') {
         if(!readInvoiceByKode($kode)) {
@@ -213,11 +244,19 @@ if ($method === 'POST') {
         if(!readInvoiceByKode($kode) || readInvoiceByKode($kode)->getId() == $id) {
             updateInvoice($_GET['id'], $customer_id, $date, $kode);
             setAlert('success', 'Invoice berhasil diperbarui!');
-            header("Location: ../pages/html/tableInvoice.php");
+
+            if($kondisi){
+                header("Location: ../pages/html/tableItemInv.php?invoice=$id");
             exit();
+            } else {
+                header("Location: ../pages/html/tableInvoice.php");
+            exit();
+            }
+
+            
         } else {
             setAlert('danger', 'Gagal memperbarui invoice.');
-            header("Location: ../pages/html/editInvoices.php?date=$date&customer_id=$customer_id&kode=$kode&id=$id");
+            header("Location: ../pages/html/editInvoices.php?date=$date&customer_id=$customer_id&kode=$kode&id=$id&kondisi=$kondisi");
             exit();
         }
     }
@@ -278,14 +317,14 @@ if ($method === 'POST') {
         } else if ($type === 'itemcustomer') {
             $success = deleteItemCustomer($id);
             $redirectUrl = '../html/tableItemCustomers.php';
-        } } else if ($type === 'invoice') {
+        } else if ($type === 'invoice') {
             $success = deleteInvoice($id);
             $redirectUrl = '../html/tableInvoices.php';
         } else if ($type === 'iteminv') {
             $success = deleteItemInv($id);
-            $redirectUrl = '../html/tableItemInvs.php';
+            $redirectUrl = '../html/tableItemInv.php?invoice';
         
-
+        }
         if ($success) {
             setAlert('success', ucfirst($type) . ' berhasil dihapus!', true);
         } else {
@@ -294,8 +333,9 @@ if ($method === 'POST') {
 
         header("Location: $redirectUrl");
         exit();
+    }
 
-    } else if ($action === 'read') {
+     else if ($action === 'read') {
         if ($type === 'customer') {
             return $id ? readCustomerById($id) : readCustomers();
         } else if ($type === 'supplier') {
@@ -304,7 +344,7 @@ if ($method === 'POST') {
             return $id ? readItemById($id) : readItems();
         } else if ($type === 'itemcustomer') {
             return $id ? readItemCustomerById($id) : readItemCustomers();
-        } } else if ($type === 'invoice') {
+        } else if ($type === 'invoice') {
             return $id ? readInvoiceById($id) : readInvoices();
         } else if ($type === 'iteminv') {
             return $id ? readItemInvById($id) : readItemInvs();
@@ -332,17 +372,22 @@ if ($method === 'POST') {
             $redirectUrl = '../html/tableInvoices.php';
             $results = searchInvoices($query);
         } else if ($type === 'iteminv') {
-            $redirectUrl = '../html/tableItemInvs.php';
-            $results = searchItemInvs($query);
+            $redirectUrl = '../html/tableItemInv.php';
+            $results = searchItemInvsInInvoice($query);
         
-
+        }
         header("Location: $redirectUrl");
         exit();
 
     } else {
         return "Invalid action.";
+    } 
+    
+    
+}
+else {
+        echo "Invalid request method.";
     }
 
-} else {
-    echo "Invalid request method.";
-}
+
+ 

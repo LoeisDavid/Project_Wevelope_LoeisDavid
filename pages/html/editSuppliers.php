@@ -44,17 +44,17 @@
 <body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
   <!--begin::App Wrapper-->
   <div class="app-wrapper">
-    <!--begin::Header-->
     <?php include __DIR__ . '/../widget/header.php'; ?>
-    <!--end::Sidebar-->
-    <!--begin::App Main-->
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
-                        <!-- Alert Session Message -->
-<?php if (isset($_SESSION['alert'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
+
+    <!-- Alert Session Message -->
+    
+  <main class="app-main">
+  <?php if (isset($_SESSION['alert'])): ?>
+    <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
+  <?= $_SESSION['alert']['message'] ?>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>  
   <?php unset($_SESSION['alert']); ?>
 <?php endif; ?>
 
@@ -65,14 +65,13 @@
   </div>
   <?php unset($_SESSION['alert_delete']); ?>
           <?php endif; ?>
-    <main class="app-main"><main class="app-main">
         <!--begin::App Content Header-->
         <div class="app-content-header">
           <!--begin::Container-->
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Customers Edit</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">supplier Edit</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Home</a></li>

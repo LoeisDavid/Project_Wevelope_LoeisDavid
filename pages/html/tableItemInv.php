@@ -1,47 +1,49 @@
 <?php
 include '../../Control/Control.php';
 
-$invoice = $_GET['invoice'] ?? null;
-$items = readItemInvByInvoice($invoice);
+
+// Inisialisasi data item
+$invoice = $_GET['invoice'];
 $inv = readInvoiceById($invoice);
+$items = readItemInvByInvoice($invoice);
 
 // Hapus item dari iteminv
 if (
-  isset($_GET['type'], $_GET['action'], $_GET['id']) &&
-  $_GET['type'] === 'iteminv' &&
-  $_GET['action'] === 'delete'
+    isset($_GET['type'], $_GET['action'], $_GET['id']) &&
+    $_GET['type'] === 'iteminv' &&
+    $_GET['action'] === 'delete'
 ) {
-  $id = (int) $_GET['id'];
-  deleteItemInv($id);    
-  $_SESSION['alert_delete'] = [
-    'type' => 'success',
-    'message' => 'Item dalam invoice berhasil dihapus.',
-  ];
-  // Refresh data setelah penghapusan
-  $items = readItemInvByInvoice($invoice);
+    $id = (int) $_GET['id'];
+    deleteItemInv($id);    
+    $_SESSION['alert_delete'] = [
+        'type' => 'success',
+        'message' => 'Item dalam invoice berhasil dihapus.',
+    ];
+    // Refresh data setelah penghapusan
+    $items = readItemInvByInvoice($invoice);
 }
 
+// Menangani pencarian item dalam invoice
 $type = $_GET['type'] ?? 'iteminv';
 $action = $_GET['action'] ?? 'read';
 $keyword = $_GET['keyword'] ?? '';
 
 if (!empty($keyword)) {
-  $action = 'search';
+    $items = searchItemInvsInInvoice($invoice, $keyword);
+    $action = 'search';
 }
 
-if ($type === 'iteminv' && $action === 'search') {
-  $items = searchItemInvs($keyword);
-}
-
+// Ambil data masing-masing Item berdasarkan hasil pencarian
 $it = [];
-for ($i = 0; $i < count($items); $i++) { 
-  $it[$i] = readItemById($items[$i]->getItemId());
+foreach ($items as $i => $item) {
+    $it[$i] = readItemById($item->getItemId());
 }
 
 $count = 0;
 $subTotal = 0;
 ?>
 
+<!-- Mulai dari sini lanjutkan bagian HTML sama seperti sebelumnya -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -53,14 +55,13 @@ $subTotal = 0;
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="../css/adminlte.css" />
 </head>
-<body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
+<body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary sidebar-open app-loaded">
   <div class="app-wrapper">
-  <?php include __DIR__ . '/../widget/header.php'; ?>
+    <?php include __DIR__ . '/../widget/header.php'; ?>
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
     <main class="app-main">
       <div class="app-content-header">
         <div class="container-fluid">
-          <!-- Alert Messages -->
           <?php if (isset($_SESSION['alert'])): ?>
             <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
               <?= $_SESSION['alert']['message'] ?>
@@ -106,9 +107,9 @@ $subTotal = 0;
                 <div class="card-body text-center"><h3 class="card-title"><a href="detailCustomer.php?id=<?= $inv->getCustomerId() ?>" class="btn btn-primary" title="Detail Customer">
     <i class="bi bi-person-circle"></i>
   </a> Customer: <?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?></h3></div>
-                
+
   <div class="card-header d-flex justify-content-start gap-2 flex-wrap">
-  <a href="editInvoices.php?method=get&id=<?= $inv->getId() ?>&kode=<?= $inv->getKode()?>&customer=<?= $inv->getCustomerId()?>" class="btn btn-warning">
+  <a href="editInvoices.php?method=get&id=<?= $inv->getId() ?>&kode=<?= $inv->getKode()?>&customer=<?= $inv->getCustomerId()?>&kondisi=<?=true?>" class="btn btn-warning">
     <i class="bi bi-pencil-square"></i> Edit Invoice
   </a>
   <a href="printInvoice.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
@@ -117,7 +118,6 @@ $subTotal = 0;
 </div>
 
                 <div class="d-flex justify-content-between align-items-center m-3 flex-wrap">
-  <!-- Bagian kiri: Count dan Subtotal horizontal -->
   <div class="d-flex gap-5 align-items-center fs-5">
     <p class="mb-0"><strong>Jumlah Barang : </strong> <?= count($items) ?></p>
     <p class="mb-0"><strong>Harga Total : Rp</strong> 
@@ -126,21 +126,20 @@ $subTotal = 0;
         foreach ($items as $i => $item) {
           $subTotal += $item->getQty() * $item->getPrice();
         }
-        echo number_format($subTotal, 0, ',', '.');
+        echo number_format($subTotal, 0, ',', '.' );
       ?> 
     </p>
   </div>
 
-  <!-- Bagian kanan: Form Search -->
-  <form method="GET" class="d-flex mt-2 mt-md-0">
-    <input type="hidden" name="type" value="iteminv">
-    <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
-    <input type="hidden" name="invoice" value="<?= $invoice ?>">
-    <input type="text" name="keyword" class="form-control w-auto me-2" placeholder="Search Item..." value="<?= htmlspecialchars($keyword) ?>">
-    <button type="submit" class="btn btn-secondary">Search</button>
-  </form>
-</div>
+  <form method="GET" action="tableiteminv.php?action=read&invoice=<?= $invoice?>" class="d-flex mt-2 mt-md-0">
+  <input type="hidden" name="type" value="iteminv">
+  <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
+  <input type="hidden" name="invoice" value="<?= $invoice ?>">
+  <input type="text" name="keyword" class="form-control w-auto me-2" placeholder="Search Item..." value="<?= htmlspecialchars($keyword) ?>">
+  <button type="submit" class="btn btn-secondary">Search</button>
+</form>
 
+</div>
 
                 <table class="table table-bordered mx-auto">
                   <thead>
@@ -157,11 +156,11 @@ $subTotal = 0;
                     <?php if (count($items) > 0): ?>
                       <?php foreach ($items as $i => $item):?>
                         <tr>
-                          <td><?= readItemById($item->getItemId())->getRefNo()?></td>
+                          <td><?= $it[$i]->getRefNo() ?></td>
                           <td><?= htmlspecialchars($it[$i]->getName()) ?></td>
                           <td><?= htmlspecialchars($item->getQty()) ?></td>
-                          <td>Rp<?= htmlspecialchars($item->getPrice()) ?></td>
-                          <td>Rp<?= htmlspecialchars($item->getQty() * $item->getPrice()) ?></td>
+                          <td>Rp<?= number_format($item->getPrice(), 0, ',', '.') ?></td>
+                          <td>Rp<?= number_format($item->getQty() * $item->getPrice(), 0, ',', '.') ?></td>
                           <td class="text-center">
                             <div class="d-flex justify-content-center gap-1">
                               <a href="editItemInv.php?method=get&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-warning" title="Edit ItemInv">

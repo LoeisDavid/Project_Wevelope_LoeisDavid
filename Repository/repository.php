@@ -114,21 +114,42 @@ function deleteItemInvByItemId($itemId) {
     return (bool) $database->delete('iteminv', ['ITEM_ID' => $itemId]);
 }
 
-function searchItemInvs($query) {
+function searchItemInvsInInvoice($invoiceId, $query) {
     global $database;
-    $queryStr = "%$query%";
-    $rows = $database->select(
-        'iteminv',
-        '*',
-        [
-            'OR' => [
-                'INVOICE_ID[~]' => $queryStr,
-                'ITEM_ID[~]'    => $queryStr,
-                'QTY[~]'        => $queryStr,
-                'PRICE[~]'      => $queryStr
-            ]
+
+    $queryStr = strtolower($query);
+
+    // Tahap 1: Cari ID item yang cocok dari tabel items
+    $itemRows = $database->select('items', [
+        'ID',
+        'REF_NO',
+        'NAME',
+        'PRICE'
+    ]);
+
+    $matchingItemIds = [];
+    foreach ($itemRows as $item) {
+        if (
+            str_contains(strtolower($item['REF_NO']), $queryStr) ||
+            str_contains(strtolower($item['NAME']), $queryStr) ||
+            str_contains((string)$item['PRICE'], $queryStr)
+        ) {
+            $matchingItemIds[] = $item['ID'];
+        }
+    }
+
+    // Kalau tidak ada item yang cocok, langsung return kosong
+    if (empty($matchingItemIds)) return [];
+
+    // Tahap 2: Ambil iteminv berdasarkan invoice ID dan item_id yang cocok
+    $rows = $database->select('iteminv', '*', [
+        'AND' => [
+            'INVOICE_ID' => $invoiceId,
+            'ITEM_ID' => $matchingItemIds
         ]
-    );
+    ]);
+
+    // Bungkus ke objek
     $entries = [];
     foreach ($rows as $row) {
         $entries[] = new ItemInv(
@@ -140,8 +161,10 @@ function searchItemInvs($query) {
             $row['TOTAL']
         );
     }
+
     return $entries;
 }
+
 
 // ---------------------- Invoice ----------------------
 function createInvoice($customerId, $tanggal, $kode) {
@@ -231,29 +254,57 @@ function deleteInvoice($id) {
 
 function searchInvoices($query) {
     global $database;
-    $queryStr = "%$query%";
-    $idQuery  = is_numeric($query) ? (int)$query : 0;
-    $rows = $database->select(
-        'invoice', '*',
-        [
-            'OR' => [
-                'ID'            => $idQuery,
-                'CUSTOMER_ID[~]' => $queryStr,
-                'DATE[~]'        => $queryStr
-            ]
-        ]
-    );
-    $invoices = [];
-    foreach ($rows as $row) {
-        $invoices[] = new Invoice(
-            $row['ID'],
-            $row['KODE'],
-            $row['DATE'],
-            $row['CUSTOMER_ID']
-        );
+    $invoices  = [];
+    $addedIds  = [];
+
+    // 1) Search Customer by name → get Customer objects
+    $customers = searchCustomersByName($query);
+    foreach ($customers as $customer) {
+        // ambil ID customer
+        $custId = $customer->getId();
+
+        // cari Invoice milik customer ini (mengembalikan array Invoice objects)
+        $custInvs = readInvoiceByCustomer($custId);
+        foreach ($custInvs as $inv) {
+            // hindari duplikat berdasarkan invoice ID
+            if (! in_array($inv->getId(), $addedIds, true)) {
+                $invoices[] = $inv;
+                $addedIds[] = $inv->getId();
+            }
+        }
     }
+
+    // 2) Normal search (KODE, CUSTOMER_ID, DATE)  
+    $queryStr = "%{$query}%";
+    $idQuery  = is_numeric($query) ? (int)$query : null;
+
+    // bangun kondisi OR-nya
+    $conds = ['OR' => [
+        'KODE[~]'        => $queryStr,
+        'DATE[~]'        => $queryStr,
+    ]];
+    if ($idQuery !== null) {
+        // jika numeric, juga cek CUSTOMER_ID exact match
+        $conds['OR']['CUSTOMER_ID'] = $idQuery;
+    }
+
+    $rows = $database->select('invoice', '*', $conds);
+    foreach ($rows as $row) {
+        if (! in_array($row['ID'], $addedIds, true)) {
+            $invoices[] = new Invoice(
+                $row['ID'],
+                $row['KODE'],
+                $row['DATE'],
+                $row['CUSTOMER_ID']
+            );
+            $addedIds[] = $row['ID'];
+        }
+    }
+
     return $invoices;
 }
+
+
 
 // ---------------------- Customers ----------------------
 function createCustomer($ref_no, $name) {
@@ -277,6 +328,22 @@ function readCustomers() {
     }
     return $customers;
 }
+
+function searchCustomersByName($query) {
+    global $database;
+    $queryStr = "%$query%";
+    $rows = $database->select('customers', '*', ['NAME[~]' => $queryStr]);
+    $customers = [];
+    foreach ($rows as $row) {
+        $customers[] = new Customer(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO']
+        );
+    }
+    return $customers;
+}
+
 
 function readCustomerById($id) {
     global $database;
@@ -362,6 +429,22 @@ function readSuppliers() {
     return $suppliers;
 }
 
+function searchSuppliersByName($query) {
+    global $database;
+    $queryStr = "%$query%";
+    $rows = $database->select('suppliers', '*', ['NAME[~]' => $queryStr]);
+    $suppliers = [];
+    foreach ($rows as $row) {
+        $suppliers[] = new Supplier(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO']
+        );
+    }
+    return $suppliers;
+}
+
+
 function readSupplierByRefNo($refNo) {
     global $database;
     $row = $database->get('suppliers', '*', ['REF_NO' => $refNo]);
@@ -431,6 +514,23 @@ function readItems() {
     }
     return $items;
 }
+
+function searchItemsByName($query) {
+    global $database;
+    $queryStr = "%$query%";
+    $rows = $database->select('items', '*', ['NAME[~]' => $queryStr]);
+    $items = [];
+    foreach ($rows as $row) {
+        $items[] = new Item(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO'],
+            $row['PRICE']
+        );
+    }
+    return $items;
+}
+
 
 function readItemByRefNo($refNo) {
     global $database;
@@ -565,20 +665,56 @@ function deleteItemCustomer($id) {
 
 function searchItemCustomers($query) {
     global $database;
-    $queryStr = "%$query%";
-    $rows = $database->select(
-        'items_customers', '*',
-        ['OR' => [
-            'Item[~]'     => $queryStr,
-            'Customer[~]' => $queryStr,
-            'Harga[~]'    => $queryStr
-        ]]
-    );
-    $entries = [];
-    foreach ($rows as $row) {
-        $entries[] = new ItemCustomer(
-            $row['ID'], $row['Item'], $row['Customer'], $row['Harga']
-        );
+    $entries   = [];
+    $addedIds  = [];                 // track ID yang sudah ditambahkan
+    $queryStr  = "%{$query}%";
+
+    // 1) Search by Item name → get ItemCustomer objects
+    $items = searchItemsByName($query);
+    foreach ($items as $item) {
+        $ics = readItemCustomerByItemId($item->getId());
+        foreach ($ics as $ic) {
+            if (! in_array($ic->getId(), $addedIds, true)) {
+                $entries[]  = $ic;
+                $addedIds[] = $ic->getId();
+            }
+        }
     }
+
+    // 2) Search by Customer name → get ItemCustomer objects
+    $customers = searchCustomersByName($query);
+    foreach ($customers as $customer) {
+        $ics = readItemCustomerByCustomerId($customer->getId());
+        foreach ($ics as $ic) {
+            if (! in_array($ic->getId(), $addedIds, true)) {
+                $entries[]  = $ic;
+                $addedIds[] = $ic->getId();
+            }
+        }
+    }
+
+    // 3) Normal search on items_customers (Item ID, Customer ID, Harga)
+    $conds = ['OR' => [
+        'Harga[~]' => $queryStr,
+    ]];
+    if (is_numeric($query)) {
+        $id = (int)$query;
+        $conds['OR']['Item']     = $id;
+        $conds['OR']['Customer'] = $id;
+    }
+
+    $rows = $database->select('items_customers', '*', $conds);
+    foreach ($rows as $row) {
+        if (! in_array($row['ID'], $addedIds, true)) {
+            $entries[]  = new ItemCustomer(
+                $row['ID'],
+                $row['Item'],
+                $row['Customer'],
+                $row['Harga']
+            );
+            $addedIds[] = $row['ID'];
+        }
+    }
+
     return $entries;
 }
