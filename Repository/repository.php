@@ -16,12 +16,12 @@ function createItemInv($invoiceId, $itemId, $qty, $price) {
         'PRICE'      => $price,
         'TOTAL'      => $total
     ];
-    return (bool) $database->insert('iteminv', $data);
+    return (bool) $database->insert('itemInv', $data);
 }
 
 function readItemInvs() {
     global $database;
-    $rows = $database->select('iteminv', '*');
+    $rows = $database->select('itemInv', '*');
     $entries = [];
     foreach ($rows as $row) {
         $entries[] = new ItemInv(
@@ -38,7 +38,7 @@ function readItemInvs() {
 
 function readItemInvById($id) {
     global $database;
-    $row = $database->get('iteminv', '*', ['ID' => $id]);
+    $row = $database->get('itemInv', '*', ['ID' => $id]);
     if ($row) {
         return new ItemInv(
             $row['ID'],
@@ -54,7 +54,7 @@ function readItemInvById($id) {
 
 function readItemInvByItemId($itemId) {
     global $database;
-    $rows = $database->select('iteminv', '*', ['ITEM_ID' => $itemId]);
+    $rows = $database->select('itemInv', '*', ['ITEM_ID' => $itemId]);
     $entries = [];
     foreach ($rows as $row) {
         $entries[] = new ItemInv(
@@ -71,7 +71,7 @@ function readItemInvByItemId($itemId) {
 
 function readItemInvByInvoice($invoiceId) {
     global $database;
-    $rows = $database->select('iteminv', '*', ['INVOICE_ID' => $invoiceId]);
+    $rows = $database->select('itemInv', '*', ['INVOICE_ID' => $invoiceId]);
     $entries = [];
     foreach ($rows as $row) {
         $entries[] = new ItemInv(
@@ -96,22 +96,22 @@ function updateItemInv($id, $invoiceId, $itemId, $qty, $price) {
         'PRICE'      => $price,
         'TOTAL'      => $total
     ];
-    return (bool) $database->update('iteminv', $data, ['ID' => $id])->rowCount();
+    return (bool) $database->update('itemInv', $data, ['ID' => $id])->rowCount();
 }
 
 function deleteItemInv($id) {
     global $database;
-    return (bool) $database->delete('iteminv', ['ID' => $id]);
+    return (bool) $database->delete('itemInv', ['ID' => $id]);
 }
 
 function deleteItemInvByInvId($invoiceId) {
     global $database;
-    return (bool) $database->delete('iteminv', ['INVOICE_ID' => $invoiceId]);
+    return (bool) $database->delete('itemInv', ['INVOICE_ID' => $invoiceId]);
 }
 
 function deleteItemInvByItemId($itemId) {
     global $database;
-    return (bool) $database->delete('iteminv', ['ITEM_ID' => $itemId]);
+    return (bool) $database->delete('itemInv', ['ITEM_ID' => $itemId]);
 }
 
 function searchItemInvsInInvoice($invoiceId, $query) {
@@ -142,7 +142,7 @@ function searchItemInvsInInvoice($invoiceId, $query) {
     if (empty($matchingItemIds)) return [];
 
     // Tahap 2: Ambil iteminv berdasarkan invoice ID dan item_id yang cocok
-    $rows = $database->select('iteminv', '*', [
+    $rows = $database->select('itemInv', '*', [
         'AND' => [
             'INVOICE_ID' => $invoiceId,
             'ITEM_ID' => $matchingItemIds

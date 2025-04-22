@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -17,7 +19,7 @@ if (!defined('BASE_URL')) {
     // $script_name = $_SERVER['SCRIPT_NAME'];
     // $project_folder = explode("/", trim($script_name, "/"))[0];
 
-    define("BASE_URL", "/".getBaseUrl(). $name_project);
+    define("BASE_URL", $base_url);
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
