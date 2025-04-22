@@ -309,7 +309,7 @@ function searchInvoices($query) {
 // ---------------------- Customers ----------------------
 function createCustomer($ref_no, $name) {
     global $database;
-    return (bool) $database->insert('Customers', [
+    return (bool) $database->insert('customers', [
         'REF_NO' => $ref_no,
         'NAME'   => $name
     ]);
@@ -317,7 +317,7 @@ function createCustomer($ref_no, $name) {
 
 function readCustomers() {
     global $database;
-    $rows = $database->select('Customers', '*');
+    $rows = $database->select('customers', '*');
     $customers = [];
     foreach ($rows as $row) {
         $customers[] = new Customer(
@@ -347,7 +347,7 @@ function searchCustomersByName($query) {
 
 function readCustomerById($id) {
     global $database;
-    $row = $database->get('Customers', '*', ['ID' => $id]);
+    $row = $database->get('customers', '*', ['ID' => $id]);
     if ($row) {
         return new Customer(
             $row['ID'],
@@ -360,7 +360,7 @@ function readCustomerById($id) {
 
 function updateCustomer($id, $ref_no, $name) {
     global $database;
-    return (bool) $database->update('Customers', [
+    return (bool) $database->update('customers', [
         'REF_NO' => $ref_no,
         'NAME'   => $name
     ], ['ID' => $id])->rowCount();
@@ -403,7 +403,7 @@ function deleteCustomer($id) {
     foreach ($invoices as $inv) {
         deleteInvoice($inv->getId());
     }
-    return (bool) $database->delete('Customers', ['ID' => $id]);
+    return (bool) $database->delete('customers', ['ID' => $id]);
 }
 
 // ---------------------- Suppliers ----------------------
@@ -417,7 +417,7 @@ function createSupplier($ref_no, $name) {
 
 function readSuppliers() {
     global $database;
-    $rows = $database->select('Suppliers', '*');
+    $rows = $database->select('suppliers', '*');
     $suppliers = [];
     foreach ($rows as $row) {
         $suppliers[] = new Supplier(
@@ -493,7 +493,7 @@ function deleteSupplier($id) {
 // ---------------------- Items ----------------------
 function createItem($ref_no, $name, $price) {
     global $database;
-    return (bool) $database->insert('Items', [
+    return (bool) $database->insert('items', [
         'REF_NO' => $ref_no,
         'NAME'   => $name,
         'PRICE'  => $price
@@ -502,7 +502,7 @@ function createItem($ref_no, $name, $price) {
 
 function readItems() {
     global $database;
-    $rows = $database->select('Items', '*');
+    $rows = $database->select('items', '*');
     $items = [];
     foreach ($rows as $row) {
         $items[] = new Item(
@@ -544,13 +544,13 @@ function readItemByRefNo($refNo) {
 
 function readItemById($id) {
     global $database;
-    $row = $database->get('Items', '*', ['ID' => $id]);
+    $row = $database->get('items', '*', ['ID' => $id]);
     return $row ? new Item($row['ID'], $row['NAME'], $row['REF_NO'], $row['PRICE']) : null;
 }
 
 function updateItem($id, $ref_no, $name, $price) {
     global $database;
-    return (bool) $database->update('Items', [
+    return (bool) $database->update('items', [
         'REF_NO' => $ref_no,
         'NAME'   => $name,
         'PRICE'  => $price
@@ -585,7 +585,7 @@ function deleteItem($id) {
     foreach ($itemInvs as $ii) {
         deleteItemInv($ii->getId());
     }
-    return (bool) $database->delete('Items', ['ID' => $id]);
+    return (bool) $database->delete('items', ['ID' => $id]);
 }
 
 // ---------------------- Items_Customers ----------------------
