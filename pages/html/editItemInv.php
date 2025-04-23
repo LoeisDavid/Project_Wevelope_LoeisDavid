@@ -68,8 +68,7 @@ $items = readItems(); // ambil daftar barang
     <?php endif; ?>
 
     <main class="app-main">
-      <div class="container mt-4">
-        <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card card-primary card-outlinr mb-6" >
           <div class="card-header text-center">
             <h4>Edit Item</h4>
           </div>
@@ -108,7 +107,6 @@ $items = readItems(); // ambil daftar barang
             </form>
           </div>
         </div>
-      </div>
     </main>
     <!--end::App Main-->
     <!--begin::Footer-->

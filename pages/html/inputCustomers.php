@@ -70,42 +70,61 @@ $ref_no = $_GET['ref_no'] ?? null;
         <div class="card-header">
           <div class="card-title">Customers input</div>
         </div>
+
+        <div class="card card-success card-outline mb-4">
+                  <!--begin::Header-->
+                  <!--end::Header-->
+                  <!--begin::Body-->
+                  <div class="card-body">
+  <form method="post" action="../../Control/Control.php?type=customer&action=create">
+
+    <div class="mb-3">
+      <label for="ref_no" class="form-label">REF_NO</label>
+      <input
+        type="text"
+        class="form-control"
+        id="ref_no"
+        name="ref_no"
+        value="<?=$ref_no?>"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+    <label for="ref_no" class="form-label">Name Customer</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="NAME"
+        name="name"
+        value="<?=$name ?>"
+        required
+      />
+    </div>
+
+    <button type="submit" class="btn btn-success w-100 mt-3" style="display:block;">Simpan Perubahan</button>
+<a href="tableCustomers.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+<input type="hidden" name="invoice_id" value="<?= $itemInvs->getInvoiceId() ?>">
+
+    </div>
+  </form>
+</div>
+                  <!--end::Footer-->
+                </div>
         <!--end::Header-->
         <!--begin::Form-->
-        <form class="needs-validation" novalidate method="post" action="../../Control/Control.php?type=customer&action=create">
-
-          <!--begin::Body-->
-          <div class="card-body">
-            <!--begin::Row-->
-            <div class="row g-3">
-              <!--begin::Col-->
-              <div class="col-md-6">
-                <label for="validationCustom01" class="form-label">Name Customer</label>
-                <input type="text" class="form-control" id="validationCustom01" value="<?= $name?>" required name="name"/>
-                <div class="valid-feedback">Looks good!</div>
-              </div>
-              <!--end::Col-->
-              <!--begin::Col-->
-              <div class="col-md-6">
-                <label for="validationCustom01" class="form-label">REF NO</label>
-                <input type="text" class="form-control"  value="<?= $ref_no?>" id="validationCustom01" name="ref_no"/>
-                <div class="valid-feedback">Looks good!</div>
-              </div>
-              <!--end::Col-->
-            </div>
-            <!--end::Row-->
-          </div>
-          <!--end::Body-->
-          <!--begin::Footer-->
-          <div class="card-footer">
-            <button class="btn btn-info" type="submit" action="create">Submit form</button>
-          </div>
-          <!--end::Footer-->
-        </form>
+       
         <!--end::Form-->
         <!--begin::JavaScript-->
     
-        <script>
+        
+        <!--end::JavaScript-->
+    <!--end::App Main-->
+    <!--begin::Footer-->
+    <?php include __DIR__ . '/../widget/footer.php'; ?>
+    <!--end::Footer-->
+  </div>
+  <script>
           // Example starter JavaScript for disabling form submissions if there are invalid fields
           (() => {
             'use strict';
@@ -130,14 +149,6 @@ $ref_no = $_GET['ref_no'] ?? null;
             });
           })();
         </script>
-        <!--end::JavaScript-->
-      </div>
-    </main>
-    <!--end::App Main-->
-    <!--begin::Footer-->
-    <?php include __DIR__ . '/../widget/footer.php'; ?>
-    <!--end::Footer-->
-  </div>
   <!--end::App Wrapper-->
   <!--begin::Script-->
   <!--begin::Third Party Plugin(OverlayScrollbars)-->

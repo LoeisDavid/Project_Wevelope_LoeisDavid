@@ -95,8 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <main class="app-main">
       <!--begin::App Content Header-->
       <div class="app-content-header">
+      <div class="card card-primary card-outlinr mb-6">
         <div class="card-header">
-          <div class="card-title">Items input</div>
+          <div class="card-title">Items-Customers</div>
         </div>
         <!--end::Header-->
         <!--begin::Form-->
@@ -146,14 +147,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
   <!-- Submit -->
   <div class="card-footer">
-    <button class="btn btn-info" type="submit">Submit form</button>
+  <button type="submit" action="create" class="btn btn-info w-100 mt-3" style="display:block;">Sumbit</button>
+    <a href="tableItems.php" class="btn btn-secondary w-100 mt-2" >Cancel</a>
   </div>
 </form>
 
-        <!--end::Form-->
-        <!--begin::JavaScript-->
-    
-        <script>
+</div>
+</div>
+</main>
+
+    <!--end::App Main-->
+    <!--begin::Footer-->
+    <?php include __DIR__ . '/../widget/footer.php'; ?>
+    <!--end::Footer-->
+  </div>
+
+  <script>
           // Example starter JavaScript for disabling form submissions if there are invalid fields
           (() => {
             'use strict';
@@ -178,14 +187,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             });
           })();
         </script>
-        <!--end::JavaScript-->
-      </div>
-    </main>
-    <!--end::App Main-->
-    <!--begin::Footer-->
-    <?php include __DIR__ . '/../widget/footer.php'; ?>
-    <!--end::Footer-->
-  </div>
   <!--end::App Wrapper-->
   <!--begin::Script-->
   <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"

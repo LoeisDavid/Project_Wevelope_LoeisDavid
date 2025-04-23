@@ -90,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       <!-- Table -->
       <div class="app-content">
         <div class="container-fluid">
+          
           <div class="row">
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
@@ -112,9 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                   <table class="table table-bordered mx-auto">
                     <thead>
                       <tr>
-                        <th style="width: 10px">ID</th>
-                        <th>Name</th>
                         <th>REF NO</th>
+                        <th>Name</th>
                         <th>Price</th>
                         <th style="width: 120px">Actions</th>
                       </tr>
@@ -123,9 +123,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                       <?php if (count($items) > 0): ?>
                         <?php foreach ($items as $item): ?>
                           <tr>
-                            <td><?= htmlspecialchars($item->getId()) ?></td>
+                          <td><?= htmlspecialchars($item->getRefNo()) ?></td>
                             <td><?= htmlspecialchars($item->getName()) ?></td>
-                            <td><?= htmlspecialchars($item->getRefNo()) ?></td>
                             <td><span>Rp </span><?= htmlspecialchars($item->getPrice()) ?></td>
                             <td class="text-center">
                               <!-- Edit Button -->

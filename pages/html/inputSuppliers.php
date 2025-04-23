@@ -68,48 +68,85 @@ $ref_no = $_GET['ref_no'] ?? null;
     <main class="app-main">
       <!--begin::App Content Header-->
       <div class="app-content-header">
+        
+        <!--end::Header-->
+        <!--begin::Form-->
+        
+        <div class="card card-success card-outline mb-12">
         <div class="card-header">
           <div class="card-title">Suppliers input</div>
         </div>
-        <!--end::Header-->
-        <!--begin::Form-->
-        <form class="needs-validation" novalidate method="post" action="../../Control/Control.php?type=supplier&action=create">
+                  <!--begin::Header-->
+                  <!--end::Header-->
+                  <!--begin::Body-->
+                  <div class="card-body">
+  <form method="post" action="../../Control/Control.php?type=supplier&action=create">
+    <input type="hidden" name="id" value="" />
 
-          <!--begin::Body-->
-          <div class="card-body">
-            <!--begin::Row-->
-            <div class="row g-3">
-              <!--begin::Col-->
-              <div class="col-md-6">
-                <label for="validationCustom01" class="form-label">Name Supplier</label>
-                <input type="text" class="form-control" id="validationCustom01"  value="<?= $name?>" required name="name"/>
-                <div class="valid-feedback">Looks good!</div>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">REF NO</label>
-                <input type="text" class="form-control"  value="<?= $ref_no?>" id="validationCustom01" name="ref_no"/>
-                <div class="valid-feedback">Looks good!</div>
-              </div>
-              <!--end::Col-->
+    <div class="mb-3">
+      <label for="ref_no" class="form-label">REF_NO</label>
+      <input
+        type="text"
+        class="form-control"
+        id="ref_no"
+        name="ref_no"
+        value="<?= $ref_no?>"
+        required
+      />
+    </div>
 
-              <!--end::Col-->
-              <!--begin::Col-->
+    <div class="mb-3">
+    <label for="ref_no" class="form-label">Nama Supplier</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="NAME"
+        name="name"
+        value="<?= $name?>"
+        required
+      />
+    </div>
 
-              <!--end::Col-->
-            </div>
-            <!--end::Row-->
-          </div>
-          <!--end::Body-->
-          <!--begin::Footer-->
-          <div class="card-footer">
-            <button class="btn btn-info" type="submit" action="create">Submit form</button>
-          </div>
-          <!--end::Footer-->
-        </form>
+    <div class="card-footer">
+    <button type="submit" action="create" class="btn btn-success w-100 mt-3" style="display:block;">Sumbit</button>
+<a href="tableSuppliers.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+
+
+  </form>
+</div>
+                  <!--end::Footer-->
+                </div>
+                </div>
+                </div>
+                </main>
+       
         <!--end::Form-->
         <!--begin::JavaScript-->
     
-        <script>
+        
+        <!--end::JavaScript-->
+    <!--end::App Main-->
+    <!--begin::Footer-->
+    <?php include __DIR__ . '/../widget/footer.php'; ?>
+    <!--end::Footer-->
+  </div>
+  <!--end::App Wrapper-->
+  <!--begin::Script-->
+  <!--begin::Third Party Plugin(OverlayScrollbars)-->
+  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
+    integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ=" crossorigin="anonymous"></script>
+  <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+  <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+    integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+    crossorigin="anonymous"></script>
+  <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
+  <script src="../js/adminlte.js"></script>
+  <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
+  <script>
           // Example starter JavaScript for disabling form submissions if there are invalid fields
           (() => {
             'use strict';
@@ -134,30 +171,6 @@ $ref_no = $_GET['ref_no'] ?? null;
             });
           })();
         </script>
-        <!--end::JavaScript-->
-      </div>
-    </main>
-    <!--end::App Main-->
-    <!--begin::Footer-->
-    <?php include __DIR__ . '/../widget/footer.php'; ?>
-    <!--end::Footer-->
-  </div>
-  <!--end::App Wrapper-->
-  <!--begin::Script-->
-  <!--begin::Third Party Plugin(OverlayScrollbars)-->
-  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
-    integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ=" crossorigin="anonymous"></script>
-  <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-    crossorigin="anonymous"></script>
-  <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-    integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-    crossorigin="anonymous"></script>
-  <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-  <script src="../js/adminlte.js"></script>
-  <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
   <script>
     const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
     const Default = {

@@ -71,11 +71,11 @@
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">supplier Edit</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Supplier Edit</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Customers</li>
+                  <li class="breadcrumb-item active" aria-current="page">Supplier Edit</li>
                 </ol>
               </div>
             </div>
@@ -89,35 +89,13 @@
           <!--begin::Container-->
           <div class="container-fluid">
             <!--begin::Row-->
-            <div class="card card-success card-outline mb-4">
+            <div class="card card-primary card-outlinr mb-6">
                   <!--begin::Header-->
                   <!--end::Header-->
                   <!--begin::Body-->
                   <div class="card-body">
   <form method="post" action="../../Control/Control.php?type=supplier&action=update">
     <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>" />
-
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon1">ID</span>
-      <input
-        type="text"
-        class="form-control"
-        name="id"
-        value="<?= htmlspecialchars($id) ?>"
-        disabled
-      />
-    </div>
-
-    <div class="input-group mb-3">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="NAME"
-        name="name"
-        value="<?= htmlspecialchars($name) ?>"
-        required
-      />
-    </div>
 
     <div class="mb-3">
       <label for="ref_no" class="form-label">REF_NO</label>
@@ -127,6 +105,18 @@
         id="ref_no"
         name="ref_no"
         value="<?= htmlspecialchars($ref_no) ?>"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+    <label for="ref_no" class="form-label">Name</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="NAME"
+        name="name"
+        value="<?= htmlspecialchars($name) ?>"
         required
       />
     </div>

@@ -19,7 +19,7 @@ if (!defined('BASE_URL')) {
     // $script_name = $_SERVER['SCRIPT_NAME'];
     // $project_folder = explode("/", trim($script_name, "/"))[0];
 
-    define("BASE_URL", $base_url);
+    define("BASE_URL", "/".getBaseUrl(). $name_project);
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -269,9 +269,9 @@ if ($method === 'POST') {
 // ITEMINV
  else if ($type === 'iteminv') {
     $item_id = $_POST['item_id'] ?? NULL;
-    $invoice_id = $_POST['invoice_id'] ?? NULL;
+    $invoice_id = $_GET['id'] ?? NULL;
     $qty = $_POST['qty'] ?? 0;
-    $price = $_POST['price'] ?? null;
+    $price = $_POST['price'] ?? readItemById($item_id);
 
     // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
 
@@ -279,7 +279,7 @@ if ($method === 'POST') {
         if(!$price){
             $price = readItemById($item_id)->getPrice();
         }
-        createItemInv($invoiceId, $item_id , $qty, $price);
+        createItemInv($invoice_id, $item_id , $qty, $price);
         setAlert('success', 'Item dalam Invoice berhasil ditambahkan!');
         header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
         exit();

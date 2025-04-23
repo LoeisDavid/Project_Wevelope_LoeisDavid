@@ -76,8 +76,7 @@ $customer = readCustomerById($invoice->getCustomerId());
   <?php unset($_SESSION['alert_delete']); ?>
           <?php endif; ?>
 
-      <div class="container mt-4">
-        <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card card-primary card-outlinr mb-6">
           <div class="card-header text-center"><h4>Edit Invoice</h4></div>
           <div class="card-body">
             <form method="post" action="../../Control/Control.php?type=invoice&action=update&id=<?=$id?>&kondisi=<?= $kondisi?>">
@@ -104,7 +103,6 @@ $customer = readCustomerById($invoice->getCustomerId());
             </form>
           </div>
         </div>
-      </div>
     </main>
     <!--end::App Main-->
     <!--begin::Footer-->

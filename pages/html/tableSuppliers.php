@@ -104,9 +104,8 @@ if (
                 <table class="table table-bordered mx-auto">
   <thead>
     <tr>
-      <th style="width: 10px">ID</th>
+    <th>REF NO</th>
       <th>Name</th>
-      <th>REF NO</th>
       <th style="width: 120px">Actions</th> <!-- kolom baru -->
     </tr>
   </thead>
@@ -114,9 +113,8 @@ if (
     <?php if (count($items) > 0): ?>
       <?php foreach ($items as $item): ?>
         <tr>
-          <td><?= htmlspecialchars($item->getId()) ?></td>
+        <td><?= htmlspecialchars($item->getRefNo()) ?></td> 
           <td><?= htmlspecialchars($item->getName()) ?></td>
-          <td><?= htmlspecialchars($item->getRefNo()) ?></td>
           <td class="text-center">
             <!-- Tombol Edit -->
             <a

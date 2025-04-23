@@ -92,7 +92,7 @@
           <!--begin::Container-->
           <div class="container-fluid">
             <!--begin::Row-->
-            <div class="card card-success card-outline mb-4">
+            <div class="card card-primary card-outlinr mb-6">
                   <!--begin::Header-->
                   <!--end::Header-->
                   <!--begin::Body-->
@@ -100,14 +100,15 @@
   <form method="post" action="../../Control/Control.php?type=item&action=update">
     <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>" />
 
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon1">ID</span>
+    <div class="mb-3">
+      <label for="ref_no" class="form-label">REF_NO</label>
       <input
         type="text"
         class="form-control"
-        name="id"
-        value="<?= htmlspecialchars($id) ?>"
-        disabled
+        id="ref_no"
+        name="ref_no"
+        value="<?= htmlspecialchars($ref_no) ?>"
+        required
       />
     </div>
 
@@ -118,18 +119,6 @@
         placeholder="NAME"
         name="name"
         value="<?= htmlspecialchars($name) ?>"
-        required
-      />
-    </div>
-
-    <div class="mb-3">
-      <label for="ref_no" class="form-label">REF_NO</label>
-      <input
-        type="text"
-        class="form-control"
-        id="ref_no"
-        name="ref_no"
-        value="<?= htmlspecialchars($ref_no) ?>"
         required
       />
     </div>
@@ -158,8 +147,6 @@
                 </div>
             <!--end::Row-->
           </div>
-          <!--end::Container-->
-        </div>
         <!--end::App Content-->
       </main>
     <!--end::App Main-->

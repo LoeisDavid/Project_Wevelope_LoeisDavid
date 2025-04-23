@@ -112,11 +112,11 @@ $it= readItemById($itemCustomers->getItem());
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Item-Customers Edit</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Item-Customer Edit</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">General Form</li>
+                  <li class="breadcrumb-item active" aria-current="page">Item-Customer Edit</li>
                 </ol>
               </div>
             </div>
@@ -129,25 +129,13 @@ $it= readItemById($itemCustomers->getItem());
         <div class="app-content">
           <!--begin::Container-->
           <div class="container-fluid">
-            <!--begin::Row-->
-            <div class="card card-success card-outline mb-4">
+          <div class="card card-primary card-outlinr mb-6">
                   <!--begin::Header-->
                   <!--end::Header-->
                   <!--begin::Body-->
                   <div class="card-body">
   <form method="post" action="../../Control/Control.php?type=itemcustomer&action=update">
     <input type="hidden" name="id" value="<?= htmlspecialchars($id) ?>" />
-
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon1">ID</span>
-      <input
-        type="text"
-        class="form-control"
-        name="id"
-        value="<?= htmlspecialchars($id) ?>"
-        disabled
-      />
-    </div>
 
     <div class="col-md-6">
   <label for="item_id" class="form-label">Item Name</label>
@@ -195,13 +183,12 @@ $it= readItemById($itemCustomers->getItem());
 
     </div>
   </form>
+  </div>
 </div>
                   <!--end::Footer-->
                 </div>
             <!--end::Row-->
           </div>
-          <!--end::Container-->
-        </div>
         <!--end::App Content-->
       </main>
     <!--end::App Main-->

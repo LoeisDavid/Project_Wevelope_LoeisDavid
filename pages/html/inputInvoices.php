@@ -92,8 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php unset($_SESSION['alert_delete']); ?>
           <?php endif; ?>
           <main class="app-main">
-      <div class="container mt-4">
-        <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card card-primary card-outlinr mb-6">
           <div class="card-header text-center"><h4>Input Invoice</h4></div>
           <div class="card-body">
             <form method="POST">
@@ -115,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="date" name="tanggal" id="tanggal" class="form-control" required>
               </div>
               <button type="submit" class="btn btn-primary w-100">Simpan Invoice</button>
+              <a href="tableInvoice.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
             </form>
-          </div>
         </div>
       </div>
     </main>

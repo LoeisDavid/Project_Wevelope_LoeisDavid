@@ -91,18 +91,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php unset($_SESSION['alert_delete']); ?>
           <?php endif; ?>
           <main class="app-main">
-      <div class="container mt-4">
-        <div class="card mx-auto" style="max-width: 600px;">
+        <div class="card card-primary card-outlinr mb-6">
           <div class="card-header text-center"><h4>Input Invoice</h4></div>
           <div class="card-body">
-          <form method="POST">
-          <div class="mb-3">
+          <form method="post" action="../../Control/Control.php?type=iteminv&action=create&id=<?=$invoice?>">
+                <div class="border rounded p-3 mb-3">
+                <div class="mb-3">
                     <label class="form-label">KODE INVOICE</label>
                     <input type="number" name="id" class="form-control" value="<?= $kode ?>" disabled>
                   </div>
-  <div class="mb-3">
-    <label for="item" class="form-label">Pilih Item</label>
-    <select name="item" id="item" class="form-select" required>
+                  <div class="mb-3">
+                    <label class="form-label">Barang</label>
+                    <select name="item_id" id="item_id" class="form-select" required>
       <option value="">-- Pilih Item --</option>
       <?php foreach ($items as $item): ?>
         <option value="<?= $item->getId() ?>" data-price="<?= $item->getPrice() ?>">
@@ -110,20 +110,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </option>
       <?php endforeach; ?>
     </select>
-  </div>
-  <div class="mb-3">
-    <label for="qty" class="form-label">Qty</label>
-    <input type="number" name="qty" id="qty" class="form-control" required>
-  </div>
-  <div class="mb-3">
-    <label for="harga" class="form-label">Harga</label>
-    <input type="number" name="harga" id="harga" class="form-control">
-  </div>
-  <button type="submit" class="btn btn-primary w-100">Tambah Item ke Invoice</button>
-</form>
-          </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Qty</label>
+                    <input type="number" name="qty" class="form-control" required value="">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Harga</label>
+                    <input type="number" name="price" class="form-control" value="">
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100 mt-3" style="display:block;">Tambah Item ke Invoice</button>
+<a href="tableItemInv.php?invoice=<?= $invoice ?>" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+
+                </div>
+                
+            </form>
         </div>
-      </div>
     </main>
     <!--end::App Main-->
     <!--begin::Footer-->
