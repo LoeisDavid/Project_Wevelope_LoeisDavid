@@ -321,7 +321,7 @@ if ($method === 'POST') {
             $redirectUrl = '../html/tableItemCustomers.php';
         } else if ($type === 'invoice') {
             $success = deleteInvoice($id);
-            $redirectUrl = '../html/tableInvoices.php';
+            $redirectUrl = '../html/tableInvoice.php';
         } else if ($type === 'iteminv') {
             $success = deleteItemInv($id);
             $redirectUrl = '../html/tableItemInv.php?invoice';
@@ -371,7 +371,7 @@ if ($method === 'POST') {
             $redirectUrl = '../html/tableItemCustomers.php';
             $results = searchItemCustomers($query);  // Fungsi search untuk item customer
         } else if ($type === 'invoice') {
-            $redirectUrl = '../html/tableInvoices.php';
+            $redirectUrl = '../html/tableInvoice.php';
             $results = searchInvoices($query);
         } else if ($type === 'iteminv') {
             $redirectUrl = '../html/tableItemInv.php';

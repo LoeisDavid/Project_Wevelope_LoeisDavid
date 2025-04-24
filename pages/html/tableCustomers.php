@@ -10,7 +10,7 @@ if (
   deleteCustomer($id);                    // pastikan fungsi ini ada di Control.php / repository
 }
 
-$items = []; // pastikan ini array kosong, bukan array berisi null
+$items = readCustomers(); // pastikan ini array kosong, bukan array berisi null
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   $type = $_GET['type'] ?? 'customer';
@@ -26,10 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   if ($type === 'customer') {
       if ($action === 'search') {
           // Cari berdasarkan keyword
-          $items = searchCustomers($keyword);
+          $itemSearch = searchCustomers($keyword);
       } else {
           // Jika tidak ada keyword, tampilkan semua data (read)
-          $items = readCustomers();
+          $itemSearch = [];
       }
   }
 }
@@ -54,22 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <main class="app-main">
       <div class="app-content-header">
         <div class="container-fluid">
-                              <!-- Alert Session Message -->
-<?php if (isset($_SESSION['alert'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert']); ?>
-<?php endif; ?>
-
-<?php if (isset($_SESSION['alert_delete'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert_delete']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert_delete']); ?>
-          <?php endif; ?>
+        <div class="container mt-3">
           <div class="row">
             <div class="col-sm-6"><h3 class="mb-0">Customers Table</h3></div>
             <div class="col-sm-6">
@@ -83,12 +68,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       </div>
       <div class="app-content">
         <div class="container-fluid">
-          <div class="row">
+        <div class="row">
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
-                <div class="card-header text-center"><h3 class="card-title">Customers Table</h3></div>
                 <div class="card-body text-center">
-                <form method="GET" class="mb-3 d-flex justify-content-end">
+                <form method="GET" class="mb-3 d-flex justify-content-center">
                     <input type="hidden" name="type" value="customer">
                     <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
                     <input
@@ -100,6 +84,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     >
                     <button type="submit" class="btn btn-secondary">Search</button>
                   </form>
+                  <table class="table table-bordered mx-auto">
+                    <thead>
+                      <tr>
+                      <th>REF NO</th>
+                        <th>Name</th>
+                        <th style="width: 120px">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php if ($itemSearch && count($items) > 0): ?>
+                        <?php foreach ($itemSearch as $item): ?>
+                          <tr>
+                          <td><?= htmlspecialchars($item->getRefNo()) ?></td>
+                            <td><?= htmlspecialchars($item->getName()) ?></td>
+                            <td class="text-center">
+                                <!-- Tombol Edit -->
+                                <a
+                                href="editCustomers.php?method=get&id=<?= $item->getId() ?>&name=<?= $item->getName()?>&ref_no=<?= $item->getRefNo()?>"
+                                class="btn btn-sm btn-warning me-1"
+                                title="Edit Customer"
+                              >
+                              <i class="bi bi-pencil-square"></i>
+                              </a>
+                                <!-- Tombol Delete -->
+                                <a href="?type=customer&action=delete&id=<?= $item->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus customer ini?');" title="Delete Customer">
+                                  <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                          </tr>
+                        <?php endforeach; ?>
+                        <?php else: ?>
+                        <tr><td colspan="4" class="text-center text-muted">No data found.</td></tr>
+                        <?php endif; ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <div class="card mb-4">
+                <div class="card-header text-center"><h3>Customers Table</h3></div>
+                <div class="card-body text-center">
                   <table class="table table-bordered mx-auto">
                     <thead>
                       <tr>
@@ -142,12 +170,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
               </div>
             </div>
           </div>
+          </div>
         </div>
       </div>
     </main>
 
     <?php include __DIR__ . '/../widget/footer.php'; ?>
   </div>
+
+  <?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelector('.alert');
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelectorAll('.alert')[1];
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert_delete']); ?>
+<?php endif; ?>
 
   <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>

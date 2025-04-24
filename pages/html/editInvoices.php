@@ -60,22 +60,6 @@ $customer = readCustomerById($invoice->getCustomerId());
 
           <main class="app-main">
 
-          <?php if (isset($_SESSION['alert'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert']); ?>
-<?php endif; ?>
-
-<?php if (isset($_SESSION['alert_delete'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert_delete']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert_delete']); ?>
-          <?php endif; ?>
-
         <div class="card card-primary card-outlinr mb-6">
           <div class="card-header text-center"><h4>Edit Invoice</h4></div>
           <div class="card-body">
@@ -109,6 +93,38 @@ $customer = readCustomerById($invoice->getCustomerId());
     <?php include __DIR__ . '/../widget/footer.php'; ?>
     <!--end::Footer-->
   </div>
+  <?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelector('.alert');
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelectorAll('.alert')[1];
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert_delete']); ?>
+<?php endif; ?>
+
   <!--end::App Wrapper-->
   <!--begin::Script-->
   <!--begin::Third Party Plugin(OverlayScrollbars)-->

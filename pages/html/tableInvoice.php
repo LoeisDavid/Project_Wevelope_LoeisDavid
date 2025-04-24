@@ -1,5 +1,5 @@
 <?php
-include '../../Control/Control.php';
+include_once '../../Control/Control.php';
 
 if (
   isset($_GET['type'], $_GET['action'], $_GET['id']) &&
@@ -16,6 +16,7 @@ if (
 
 // Ambil semua invoice
 $items = readInvoices();
+$customers = readCustomers();
 
 // Hapus invoice yang tidak memiliki item di iteminv
 
@@ -24,17 +25,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   $type = $_GET['type'] ?? 'invoice';
   $action = $_GET['action'] ?? 'read';
   $keyword = $_GET['keyword'] ?? '';
+  $customer = $_GET['customer'] ??'';
+  $start_date = $_GET['start_date'] ??'';
+  $end_date = $_GET['end_date'] ??'';
 
-  if (!empty($keyword)) {
+  if (!empty($keyword) && $keyword != '') {
     $action = 'search';
   }
 
   if ($type === 'invoice') {
     if ($action === 'search') {
-      $items = searchInvoices($keyword);
+      $itemSearch = searchInvoices($keyword);
     } else {
-      $items = readInvoices(); // Ambil lagi data terbaru setelah penghapusan
+      if( $customer!= null && $customer != ''){
+        $itemSearch = readInvoiceByCustomer($customer);
+      } else {
+        if($start_date != null && $start_date != '' && $end_date != null && $end_date != '' ){
+          $itemSearch = readInvoiceByRangeDate($start_date,$end_date);
+        } else {
+          $itemSearch = [];
+        }
+      }
     }
+
+    
+
+    
   }
 }
 
@@ -59,22 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <main class="app-main">
       <div class="app-content-header">
         <div class="container-fluid">
-          <!-- Alert Session Message -->
-<?php if (isset($_SESSION['alert'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert']); ?>
-<?php endif; ?>
-
-<?php if (isset($_SESSION['alert_delete'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert_delete']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert_delete']); ?>
-<?php endif; ?>
+        <div class="container mt-3">
           <div class="row">
             <div class="col-sm-6"><h3 class="mb-0">Invoices Table</h3></div>
             <div class="col-sm-6">
@@ -88,23 +89,120 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       </div>
       <div class="app-content">
         <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+              <div class="card mb-4">
+                
+                <div class="card-body text-center">
+                <form method="GET" class="row row-cols-lg-auto g-2 align-items-end justify-content-center mb-3">
+  <input type="hidden" name="type" value="invoice">
+
+  <div class="col">
+    <label for="keyword" class="form-label">Keyword</label>
+    <input
+      type="text"
+      id="keyword"
+      name="keyword"
+      class="form-control"
+      placeholder="Search invoice..."
+      value="<?= htmlspecialchars($keyword) ?>"
+    >
+  </div>
+
+  <div class="col">
+    <label for="customer" class="form-label">Customer</label>
+    <select name="customer" id="customer" class="form-select">
+      <option value="">-- Pilih Customer --</option>
+      <?php foreach ($customers as $cust): ?>
+        <option value="<?= $cust->getId() ?>"><?= htmlspecialchars($cust->getName()) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+
+  <div class="col">
+    <label for="start_date" class="form-label">Start Date</label>
+    <input type="date" id="start_date" name="start_date" class="form-control" value="<?= $_GET['start_date'] ?? '' ?>">
+  </div>
+
+  <div class="col">
+    <label for="end_date" class="form-label">End Date</label>
+    <input type="date" id="end_date" name="end_date" class="form-control" value="<?= $_GET['end_date'] ?? '' ?>">
+  </div>
+
+  <div class="col">
+    <button type="submit" class="btn btn-primary">
+      <i class="bi bi-search"></i> Search
+    </button>
+  </div>
+</form>
+
+
+                <table class="table table-bordered mx-auto">
+  <thead>
+    <tr>
+      <th style="width: 10px">KODE</th>
+      <th>TANGGAL</th>
+      <th>CUSTOMERS</th>
+      <th style="width: 120px">Actions</th> <!-- kolom baru -->
+    </tr>
+  </thead>
+  <tbody>
+    <?php if (count($itemSearch) > 0): ?>
+      <?php foreach ($itemSearch as $item): ?>
+        <tr>
+          <td><?= htmlspecialchars($item->getKode()) ?></td>
+          <td><?= htmlspecialchars($item->getDate()) ?></td>
+          <td><?= htmlspecialchars(readCustomerById($item->getCustomerId())->getName()) ?></td>
+          <td class="text-center">
+          <div class="d-flex justify-content-center gap-1">
+  <!-- Tombol View -->
+  <a
+    href="tableItemInv.php?invoice=<?= $item->getId() ?>"
+    class="btn btn-sm btn-info"
+    title="Lihat Detail Invoice"
+  >
+    <i class="bi bi-eye"></i>
+  </a>
+
+  <!-- Tombol Edit -->
+  <a
+    href="editInvoices.php?method=get&id=<?= $item->getId() ?>&kode=<?= $item->getKode()?>&customer=<?= $item->getCustomerId()?>"
+    class="btn btn-sm btn-warning"
+    title="Edit Invoices"
+  >
+    <i class="bi bi-pencil-square"></i>
+  </a>
+
+  <!-- Tombol Delete -->
+  <a
+    href="?type=invoice&action=delete&id=<?= $item->getId() ?>"
+    class="btn btn-sm btn-danger"
+    onclick="return confirm('Yakin ingin menghapus invoice ini?');"
+    title="Delete Invoice"
+  >
+    <i class="bi bi-trash"></i>
+  </a>
+</div>
+
+
+        </tr>        
+      <?php endforeach; ?>
+      
+      <?php else: ?>
+                        <tr><td colspan="4" class="text-center text-muted">No data found.</td></tr>
+                      <?php endif; ?>
+  </tbody>
+</table>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="row">
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
                 <div class="card-header text-center"><h3 class="card-title">Data Invoices tersimpan</h3></div>
                 <div class="card-body text-center">
-                <form method="GET" class="mb-3 d-flex justify-content-end">
-                    <input type="hidden" name="type" value="invoice">
-                    <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
-                    <input
-                      type="text"
-                      name="keyword"
-                      class="form-control w-auto me-2"
-                      placeholder="Search invoice..."
-                      value="<?= htmlspecialchars($keyword) ?>"
-                    >
-                    <button type="submit" class="btn btn-secondary">Search</button>
-                  </form>
+                
                 <table class="table table-bordered mx-auto">
   <thead>
     <tr>
@@ -165,6 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <i class="bi bi-plus-circle"></i> Create New
   </a>
 </div>
+</div>
                 </div>
               </div>
             </div>
@@ -175,6 +274,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       <?php include __DIR__ . '/../widget/footer.php'; ?>
       <!--end::Footer-->
     </div>
+
+    <?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelector('.alert');
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelectorAll('.alert')[1];
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert_delete']); ?>
+<?php endif; ?>
+
     <!--end::App Wrapper-->
     <!--begin::Script-->
     <!--begin::Third Party Plugin(OverlayScrollbars)-->

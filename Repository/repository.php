@@ -101,17 +101,34 @@ function updateItemInv($id, $invoiceId, $itemId, $qty, $price) {
 
 function deleteItemInv($id) {
     global $database;
+
+    try {
     return (bool) $database->delete('itemInv', ['ID' => $id]);
+    } catch (Exception $e) {
+        return false;
+    }
 }
 
 function deleteItemInvByInvId($invoiceId) {
     global $database;
-    return (bool) $database->delete('itemInv', ['INVOICE_ID' => $invoiceId]);
+
+    try {
+        return (bool) $database->delete('itemInv', ['INVOICE_ID' => $invoiceId]);
+    } catch (Exception $e) {
+        return false;
+    }
+    
 }
 
 function deleteItemInvByItemId($itemId) {
     global $database;
-    return (bool) $database->delete('itemInv', ['ITEM_ID' => $itemId]);
+
+    try {
+        return (bool) $database->delete('itemInv', ['ITEM_ID' => $itemId]);
+    } catch (Exception $e) {
+        return false;
+    }
+    
 }
 
 function searchItemInvsInInvoice($invoiceId, $query) {
@@ -235,6 +252,23 @@ function readInvoiceByCustomer($customerId) {
     return $invoices;
 }
 
+function readInvoiceByRangeDate($startDate, $endDate) {
+    global $database;
+    $rows = $database->select("invoice", "*", [
+        "DATE[<>]" => [$startDate, $endDate]
+    ]);
+    $invoices = [];
+    foreach ($rows as $row) {
+        $invoices[] = new Invoice(
+            $row['ID'],
+            $row['KODE'],
+            $row['DATE'],
+            $row['CUSTOMER_ID']
+        );
+    }
+    return $invoices;
+}
+
 function updateInvoice($id, $customerId, $tanggal, $kode) {
     global $database;
     $data = [
@@ -248,8 +282,13 @@ function updateInvoice($id, $customerId, $tanggal, $kode) {
 function deleteInvoice($id) {
     global $database;
     // delete related iteminv records
-    deleteItemInvByInvId($id);
-    return (bool) $database->delete('invoice', ['ID' => $id]);
+    
+    try{
+        return (bool) $database->delete('invoice', ['ID' => $id]);
+    } catch (Exception $e){
+        return false;
+    }
+    
 }
 
 function searchInvoices($query) {
@@ -395,15 +434,12 @@ function searchCustomers($query) {
 function deleteCustomer($id) {
     global $database;
     // delete related item_customers and invoices
-    $itemCustomers = readItemCustomerByCustomerId($id);
-    foreach ($itemCustomers as $ic) {
-        deleteItemCustomer($ic->getId());
+    try{
+        return (bool) $database->delete('customers', ['ID' => $id]);
+    } catch (Exception $e) {
+        return false;
     }
-    $invoices = readInvoiceByCustomer($id);
-    foreach ($invoices as $inv) {
-        deleteInvoice($inv->getId());
-    }
-    return (bool) $database->delete('customers', ['ID' => $id]);
+    
 }
 
 // ---------------------- Suppliers ----------------------
@@ -487,8 +523,14 @@ function updateSupplier($id, $ref_no, $name) {
 
 function deleteSupplier($id) {
     global $database;
-    return (bool) $database->delete('Suppliers', ['ID' => $id]);
+    try {
+        return (bool) $database->delete('Suppliers', ['ID' => $id]);
+    } catch (Exception $e) {
+        return false;
+    }
+    
 }
+    
 
 // ---------------------- Items ----------------------
 function createItem($ref_no, $name, $price) {
@@ -577,15 +619,12 @@ function searchItems($query) {
 function deleteItem($id) {
     global $database;
     // delete related item_customers, iteminv and invoices
-    $itemCustomers = readItemCustomerByItemId($id);
-    foreach ($itemCustomers as $ic) {
-        deleteItemCustomer($ic->getId());
+    try {
+        // Terakhir hapus item utama
+        return (bool) $database->delete('items', ['ID' => $id]);
+    } catch (Exception $e) {
+        return false; // Return false kalau delete item gagal
     }
-    $itemInvs = readItemInvByItemId($id);
-    foreach ($itemInvs as $ii) {
-        deleteItemInv($ii->getId());
-    }
-    return (bool) $database->delete('items', ['ID' => $id]);
 }
 
 // ---------------------- Items_Customers ----------------------
@@ -660,7 +699,13 @@ function updateItemCustomer($id, $item_id, $customer_id, $harga) {
 
 function deleteItemCustomer($id) {
     global $database;
-    return (bool) $database->delete('items_customers', ['ID' => $id]);
+
+    try {
+        return (bool) $database->delete('items_customers', ['ID' => $id]);
+    } catch (Exception $e) {
+        return false;
+    }
+    
 }
 
 function searchItemCustomers($query) {

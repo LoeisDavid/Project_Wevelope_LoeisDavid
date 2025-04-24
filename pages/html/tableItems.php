@@ -14,6 +14,8 @@ if (
     deleteItem($id);                    // pastikan fungsi ini ada di Control.php / repository
 }
 
+$itemSearch = [];
+
 // 2) Fetch items
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   $type = $_GET['type'] ?? 'item';
@@ -21,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   $keyword = $_GET['keyword'] ?? ''; // Ambil keyword dari form pencarian
 
   // Jika ada keyword, set action menjadi 'search'
-  if (!empty($keyword)) {
+  if (!empty($keyword) && $keyword != '') {
       $action = 'search';
   }
 
@@ -29,13 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   if ($type === 'item') {
       if ($action === 'search') {
           // Cari berdasarkan keyword
-          $items = searchItems($keyword);
+          $itemSearch = searchItems($keyword);
       } else {
           // Jika tidak ada keyword, tampilkan semua data (read)
-          $items = readItems();
+          $itemsSearch = [];
       }
   }
 }
+
+$items = readItems();
 
 ?>
 <!doctype html>
@@ -60,22 +64,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       <!-- Content Header -->
       <div class="app-content-header">
         <div class="container-fluid">
+        <div class="container mt-3">
                     <!-- Alert Session Message -->
-<?php if (isset($_SESSION['alert'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert']); ?>
-<?php endif; ?>
 
-<?php if (isset($_SESSION['alert_delete'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert_delete']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert_delete']); ?>
-          <?php endif; ?>
           <div class="row">
             <div class="col-sm-6"><h3 class="mb-0">Items Table</h3></div>
             <div class="col-sm-6">
@@ -90,15 +81,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       <!-- Table -->
       <div class="app-content">
         <div class="container-fluid">
-          
-          <div class="row">
+        <div class="row">
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
-                <div class="card-header text-center">
-                  <h3 class="card-title">Data Item tersimpan</h3>
-                </div>
+                
                 <div class="card-body text-center">
-                <form method="GET" class="mb-3 d-flex justify-content-end">
+                <form method="GET" class="mb-3 d-flex justify-content-center">
                     <input type="hidden" name="type" value="item">
                     <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
                     <input
@@ -110,6 +98,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     >
                     <button type="submit" class="btn btn-secondary">Search</button>
                   </form>
+                  <table class="table table-bordered mx-auto">
+                    <thead>
+                      <tr>
+                        <th>REF NO</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th style="width: 120px">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php if (count($itemSearch) > 0): ?>
+                        <?php foreach ($itemSearch as $item): ?>
+                          <tr>
+                          <td><?= htmlspecialchars($item->getRefNo()) ?></td>
+                            <td><?= htmlspecialchars($item->getName()) ?></td>
+                            <td><span>Rp </span><?= htmlspecialchars($item->getPrice()) ?></td>
+                            <td class="text-center">
+                              <!-- Edit Button -->
+                              <a
+                                href="editItems.php?method=get&id=<?= $item->getId() ?>&name=<?= $item->getName()?>&ref_no=<?= $item->getRefNo()?>&price=<?= $item->getPrice()?>"
+                                class="btn btn-sm btn-warning me-1"
+                                title="Edit Item"
+                              >
+                                <i class="bi bi-pencil-square"></i>
+                              </a>
+                              <!-- Delete Button -->
+                              <a
+                                href="?type=item&action=delete&id=<?= $item->getId() ?>"
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('Yakin ingin menghapus item ini?');"
+                                title="Delete Item"
+                              >
+                                <i class="bi bi-trash"></i>
+                              </a>
+                            </td>
+                          </tr>
+                        <?php endforeach; ?>
+                        
+                        <?php else: ?>
+                        <tr><td colspan="4" class="text-center text-muted">No data found.</td></tr>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <div class="card mb-4">
+                <div class="card-header text-center">
+                  <h3 class="">Data Item tersimpan</h3>
+                </div>
+                <div class="card-body text-center">
                   <table class="table table-bordered mx-auto">
                     <thead>
                       <tr>
@@ -155,6 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <i class="bi bi-plus-circle"></i> Create New
   </a>
 </div>
+</div>
                 </div>
               </div>
             </div>
@@ -166,6 +209,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <!-- Footer -->
     <?php include __DIR__ . '/../widget/footer.php'; ?>
   </div>
+
+  <?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelector('.alert');
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelectorAll('.alert')[1];
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert_delete']); ?>
+<?php endif; ?>
+
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js" crossorigin="anonymous"></script>

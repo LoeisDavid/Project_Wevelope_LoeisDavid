@@ -62,21 +62,7 @@ $subTotal = 0;
     <main class="app-main">
       <div class="app-content-header">
         <div class="container-fluid">
-          <?php if (isset($_SESSION['alert'])): ?>
-            <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
-              <?= $_SESSION['alert']['message'] ?>
-              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <?php unset($_SESSION['alert']); ?>
-          <?php endif; ?>
-
-          <?php if (isset($_SESSION['alert_delete'])): ?>
-            <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
-              <?= $_SESSION['alert_delete']['message'] ?>
-              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <?php unset($_SESSION['alert_delete']); ?>
-          <?php endif; ?>
+        <div class="container mt-3">
 
           <div class="row">
             <div class="col-sm-6">
@@ -187,12 +173,46 @@ $subTotal = 0;
               </div>
             </div>
           </div>
+          </div>
         </div>
       </div>  
     </main>
 
     <?php include __DIR__ . '/../widget/footer.php'; ?>
   </div>
+
+  <?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelector('.alert');
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelectorAll('.alert')[1];
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert_delete']); ?>
+<?php endif; ?>
+
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>

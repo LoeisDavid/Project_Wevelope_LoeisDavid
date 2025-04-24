@@ -20,13 +20,13 @@ $action  = !empty($keyword) ? 'search' : 'read';
 // Fetch ItemCustomer entries (read or search)
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (!empty($keyword)) {
-        $itemCustomers = searchItemCustomers($keyword);
+        $itemCustomersSearch = searchItemCustomers($keyword);
     } else {
-        $itemCustomers = readItemCustomers();
+        $itemCustomersSearch = [];
     }
-} else {
-    $itemCustomers = [];
 }
+    $itemCustomers = readItemCustomers();
+
 
 // Prepare related Item and Customer objects
 $items     = [];
@@ -56,21 +56,7 @@ foreach ($itemCustomers as $ic) {
     <main class="app-main">
       <div class="app-content-header">
         <div class="container-fluid">
-          <?php if (isset($_SESSION['alert'])): ?>
-            <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
-              <?= $_SESSION['alert']['message'] ?>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <?php unset($_SESSION['alert']); ?>
-          <?php endif; ?>
-          <?php if (isset($_SESSION['alert_delete'])): ?>
-            <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
-              <?= $_SESSION['alert_delete']['message'] ?>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <?php unset($_SESSION['alert_delete']); ?>
-          <?php endif; ?>
-
+        <div class="container mt-3">
           <div class="row">
             <div class="col-sm-6"><h3 class="mb-0">Item Customer Table</h3></div>
             <div class="col-sm-6">
@@ -85,14 +71,13 @@ foreach ($itemCustomers as $ic) {
 
       <div class="app-content">
         <div class="container-fluid">
-          <div class="row">
+        <div class="row">
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
-                <div class="card-header text-center"><h3 class="card-title">Data Item-Customer Tersimpan</h3></div>
                 <div class="card-body text-center">
 
                   <!-- Search Form -->
-                  <form method="GET" class="mb-3 d-flex justify-content-end">
+                  <form method="GET" class="mb-3 d-flex justify-content-center">
                     <input type="hidden" name="type" value="itemcustomer">
                     <input type="hidden" name="action" value="<?= $action ?>">
                     <input
@@ -104,6 +89,58 @@ foreach ($itemCustomers as $ic) {
                     >
                     <button type="submit" class="btn btn-secondary">Search</button>
                   </form>
+
+                  <!-- Data Table -->
+                  <table class="table table-bordered mx-auto">
+                    <thead>
+                      <tr>
+                        <th>Item Name</th>
+                        <th>Customer Name</th>
+                        <th>Price</th>
+                        <th style="width: 120px">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php if (count($itemCustomersSearch) > 0): ?>
+                        <?php for ($i = 0; $i < count($itemCustomersSearch); $i++): ?>
+                          <tr>
+                            <td><?= htmlspecialchars($items[$i]->getName()) ?></td>
+                            <td><?= htmlspecialchars($customers[$i]->getName()) ?></td>
+                            <td>Rp <?= number_format($itemCustomers[$i]->getHarga(), 0, ',', '.') ?></td>
+                            <td class="text-center">
+                              <a
+                                href="editItemCustomers.php?method=get&id=<?= $itemCustomersSearch[$i]->getId() ?>"
+                                class="btn btn-sm btn-warning me-1"
+                                title="Edit Item-Customer"
+                              >
+                                <i class="bi bi-pencil-square"></i>
+                              </a>
+                              <a
+                                href="?type=itemcustomer&action=delete&id=<?= $itemCustomersSearch[$i]->getId() ?>"
+                                class="btn btn-sm btn-danger"
+                                onclick="return confirm('Yakin ingin menghapus item ini?');"
+                                title="Delete Item-Customer"
+                              >
+                                <i class="bi bi-trash"></i>
+                              </a>
+                            </td>
+                          </tr>
+                        <?php endfor; ?>
+                      <?php else: ?>
+                        <tr><td colspan="4" class="text-center text-muted">No data found.</td></tr>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <div class="card mb-4">
+                <div class="card-header text-center"><h3>Data Item-Customer Tersimpan</h3></div>
+                <div class="card-body text-center">
 
                   <!-- Data Table -->
                   <table class="table table-bordered mx-auto">
@@ -156,6 +193,7 @@ foreach ($itemCustomers as $ic) {
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </div>
@@ -163,6 +201,39 @@ foreach ($itemCustomers as $ic) {
 
     <?php include __DIR__ . '/../widget/footer.php'; ?>
   </div>
+
+  <?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelector('.alert');
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelectorAll('.alert')[1];
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert_delete']); ?>
+<?php endif; ?>
+
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>

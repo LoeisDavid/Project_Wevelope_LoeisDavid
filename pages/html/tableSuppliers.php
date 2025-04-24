@@ -17,10 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   if ($type === 'supplier') {
       if ($action === 'search') {
           // Cari berdasarkan keyword
-          $items = searchSuppliers($keyword);
+          $suppliersSearch = searchSuppliers($keyword);
       } else {
           // Jika tidak ada keyword, tampilkan semua data (read)
-          $items = readSuppliers();
+          $suppliersSearch = [];
       }
   }
 }
@@ -33,6 +33,8 @@ if (
   $id = (int) $_GET['id'];
   deleteSupplier($id);                    // pastikan fungsi ini ada di Control.php / repository
 }
+
+$items = readSuppliers();
 ?>
 
 
@@ -56,21 +58,11 @@ if (
       <div class="app-content-header">
         <div class="container-fluid">
           <!-- Alert Session Message -->
-<?php if (isset($_SESSION['alert'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert']); ?>
-<?php endif; ?>
+          
+          <div class="container mt-3">
+  <!-- Notifikasi Session -->
 
-<?php if (isset($_SESSION['alert_delete'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show" role="alert">
-    <?= $_SESSION['alert_delete']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <?php unset($_SESSION['alert_delete']); ?>
-<?php endif; ?>
+
           <div class="row">
             <div class="col-sm-6"><h3 class="mb-0">Suppliers Table</h3></div>
             <div class="col-sm-6">
@@ -84,12 +76,11 @@ if (
       </div>
       <div class="app-content">
         <div class="container-fluid">
-          <div class="row">
+        <div class="row">
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
-                <div class="card-header text-center"><h3 class="card-title">Data Supplier tersimpan</h3></div>
                 <div class="card-body text-center">
-                <form method="GET" class="mb-3 d-flex justify-content-end">
+                <form method="GET" class="mb-3 d-flex justify-content-center">
                     <input type="hidden" name="type" value="supplier">
                     <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
                     <input
@@ -101,6 +92,66 @@ if (
                     >
                     <button type="submit" class="btn btn-secondary">Search</button>
                   </form>
+                <table class="table table-bordered mx-auto">
+  <thead>
+    <tr>
+    <th>REF NO</th>
+      <th>Name</th>
+      <th style="width: 120px">Actions</th> <!-- kolom baru -->
+    </tr>
+  </thead>
+  <tbody>
+    <?php if (count($suppliersSearch) > 0): ?>
+      <?php foreach ($suppliersSearch as $item): ?>
+        <tr>
+        <td><?= htmlspecialchars($item->getRefNo()) ?></td> 
+          <td><?= htmlspecialchars($item->getName()) ?></td>
+          <td class="text-center">
+            <!-- Tombol Edit -->
+            <a
+              href="editSuppliers.php?method=get&id=<?= $item->getId() ?>&name=<?= $item->getName()?>&ref_no=<?= $item->getRefNo()?>"
+              class="btn btn-sm btn-warning me-1"
+              title="Edit Suppliers"
+            >
+              <i class="bi bi-pencil-square"></i>
+            </a>
+            <!-- Tombol Delete -->
+            <a
+              href="?type=supplier&action=delete&id=<?= $item->getId() ?>"
+              class="btn btn-sm btn-danger"
+              onclick="return confirm('Yakin ingin menghapus supplier ini?');"
+              title="Delete Supplier"
+            >
+              <i class="bi bi-trash"></i>
+            </a>
+          </td>
+        </tr>        
+      <?php endforeach; ?>
+      
+      <?php else: ?>
+                        <tr><td colspan="4" class="text-center text-muted">No data found.</td></tr>
+                      <?php endif; ?>
+  </tbody>
+</table>  
+                </div>
+                <div class="card-footer clearfix">
+                    <ul class="pagination pagination-sm m-0 float-end">
+                      <li class="page-item"><a class="page-link" href="#">«</a></li>
+                      <li class="page-item"><a class="page-link" href="#">1</a></li>
+                      <li class="page-item"><a class="page-link" href="#">2</a></li>
+                      <li class="page-item"><a class="page-link" href="#">3</a></li>
+                      <li class="page-item"><a class="page-link" href="#">»</a></li>
+                    </ul>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8 mx-auto">
+              <div class="card mb-4">
+                <div class="card-header text-center"><h3 >Data Supplier tersimpan</h3></div>
+                <div class="card-body text-center">
+                
                 <table class="table table-bordered mx-auto">
   <thead>
     <tr>
@@ -136,9 +187,9 @@ if (
           </td>
         </tr>        
       <?php endforeach; ?>
-      
-      </tr>
-    <?php endif; ?>
+      <?php else: ?>
+                        <tr><td colspan="4" class="text-center text-muted">No data found.</td></tr>
+                      <?php endif; ?>
   </tbody>
 </table>
 <div class="text-start mt-3">
@@ -147,6 +198,15 @@ if (
   </a>
 </div>
                 </div>
+                <div class="card-footer clearfix">
+                    <ul class="pagination pagination-sm m-0 float-end">
+                      <li class="page-item"><a class="page-link" href="#">«</a></li>
+                      <li class="page-item"><a class="page-link" href="#">1</a></li>
+                      <li class="page-item"><a class="page-link" href="#">2</a></li>
+                      <li class="page-item"><a class="page-link" href="#">3</a></li>
+                      <li class="page-item"><a class="page-link" href="#">»</a></li>
+                    </ul>
+                  </div>
               </div>
             </div>
           </div>
@@ -156,6 +216,39 @@ if (
       <?php include __DIR__ . '/../widget/footer.php'; ?>
       <!--end::Footer-->
     </div>
+
+    <?php if (isset($_SESSION['alert'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelector('.alert');
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['alert_delete'])): ?>
+  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
+    <?= $_SESSION['alert_delete']['message'] ?>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const alert = document.querySelectorAll('.alert')[1];
+      if (alert) {
+        bootstrap.Alert.getOrCreateInstance(alert).close();
+      }
+    }, 3000);
+  </script>
+  <?php unset($_SESSION['alert_delete']); ?>
+<?php endif; ?>
+
     <!--end::App Wrapper-->
     <!--begin::Script-->
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
