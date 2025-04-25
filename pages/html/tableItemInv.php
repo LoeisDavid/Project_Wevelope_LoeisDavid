@@ -28,10 +28,6 @@ $type = $_GET['type'] ?? 'iteminv';
 $action = $_GET['action'] ?? 'read';
 $keyword = $_GET['keyword'] ?? '';
 
-if (!empty($keyword)) {
-    $items = searchItemInvsInInvoice($invoice, $keyword);
-    $action = 'search';
-}
 
 // Ambil data masing-masing Item berdasarkan hasil pencarian
 $it = [];
@@ -41,6 +37,46 @@ foreach ($items as $i => $item) {
 
 $count = 0;
 $subTotal = 0;
+
+
+$countPage = 5;
+
+// Fetch all data
+$allitemCustomers = readItemInvByInvoice($invoice);
+
+// Get filters from query string
+$keyword     = $_GET['keyword']    ?? '';
+
+// Determine which set to display
+if (
+    $keyword !== ''
+) {
+    
+  $items = searchItemInvsInInvoice($invoice, $keyword);
+        $isSearch = true;
+} else {
+    $items = $allitemCustomers;
+    $isSearch = false;
+}
+
+$count= count($items);
+
+$page=count($items)/$countPage;
+$selectPage= $_GET['page'] ?? 0;
+$offset = $selectPage*$countPage;
+$contain= [];
+
+for ($i = 0; $i < $countPage; $i++) {
+  if ($offset >= count($items)) {
+      break;
+  } else {
+      $contain[] = $items[$offset];
+      $offset++;
+  }
+}
+
+
+$items = $contain;
 ?>
 
 <!-- Mulai dari sini lanjutkan bagian HTML sama seperti sebelumnya -->
@@ -62,8 +98,7 @@ $subTotal = 0;
     <main class="app-main">
       <div class="app-content-header">
         <div class="container-fluid">
-        <div class="container mt-3">
-
+      
           <div class="row">
             <div class="col-sm-6">
               <h3 class="mb-0">Item Inv Table</h3>
@@ -73,8 +108,7 @@ $subTotal = 0;
                 <li class="breadcrumb-item"><a href="../../index.php">Dashboard</a></li>
                 <li class="breadcrumb-item active">Item Inv</li>
               </ol>
-            </div>
-          </div>
+            </div>  
         </div>
       </div>
 
@@ -84,15 +118,30 @@ $subTotal = 0;
             <div class="col-md-8 mx-auto">
               <div class="card mb-4">
                 <div class="card-body text-center"><h2>Detail Invoice</h2></div>
-                <div class="card-body text-center"><h3 class="card-title"><a href="#" class="btn btn-primary" title="Lihat Detail">
-    <i class="bi bi-info-circle"></i>
-  </a> Kode Invoice: <?= htmlspecialchars($inv->getKode()) ?></h3></div>
-                <div class="card-body text-center"><h3 class="card-title"><a href="#" class="btn btn-primary" title="Lihat Kalender">
-    <i class="bi bi-calendar-event"></i>
-  </a> Tanggal: <?= htmlspecialchars($inv->getDate()) ?></h3></div>
-                <div class="card-body text-center"><h3 class="card-title"><a href="detailCustomer.php?id=<?= $inv->getCustomerId() ?>" class="btn btn-primary" title="Detail Customer">
-    <i class="bi bi-person-circle"></i>
-  </a> Customer: <?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?></h3></div>
+
+                <div class="card-body text-center">
+                  <h3 class="card-title">
+                    <button class="btn btn-primary" disabled>
+                      <i class="bi bi-info-circle"></i>
+                    </button> Kode Invoice: <?= htmlspecialchars($inv->getKode()) ?>
+                  </h3>
+                </div>
+
+                <div class="card-body text-center">
+                  <h3 class="card-title">
+                    <button class="btn btn-primary" disabled>
+                      <i class="bi bi-calendar-event"></i>
+                    </button> Tanggal: <?= htmlspecialchars($inv->getDate()) ?>
+                  </h3>
+                </div>
+
+                <div class="card-body text-center">
+                  <h3 class="card-title">
+                    <button class="btn btn-primary" disabled>
+                      <i class="bi bi-person-circle"></i>
+                    </button> Customer: <?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?>
+                  </h3>
+                </div>
 
   <div class="card-header d-flex justify-content-start gap-2 flex-wrap">
   <a href="editInvoices.php?method=get&id=<?= $inv->getId() ?>&kode=<?= $inv->getKode()?>&customer=<?= $inv->getCustomerId()?>&kondisi=<?=true?>" class="btn btn-warning">
@@ -105,7 +154,7 @@ $subTotal = 0;
 
                 <div class="d-flex justify-content-between align-items-center m-3 flex-wrap">
   <div class="d-flex gap-5 align-items-center fs-5">
-    <p class="mb-0"><strong>Jumlah Barang : </strong> <?= count($items) ?></p>
+    <p class="mb-0"><strong>Jumlah Barang : </strong><?= $count ?></p>
     <p class="mb-0"><strong>Harga Total : Rp</strong> 
       <?php 
         $subTotal = 0;
@@ -143,7 +192,7 @@ $subTotal = 0;
                       <?php foreach ($items as $i => $item):?>
                         <tr>
                           <td><?= $it[$i]->getRefNo() ?></td>
-                          <td><?= htmlspecialchars($it[$i]->getName()) ?></td>
+                          <td><?= htmlspecialchars(readItemById($item->getItemId())->getName()) ?></td>
                           <td><?= htmlspecialchars($item->getQty()) ?></td>
                           <td>Rp<?= number_format($item->getPrice(), 0, ',', '.') ?></td>
                           <td>Rp<?= number_format($item->getQty() * $item->getPrice(), 0, ',', '.') ?></td>
@@ -165,10 +214,34 @@ $subTotal = 0;
                   </tbody>
                 </table>
 
-                <div class="text-start mt-3">
+                <div class="text-start mt-3 clearfix">
                   <a href="inputItemInv.php?invoice=<?= $invoice ?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
+                  <ul class="pagination pagination-sm m-0 float-end">
+    <?php if($page > 1): ?>
+        <?php if($selectPage - 1 >= 0): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?= $selectPage - 1 ?>&keyword=<?= $keyword ?>&invoice=<?= $invoice ?>">«</a>
+            </li>
+        <?php endif; ?>
+
+        <?php for($i = 0; $i < $page; $i++): ?>
+            <li class="page-item <?= ($i == $selectPage) ? 'active' : '' ?>">
+                <a class="page-link" href="?page=<?= $i ?>&keyword=<?= $keyword ?>&invoice=<?= $invoice ?>">
+                    <?= htmlspecialchars($i + 1) ?>
+                </a>
+            </li>
+        <?php endfor; ?>
+
+        <?php if($selectPage + 1 < $page): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?= $selectPage + 1 ?>&keyword=<?= $keyword ?>&invoice=<?= $invoice ?>">»</a>
+            </li>
+        <?php endif; ?>
+    <?php endif; ?>
+</ul>
+
                 </div>
               </div>
             </div>

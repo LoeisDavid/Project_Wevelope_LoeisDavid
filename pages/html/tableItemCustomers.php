@@ -1,47 +1,67 @@
 <?php
-include __DIR__ . '/../../Control/Control.php';
+include_once '../../Control/Control.php';
 
-// Handle delete ItemCustomer
+// Handle delete action
 if (
-    isset($_GET['type'], $_GET['action'], $_GET['id']) &&
-    $_GET['type'] === 'itemcustomer' &&
-    $_GET['action'] === 'delete'
+    isset($_GET['type'], $_GET['action'], $_GET['id'])
+    && $_GET['type'] === 'itemcustomer'
+    && $_GET['action'] === 'delete'
 ) {
     $id = (int) $_GET['id'];
-    deleteItemCustomer($id);
+    deleteitemCustomer($id);
+    $_SESSION['alert_delete'] = [
+        'type'    => 'success',
+        'message' => 'Item-Customer berhasil dihapus.',
+    ];
+    // Redirect to avoid resubmission
     header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
     exit;
 }
 
-// Determine keyword and action for search
-$keyword = $_GET['keyword'] ?? '';
-$action  = !empty($keyword) ? 'search' : 'read';
+$countPage = 5;
 
-// Fetch ItemCustomer entries (read or search)
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    if (!empty($keyword)) {
-        $itemCustomersSearch = searchItemCustomers($keyword);
-    } else {
-        $itemCustomersSearch = [];
-    }
+// Fetch all data
+$allitemCustomers = readitemCustomers();
+
+// Get filters from query string
+$keyword     = $_GET['keyword']    ?? '';
+
+// Determine which set to display
+if (
+    $keyword !== ''
+) {
+    
+        $displayitemCustomer = searchitemCustomers($keyword);
+        $isSearch = true;
+} else {
+    $displayitemCustomer = $allitemCustomers;
+    $isSearch = false;
 }
-    $itemCustomers = readItemCustomers();
 
+$page=count($displayitemCustomer)/$countPage;
+$selectPage= $_GET['page'] ?? 0;
+$offset = $selectPage*$countPage;
+$contain= [];
 
-// Prepare related Item and Customer objects
-$items     = [];
-$customers = [];
-foreach ($itemCustomers as $ic) {
-    $items[]     = readItemById($ic->getItem());
-    $customers[] = readCustomerById($ic->getCustomer());
+for ($i = 0; $i < $countPage; $i++) {
+  if ($offset >= count($displayitemCustomer)) {
+      break;
+  } else {
+      $contain[] = $displayitemCustomer[$offset];
+      $offset++;
+  }
 }
+
+
+$displayitemCustomer = $contain;
+
+
 ?>
-
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>AdminLTE 4 | Item-Customer Table</title>
+  <title>Item-Customer Table</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
@@ -56,143 +76,120 @@ foreach ($itemCustomers as $ic) {
     <main class="app-main">
       <div class="app-content-header">
         <div class="container-fluid">
-        <div class="container mt-3">
-          <div class="row">
-            <div class="col-sm-6"><h3 class="mb-0">Item Customer Table</h3></div>
+          <!-- Page Header -->
+          <div class="row mb-3">
+            <div class="col-sm-6">
+              <h3 class="mb-0">Item Customer Table</h3>
+            </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item"><a href="../../index.php">Dashboard</a></li>
-                <li class="breadcrumb-item active">Item-Customer</li>
+                <li class="breadcrumb-item active">Item Customer</li>
               </ol>
             </div>
           </div>
-        </div>
-      </div>
+          <!-- Centered Content -->
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+              <!-- Search Form -->
+              <form method="GET" class="row row-cols-lg-auto g-2 align-items-end mb-4 justify-content-center">
+                <input type="hidden" name="type" value="itemcustomer">
+                <div class="col">
+                  <label for="keyword" class="form-label">Keyword</label>
+                  <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Search Item-Customer..." value="<?= htmlspecialchars($keyword) ?>">
+                </div>
+                <div class="col">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Search
+                  </button>
+                </div>
+              </form>
 
-      <div class="app-content">
-        <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-8 mx-auto">
-              <div class="card mb-4">
-                <div class="card-body text-center">
+              <!-- Unified Table -->
+              <div class="card">
+                <div class="card-header text-center">
+                  <h3 class="card-title"><?= $isSearch ? 'Search Results' : 'All itemCustomers' ?></h3>
+                </div>
+                <div class="card-body p-0">
+                  <table class="table table-bordered mb-0">
+                  <thead>
+  <tr>
+    <th class="text-center align-middle" style="width: 20%;">NAME ITEM</th>
+    <th class="text-center align-middle" style="width: 20%;">NAME CUSTOMER</th>
+    <th class="text-center align-middle" style="width: 20%;">PRICE</th>
+    <th class="text-center align-middle" style="width: 10%;">ACTIONS</th>
+  </tr>
+</thead>
+<tbody>
 
-                  <!-- Search Form -->
-                  <form method="GET" class="mb-3 d-flex justify-content-center">
-                    <input type="hidden" name="type" value="itemcustomer">
-                    <input type="hidden" name="action" value="<?= $action ?>">
-                    <input
-                      type="text"
-                      name="keyword"
-                      class="form-control w-auto me-2"
-                      placeholder="Search Item-Customer..."
-                      value="<?= htmlspecialchars($keyword) ?>"
-                    >
-                    <button type="submit" class="btn btn-secondary">Search</button>
-                  </form>
-
-                  <!-- Data Table -->
-                  <table class="table table-bordered mx-auto">
-                    <thead>
-                      <tr>
-                        <th>Item Name</th>
-                        <th>Customer Name</th>
-                        <th>Price</th>
-                        <th style="width: 120px">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php if (count($itemCustomersSearch) > 0): ?>
-                        <?php for ($i = 0; $i < count($itemCustomersSearch); $i++): ?>
+                      <?php if (count($displayitemCustomer) > 0): ?>
+                        <?php foreach ($displayitemCustomer as $inv): ?>
                           <tr>
-                            <td><?= htmlspecialchars($items[$i]->getName()) ?></td>
-                            <td><?= htmlspecialchars($customers[$i]->getName()) ?></td>
-                            <td>Rp <?= number_format($itemCustomers[$i]->getHarga(), 0, ',', '.') ?></td>
-                            <td class="text-center">
-                              <a
-                                href="editItemCustomers.php?method=get&id=<?= $itemCustomersSearch[$i]->getId() ?>"
-                                class="btn btn-sm btn-warning me-1"
-                                title="Edit Item-Customer"
-                              >
-                                <i class="bi bi-pencil-square"></i>
-                              </a>
-                              <a
-                                href="?type=itemcustomer&action=delete&id=<?= $itemCustomersSearch[$i]->getId() ?>"
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Yakin ingin menghapus item ini?');"
-                                title="Delete Item-Customer"
-                              >
-                                <i class="bi bi-trash"></i>
-                              </a>
+                          <td class="text-center align-middle"><?= htmlspecialchars(readItemById($inv->getItem())->getName()) ?></td>
+<td class="text-center align-middle"><?= htmlspecialchars(readCustomerById($inv->getCustomer())->getName()) ?></td>
+<td class="text-center align-middle"><?= htmlspecialchars($inv->getHarga()) ?></td>
+<td class="text-center align-middle">
+
+                            
+<a
+  href="editItemCustomers.php?method=get&id=<?= $inv->getId() ?>"
+  class="btn btn-sm btn-warning me-1"
+  title="Edit Item-Customer"
+>
+  <i class="bi bi-pencil-square"></i>
+</a>
+<a
+  href="?type=itemcustomer&action=delete&id=<?= $inv->getId() ?>"
+  class="btn btn-sm btn-danger"
+  onclick="return confirm('Yakin ingin menghapus item ini?');"
+  title="Delete Item-Customer"
+>
+  <i class="bi bi-trash"></i>
+</a>
+
+                              </div>
                             </td>
                           </tr>
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
                       <?php else: ?>
-                        <tr><td colspan="4" class="text-center text-muted">No data found.</td></tr>
+                        <tr>
+                        <td colspan="4" class="text-center align-middle text-muted"><?= $isSearch ? 'No matching records.' : 'No invoices found.' ?></td>
+                        </tr>
                       <?php endif; ?>
                     </tbody>
                   </table>
+                </div>
+                <div class="card-footer text-start clearfix">
+                  <a href="inputItemCustomers.php" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create New
+                  </a>
+                  <ul class="pagination pagination-sm m-0 float-end">
+    <?php if($page > 1): ?>
+        <?php if($selectPage - 1 >= 0): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?= $selectPage - 1 ?>&keyword=<?= $keyword ?>">«</a>
+            </li>
+        <?php endif; ?>
+
+        <?php for($i = 0; $i < $page; $i++): ?>
+            <li class="page-item <?= ($i == $selectPage) ? 'active' : '' ?>">
+                <a class="page-link" href="?page=<?= $i ?>&keyword=<?= $keyword ?>">
+                    <?= htmlspecialchars($i + 1) ?>
+                </a>
+            </li>
+        <?php endfor; ?>
+
+        <?php if($selectPage + 1 < $page): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?= $selectPage + 1 ?>&keyword=<?= $keyword ?>">»</a>
+            </li>
+        <?php endif; ?>
+    <?php endif; ?>
+</ul>
 
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-8 mx-auto">
-              <div class="card mb-4">
-                <div class="card-header text-center"><h3>Data Item-Customer Tersimpan</h3></div>
-                <div class="card-body text-center">
 
-                  <!-- Data Table -->
-                  <table class="table table-bordered mx-auto">
-                    <thead>
-                      <tr>
-                        <th>Item Name</th>
-                        <th>Customer Name</th>
-                        <th>Price</th>
-                        <th style="width: 120px">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php if (count($itemCustomers) > 0): ?>
-                        <?php for ($i = 0; $i < count($itemCustomers); $i++): ?>
-                          <tr>
-                            <td><?= htmlspecialchars($items[$i]->getName()) ?></td>
-                            <td><?= htmlspecialchars($customers[$i]->getName()) ?></td>
-                            <td>Rp <?= number_format($itemCustomers[$i]->getHarga(), 0, ',', '.') ?></td>
-                            <td class="text-center">
-                              <a
-                                href="editItemCustomers.php?method=get&id=<?= $itemCustomers[$i]->getId() ?>"
-                                class="btn btn-sm btn-warning me-1"
-                                title="Edit Item-Customer"
-                              >
-                                <i class="bi bi-pencil-square"></i>
-                              </a>
-                              <a
-                                href="?type=itemcustomer&action=delete&id=<?= $itemCustomers[$i]->getId() ?>"
-                                class="btn btn-sm btn-danger"
-                                onclick="return confirm('Yakin ingin menghapus item ini?');"
-                                title="Delete Item-Customer"
-                              >
-                                <i class="bi bi-trash"></i>
-                              </a>
-                            </td>
-                          </tr>
-                        <?php endfor; ?>
-                      <?php else: ?>
-                        <tr><td colspan="4" class="text-center text-muted">No data found.</td></tr>
-                      <?php endif; ?>
-                    </tbody>
-                  </table>
-
-                  <div class="text-start mt-3">
-                    <a href="inputItemCustomers.php" class="btn btn-primary">
-                      <i class="bi bi-plus-circle"></i> Create New
-                    </a>
-                  </div>
-
-                </div>
-              </div>
-            </div>
             </div>
           </div>
         </div>
@@ -202,7 +199,8 @@ foreach ($itemCustomers as $ic) {
     <?php include __DIR__ . '/../widget/footer.php'; ?>
   </div>
 
-  <?php if (isset($_SESSION['alert'])): ?>
+<!-- Alert Delete -->
+<?php if (isset($_SESSION['alert'])): ?>
   <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
     <?= $_SESSION['alert']['message'] ?>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -234,21 +232,10 @@ foreach ($itemCustomers as $ic) {
   <?php unset($_SESSION['alert_delete']); ?>
 <?php endif; ?>
 
-
   <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-  <script src="../js/adminlte.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const sidebarWrapper = document.querySelector('.sidebar-wrapper');
-      if (sidebarWrapper && typeof OverlayScrollbarsGlobal?.OverlayScrollbars !== 'undefined') {
-        OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-          scrollbars: { theme: 'os-theme-light', autoHide: 'leave', clickScroll: true }
-        });
-      }
-    });
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+  <script src="../../js/adminlte.js"></script>
 </body>
 </html>

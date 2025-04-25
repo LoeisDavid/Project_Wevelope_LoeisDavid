@@ -282,6 +282,7 @@ function updateInvoice($id, $customerId, $tanggal, $kode) {
 function deleteInvoice($id) {
     global $database;
     // delete related iteminv records
+    deleteItemInvByInvId($id);
     
     try{
         return (bool) $database->delete('invoice', ['ID' => $id]);

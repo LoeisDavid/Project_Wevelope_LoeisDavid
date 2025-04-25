@@ -1,175 +1,184 @@
 <?php
-include '../../Control/Control.php';
+include_once '../../Control/Control.php';
 
+// Handle delete action
 if (
-  isset($_GET['type'], $_GET['action'], $_GET['id']) &&
-  $_GET['type'] === 'customer' &&
-  $_GET['action'] === 'delete'
+    isset($_GET['type'], $_GET['action'], $_GET['id'])
+    && $_GET['type'] === 'customer'
+    && $_GET['action'] === 'delete'
 ) {
-  $id = (int) $_GET['id'];
-  deleteCustomer($id);                    // pastikan fungsi ini ada di Control.php / repository
+    $id = (int) $_GET['id'];
+    deleteCustomer($id);
+    $_SESSION['alert_delete'] = [
+        'type'    => 'success',
+        'message' => 'Customer berhasil dihapus.',
+    ];
+    // Redirect to avoid resubmission
+    header('Location: ' . strtok($_SERVER['REQUEST_URI'], '?'));
+    exit;
 }
 
-$items = readCustomers(); // pastikan ini array kosong, bukan array berisi null
+$countPage = 5;
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-  $type = $_GET['type'] ?? 'customer';
-  $action = $_GET['action'] ?? 'read'; // default action adalah 'read'
-  $keyword = $_GET['keyword'] ?? ''; // Ambil keyword dari form pencarian
+// Fetch all data
+$allCustomers = readCustomers();
 
-  // Jika ada keyword, set action menjadi 'search'
-  if (!empty($keyword)) {
-      $action = 'search';
-  }
+// Get filters from query string
+$keyword     = $_GET['keyword']    ?? '';
 
-  // Sesuaikan aksi berdasarkan action
-  if ($type === 'customer') {
-      if ($action === 'search') {
-          // Cari berdasarkan keyword
-          $itemSearch = searchCustomers($keyword);
-      } else {
-          // Jika tidak ada keyword, tampilkan semua data (read)
-          $itemSearch = [];
-      }
+// Determine which set to display
+if (
+    $keyword !== ''
+) {
+    
+        $displayCustomer = searchCustomers($keyword);
+        $isSearch = true;
+} else {
+    $displayCustomer = $allCustomers;
+    $isSearch = false;
+}
+
+$page=count($displayCustomer)/$countPage;
+$selectPage= $_GET['page'] ?? 0;
+$offset = $selectPage*$countPage;
+$contain= [];
+
+for ($i = 0; $i < $countPage; $i++) {
+  if ($offset >= count($displayCustomer)) {
+      break;
+  } else {
+      $contain[] = $displayCustomer[$offset];
+      $offset++;
   }
 }
+
+
+$displayCustomer = $contain;
+
+
 ?>
-
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>AdminLTE 4 | Customers Table</title>
+  <title>Customer Table</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="../css/adminlte.css" />
 </head>
-<body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary sidebar-open app-loadedy">
+<body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary sidebar-open app-loaded">
   <div class="app-wrapper">
-  <?php include __DIR__ . '/../widget/header.php'; ?>
-  <?php include __DIR__ . '/../widget/sidebar.php'; ?>
+    <?php include __DIR__ . '/../widget/header.php'; ?>
+    <?php include __DIR__ . '/../widget/sidebar.php'; ?>
 
     <main class="app-main">
       <div class="app-content-header">
         <div class="container-fluid">
-        <div class="container mt-3">
-          <div class="row">
-            <div class="col-sm-6"><h3 class="mb-0">Customers Table</h3></div>
+          <!-- Page Header -->
+          <div class="row mb-3">
+            <div class="col-sm-6">
+              <h3 class="mb-0">Customer Table</h3>
+            </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item"><a href="../../index.php">Dashboard</a></li>
-                <li class="breadcrumb-item active">Customers</li>
+                <li class="breadcrumb-item active">Customer</li>
               </ol>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="app-content">
-        <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-8 mx-auto">
-              <div class="card mb-4">
-                <div class="card-body text-center">
-                <form method="GET" class="mb-3 d-flex justify-content-center">
-                    <input type="hidden" name="type" value="customer">
-                    <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
-                    <input
-                      type="text"
-                      name="keyword"
-                      class="form-control w-auto me-2"
-                      placeholder="Search customer..."
-                      value="<?= htmlspecialchars($keyword) ?>"
-                    >
-                    <button type="submit" class="btn btn-secondary">Search</button>
-                  </form>
-                  <table class="table table-bordered mx-auto">
-                    <thead>
-                      <tr>
-                      <th>REF NO</th>
-                        <th>Name</th>
-                        <th style="width: 120px">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php if ($itemSearch && count($items) > 0): ?>
-                        <?php foreach ($itemSearch as $item): ?>
-                          <tr>
-                          <td><?= htmlspecialchars($item->getRefNo()) ?></td>
-                            <td><?= htmlspecialchars($item->getName()) ?></td>
-                            <td class="text-center">
-                                <!-- Tombol Edit -->
-                                <a
-                                href="editCustomers.php?method=get&id=<?= $item->getId() ?>&name=<?= $item->getName()?>&ref_no=<?= $item->getRefNo()?>"
-                                class="btn btn-sm btn-warning me-1"
-                                title="Edit Customer"
-                              >
-                              <i class="bi bi-pencil-square"></i>
-                              </a>
-                                <!-- Tombol Delete -->
-                                <a href="?type=customer&action=delete&id=<?= $item->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus customer ini?');" title="Delete Customer">
-                                  <i class="bi bi-trash"></i>
-                                </a>
-                            </td>
-                          </tr>
-                        <?php endforeach; ?>
-                        <?php else: ?>
-                        <tr><td colspan="4" class="text-center text-muted">No data found.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                  </table>
+          <!-- Centered Content -->
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+              <!-- Search Form -->
+              <form method="GET" class="row row-cols-lg-auto g-2 align-items-end mb-4 justify-content-center">
+                <input type="hidden" name="type" value="customer">
+                <div class="col">
+                  <label for="keyword" class="form-label">Keyword</label>
+                  <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Search Customer..." value="<?= htmlspecialchars($keyword) ?>">
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-8 mx-auto">
-              <div class="card mb-4">
-                <div class="card-header text-center"><h3>Customers Table</h3></div>
-                <div class="card-body text-center">
-                  <table class="table table-bordered mx-auto">
-                    <thead>
-                      <tr>
-                      <th>REF NO</th>
-                        <th>Name</th>
-                        <th style="width: 120px">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php if ($items && count($items) > 0): ?>
-                        <?php foreach ($items as $item): ?>
+                <div class="col">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Search
+                  </button>
+                </div>
+              </form>
+
+              <!-- Unified Table -->
+              <div class="card">
+                <div class="card-header text-center">
+                  <h3 class="card-title"><?= $isSearch ? 'Search Results' : 'All Customers' ?></h3>
+                </div>
+                <div class="card-body p-0">
+                  <table class="table table-bordered mb-0">
+                  <thead>
+  <tr>
+    <th class="text-center align-middle" style="width: 10%;">REF NO</th>
+    <th class="text-center align-middle" style="width: 20%;">NAME</th>
+    <th class="text-center align-middle" style="width: 30%;">ACTIONS</th>
+  </tr>
+</thead>
+<tbody>
+
+                      <?php if (count($displayCustomer) > 0): ?>
+                        <?php foreach ($displayCustomer as $inv): ?>
                           <tr>
-                          <td><?= htmlspecialchars($item->getRefNo()) ?></td>
-                            <td><?= htmlspecialchars($item->getName()) ?></td>
-                            <td class="text-center">
-                                <!-- Tombol Edit -->
-                                <a
-                                href="editCustomers.php?method=get&id=<?= $item->getId() ?>&name=<?= $item->getName()?>&ref_no=<?= $item->getRefNo()?>"
-                                class="btn btn-sm btn-warning me-1"
-                                title="Edit Customer"
-                              >
-                              <i class="bi bi-pencil-square"></i>
-                              </a>
-                                <!-- Tombol Delete -->
-                                <a href="?type=customer&action=delete&id=<?= $item->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus customer ini?');" title="Delete Customer">
+                          <td class="text-center align-middle"><?= htmlspecialchars($inv->getRefNo()) ?></td>
+<td class="text-center align-middle"><?= htmlspecialchars($inv->getName()) ?></td>
+<td class="text-center align-middle">
+
+                            
+                                <a href="editCustomers.php?method=get&amp;id=<?= $inv->getId() ?>&amp;ref_no=<?= urlencode($inv->getRefNo()) ?>&amp;name=<?= $inv->getName() ?>" class="btn btn-sm btn-warning" title="Edit Customer">
+                                  <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="?type=customer&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Customer ini?');" title="Delete Customer">
                                   <i class="bi bi-trash"></i>
                                 </a>
+                              </div>
                             </td>
                           </tr>
                         <?php endforeach; ?>
+                      <?php else: ?>
+                        <tr>
+                        <td colspan="4" class="text-center align-middle text-muted"><?= $isSearch ? 'No matching records.' : 'No invoices found.' ?></td>
+                        </tr>
                       <?php endif; ?>
                     </tbody>
                   </table>
-                  <div class="text-start mt-3">
-  <a href="inputCustomers.php" class="btn btn-primary">
-    <i class="bi bi-plus-circle"></i> Create New
-  </a>
-</div>
+                </div>
+                <div class="card-footer text-start clearfix">
+                  <a href="inputCustomers.php" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create New
+                  </a>
+                  <ul class="pagination pagination-sm m-0 float-end">
+    <?php if($page > 1): ?>
+        <?php if($selectPage - 1 >= 0): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?= $selectPage - 1 ?>&keyword=<?= $keyword ?>">«</a>
+            </li>
+        <?php endif; ?>
+
+        <?php for($i = 0; $i < $page; $i++): ?>
+            <li class="page-item <?= ($i == $selectPage) ? 'active' : '' ?>">
+                <a class="page-link" href="?page=<?= $i ?>&keyword=<?= $keyword ?>">
+                    <?= htmlspecialchars($i + 1) ?>
+                </a>
+            </li>
+        <?php endfor; ?>
+
+        <?php if($selectPage + 1 < $page): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?= $selectPage + 1 ?>&keyword=<?= $keyword ?>">»</a>
+            </li>
+        <?php endif; ?>
+    <?php endif; ?>
+</ul>
+
                 </div>
               </div>
+
             </div>
-          </div>
           </div>
         </div>
       </div>
@@ -178,7 +187,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <?php include __DIR__ . '/../widget/footer.php'; ?>
   </div>
 
-  <?php if (isset($_SESSION['alert'])): ?>
+<!-- Alert Delete -->
+<?php if (isset($_SESSION['alert'])): ?>
   <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
     <?= $_SESSION['alert']['message'] ?>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -210,47 +220,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   <?php unset($_SESSION['alert_delete']); ?>
 <?php endif; ?>
 
-  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-  <script src="../js/adminlte.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const sidebarWrapper = document.querySelector('.sidebar-wrapper');
-      if (sidebarWrapper && typeof OverlayScrollbarsGlobal?.OverlayScrollbars !== 'undefined') {
-        OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
-          scrollbars: {
-            theme: 'os-theme-light',
-            autoHide: 'leave',
-            clickScroll: true,
-          },
-        });
-      }
-    });
-  </script>
-<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
-    integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
-    integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ=" crossorigin="anonymous"></script>
-  <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-    crossorigin="anonymous"></script>
-  <!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-    integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-    crossorigin="anonymous"></script>
-  <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
-  <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
-  <script const SELECTOR_SIDEBAR_WRAPPER='.sidebar-wrapper' ; const Default={ scrollbarTheme: 'os-theme-light' ,
-    scrollbarAutoHide: 'leave' , scrollbarClickScroll: true, }; document.addEventListener('DOMContentLoaded', function
-    () { const sidebarWrapper=document.querySelector(SELECTOR_SIDEBAR_WRAPPER); if (sidebarWrapper && typeof
-    OverlayScrollbarsGlobal?.OverlayScrollbars !=='undefined' ) {
-    OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, { scrollbars: { theme: Default.scrollbarTheme, autoHide:
-    Default.scrollbarAutoHide, clickScroll: Default.scrollbarClickScroll, }, }); } });></script>
-  <!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-  <!--end::Script-->
-    <!--end::OverlayScrollbars Configure-->
-    <!--end::Script-->
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+  <script src="../../js/adminlte.js"></script>
 </body>
 </html>
