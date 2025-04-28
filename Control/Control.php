@@ -14,12 +14,40 @@ require_once __DIR__ . '/../Models/Invoice.php';
 require_once __DIR__ . '/../Models/ItemInv.php';
 require_once __DIR__ . '/../env.php';
 
+// if (!isset($_SESSION['executed'])) {
+//     $_SESSION['executed'] = true; // Tandai bahwa kode sudah dijalankan
+
+//     $base_url = ""
+// }
+// if ($base_url == ""){
+//     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+//         $host = $_SERVER['HTTP_HOST'];
+//         $scriptName = $_SERVER['SCRIPT_NAME']; // /nsms/folder lain/nama_project/index.php
+//         $pathParts = explode('/', trim($scriptName, '/'));
+//         $base_url= "";
+//         global $name_project;
+    
+//         $kondisi=false;
+//         for( $i = count($pathParts)-1; $i >= 0; $i-- ) {
+            
+//             if( $pathParts[$i] == 'index.php' && $i !=0) {
+//                 $i--;
+//                 $kondisi=true;
+//             }
+    
+//             if($kondisi) {
+//                 $base_url = $pathParts[$i] . "/" .$base_url;
+//             }
+//         }
+
+//         $base_url = '/../'.$base_url;
+// }
 
 if (!defined('BASE_URL')) {
     // $script_name = $_SERVER['SCRIPT_NAME'];
     // $project_folder = explode("/", trim($script_name, "/"))[0];
 
-    define("BASE_URL", "/".getBaseUrl(). $name_project);
+    define("BASE_URL", "/".$base_url);
 }
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -129,7 +157,7 @@ if ($method === 'POST') {
                 exit();
             } else {
                 if (readCustomerByRefNo($ref_no)) {
-                    setAlert('danger', 'Gagal memperbarui customer.');
+                    setAlert('danger', 'Gagal memperbarui customer. Ref No sudah digunakan');
                 header("Location: ../pages/html/editCustomers.php?name=$name&ref_no=$ref_no&id=$id");
                 exit();
                 } else {
@@ -172,7 +200,7 @@ if ($method === 'POST') {
                     header("Location: ../pages/html/tableSuppliers.php");
                     exit();
                 } else {
-                    setAlert('danger', 'Gagal memperbarui supplier.');
+                    setAlert('danger', 'Gagal memperbarui supplier. Ref No sudah digunakan.');
                 header("Location: ../pages/html/editSuppliers.php?name=$name&ref_no=$ref_no&id=$id");
                 exit();
                 }
@@ -211,7 +239,7 @@ if ($method === 'POST') {
                 header("Location: ../pages/html/tableItems.php");
                 exit();
                 } else {
-                    setAlert('danger', 'Gagal memperbarui item.');
+                    setAlert('danger', 'Gagal memperbarui item. Ref No sudah digunakan.');
                 header("Location: ../pages/html/editItems.php?name=$name&ref_no=$ref_no&price=$price&id=$id");
                 exit();
                 }

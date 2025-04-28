@@ -14,7 +14,7 @@ include_once __DIR__ . '/../../Control/Control.php';
 
         <!-- Dashboard -->
         <li class="nav-item">
-          <a href="<?= BASE_URL ?>/index.php" class="nav-link">
+          <a href="<?= $base_url ?>index.php" class="nav-link">
             <i class="nav-icon bi bi-speedometer"></i>
             <p>Dashboard</p>
           </a>
@@ -22,7 +22,7 @@ include_once __DIR__ . '/../../Control/Control.php';
 
         <!-- Items -->
         <li class="nav-item">
-          <a href="<?= BASE_URL ?>/pages/html/tableItems.php" class="nav-link">
+          <a href="<?= $base_url ?>pages/html/tableItems.php" class="nav-link">
             <i class="nav-icon bi bi-table"></i>
             <p>Items</p>
           </a>
@@ -30,7 +30,7 @@ include_once __DIR__ . '/../../Control/Control.php';
 
         <!-- Customers -->
         <li class="nav-item">
-          <a href="<?= BASE_URL ?>/pages/html/tableCustomers.php" class="nav-link">
+          <a href="<?= $base_url ?>pages/html/tableCustomers.php" class="nav-link">
             <i class="nav-icon bi bi-people"></i>
             <p>Customers</p>
           </a>
@@ -38,7 +38,7 @@ include_once __DIR__ . '/../../Control/Control.php';
 
         <!-- Suppliers -->
         <li class="nav-item">
-          <a href="<?= BASE_URL ?>/pages/html/tableSuppliers.php" class="nav-link">
+          <a href="<?= $base_url ?>pages/html/tableSuppliers.php" class="nav-link">
             <i class="nav-icon bi bi-people-fill"></i>
             <p>Suppliers</p>
           </a>
@@ -46,7 +46,7 @@ include_once __DIR__ . '/../../Control/Control.php';
 
         <!-- Item Customers -->
         <li class="nav-item">
-          <a href="<?= BASE_URL ?>/pages/html/tableItemCustomers.php" class="nav-link">
+          <a href="<?= $base_url ?>pages/html/tableItemCustomers.php" class="nav-link">
             <i class="nav-icon bi bi-table"></i>
             <p>Item Customers</p>
           </a>
@@ -54,7 +54,7 @@ include_once __DIR__ . '/../../Control/Control.php';
 
         <!-- Invoice -->
         <li class="nav-item">
-          <a href="<?= BASE_URL ?>/pages/html/tableInvoice.php" class="nav-link">
+          <a href="<?= $base_url ?>pages/html/tableInvoice.php" class="nav-link">
             <i class="nav-icon bi bi-table"></i>
             <p>Invoice</p>
           </a>

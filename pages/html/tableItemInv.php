@@ -191,7 +191,7 @@ $items = $contain;
                     <?php if (count($items) > 0): ?>
                       <?php foreach ($items as $i => $item):?>
                         <tr>
-                          <td><?= $it[$i]->getRefNo() ?></td>
+                          <td><?= htmlspecialchars(readItemById($item->getItemId())->getRefNo()) ?></td>
                           <td><?= htmlspecialchars(readItemById($item->getItemId())->getName()) ?></td>
                           <td><?= htmlspecialchars($item->getQty()) ?></td>
                           <td>Rp<?= number_format($item->getPrice(), 0, ',', '.') ?></td>
