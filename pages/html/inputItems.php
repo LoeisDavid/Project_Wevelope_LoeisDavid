@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 $id = $_GET['id'] ?? null;
 $name = $_GET['name'] ?? null;
 $ref_no = $_GET['ref_no']?? null;

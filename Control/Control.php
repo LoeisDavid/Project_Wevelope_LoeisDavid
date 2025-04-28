@@ -128,14 +128,14 @@ if ($method === 'POST') {
                 header("Location: ../pages/html/tableCustomers.php");
                 exit();
             } else {
-                if (!readCustomerByRefNo($ref_no)) {
+                if (readCustomerByRefNo($ref_no)) {
+                    setAlert('danger', 'Gagal memperbarui customer.');
+                header("Location: ../pages/html/editCustomers.php?name=$name&ref_no=$ref_no&id=$id");
+                exit();
+                } else {
                     updateCustomer($_POST['id'], $ref_no, $_POST['name']);
                 setAlert('success', 'Customer berhasil diperbarui!');
                 header("Location: ../pages/html/tableCustomers.php");
-                exit();
-                } else {
-                    setAlert('danger', 'Gagal memperbarui customer.');
-                header("Location: ../pages/html/editCustomers.php?name=$name&ref_no=$ref_no&id=$id");
                 exit();
                 }
                 

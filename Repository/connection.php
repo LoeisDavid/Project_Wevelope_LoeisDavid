@@ -1,6 +1,8 @@
 <?php
 require_once(__DIR__ . '/../env.php');
-require_once __DIR__ . '/Medoo.php';
+require __DIR__ . '/../vendor/autoload.php';
+
+
 use Medoo\Medoo;
 
 // Ambil nilai dari env

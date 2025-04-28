@@ -1,2 +1,3 @@
 # Abaikan file .env (file rahasia)
 env.php
+/vendor/

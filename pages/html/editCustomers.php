@@ -1,8 +1,9 @@
 <?php
-
+session_start();
   $id = $_GET['id'];
   $name = $_GET['name'];
   $ref_no = $_GET['ref_no'];
+
 ?>
 
 <!doctype html>
@@ -43,6 +44,7 @@
 <body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
   <!--begin::App Wrapper-->
   <div class="app-wrapper">
+  <?php include __DIR__ . '/../widget/alert.php'; ?>
     <!--begin::Header-->
     <?php include __DIR__ . '/../widget/header.php'; ?>
     <!--end::Sidebar-->
@@ -123,21 +125,7 @@
     <?php include __DIR__ . '/../widget/footer.php'; ?>
     <!--end::Footer-->
   </div>
-  <?php if (isset($_SESSION['alert'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
-    <?= $_SESSION['alert']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <script>
-    setTimeout(() => {
-      const alert = document.querySelector('.alert');
-      if (alert) {
-        bootstrap.Alert.getOrCreateInstance(alert).close();
-      }
-    }, 3000);
-  </script>
-  <?php unset($_SESSION['alert']); ?>
-<?php endif; ?>
+  <!-- Alert Delete -->
 
 <?php if (isset($_SESSION['alert_delete'])): ?>
   <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
@@ -154,7 +142,6 @@
   </script>
   <?php unset($_SESSION['alert_delete']); ?>
 <?php endif; ?>
-
   <!--end::App Wrapper-->
   <!--begin::Script-->
   <!--begin::Third Party Plugin(OverlayScrollbars)-->

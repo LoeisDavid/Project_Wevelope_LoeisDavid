@@ -4,6 +4,10 @@ include '../../Control/Control.php';
 
 $customers = readCustomers(); // ambil semua customer
 
+$customerId = $_GET['customer'] ?? '';
+    $tanggal = $_GET['tanggal'] ?? '';
+    $kode = $_GET['kode'] ?? '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $action = 'create';
   $type = 'invoice';
@@ -15,12 +19,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               // Buat invoice dengan kode, tanggal, dan customerId
 
               // var_dump($customerId, $tanggal, $kode);die();
-
-              if (!createInvoice($customerId, $tanggal, $kode)) {
+              $contain= readInvoiceByKode($kode);
+              if (!empty($contain)) {
                 setAlert('danger', 'Gagal menambahkan invoice.');
-                header("Location: ../html/inputInvoices.php?date=$date&customer_id=$customer_id&kode=$kode");
+                header("Location: ../html/inputInvoices.php?tanggal=$tanggal&customer=$customerId&kode=$kode");
                 exit();
             } else {
+              createInvoice($customerId, $tanggal, $kode);
                 setAlert('success', 'invoice berhasil ditambahkan!');
                 header("Location: ../html/tableInvoice.php");
             exit();
@@ -82,20 +87,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST">
               <div class="mb-3">
                 <label for="kode" class="form-label">Kode Invoice</label>
-                <input type="text" name="kode" id="kode" class="form-control" required placeholder="Masukkan Kode Invoice">
+                <input type="text" name="kode" id="kode" class="form-control" required placeholder="Masukkan Kode Invoice" value="<?= $kode?>">
               </div>
               <div class="mb-3">
                 <label for="customer" class="form-label">Customer</label>
                 <select name="customer" id="customer" class="form-select" required>
                   <option value="">-- Pilih Customer --</option>
                   <?php foreach ($customers as $cust): ?>
-                    <option value="<?= $cust->getId() ?>"><?= htmlspecialchars($cust->getName()) ?></option>
+                    <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : ''?>><?= htmlspecialchars($cust->getName()) ?></option>
                   <?php endforeach; ?>
                 </select>
               </div>
               <div class="mb-3">
                 <label for="tanggal" class="form-label">Tanggal</label>
-                <input type="date" name="tanggal" id="tanggal" class="form-control" required>
+                <input type="date" name="tanggal" id="tanggal" class="form-control" required value="<?= $tanggal ?>">
               </div>
               <button type="submit" class="btn btn-primary w-100">Simpan Invoice</button>
               <a href="tableInvoice.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>

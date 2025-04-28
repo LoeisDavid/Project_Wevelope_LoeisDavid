@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 $id = $_GET['id'] ?? null;
 $name = $_GET['name'] ?? null;
 $ref_no = $_GET['ref_no'] ?? null;
@@ -44,6 +44,7 @@ $ref_no = $_GET['ref_no'] ?? null;
   <!--begin::App Wrapper-->
   <div class="app-wrapper">
     <!--begin::Header-->
+    <?php include __DIR__ . '/../widget/alert.php'; ?>
     <?php include __DIR__ . '/../widget/header.php'; ?>
     <!--end::Sidebar-->
     <!--begin::App Main-->
@@ -108,21 +109,6 @@ $ref_no = $_GET['ref_no'] ?? null;
     <?php include __DIR__ . '/../widget/footer.php'; ?>
     <!--end::Footer-->
   </div>
-  <?php if (isset($_SESSION['alert'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
-    <?= $_SESSION['alert']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <script>
-    setTimeout(() => {
-      const alert = document.querySelector('.alert');
-      if (alert) {
-        bootstrap.Alert.getOrCreateInstance(alert).close();
-      }
-    }, 3000);
-  </script>
-  <?php unset($_SESSION['alert']); ?>
-<?php endif; ?>
 
 <?php if (isset($_SESSION['alert_delete'])): ?>
   <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">

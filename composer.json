@@ -1,5 +1,17 @@
 {
+    "name": "asus/project_wevelope_loeis-david",
+    "autoload": {
+        "psr-4": {
+            "Asus\\ProjectWevelopeLoeisDavid\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "LoeisDavid",
+            "email": "86642990+LoeisDavid@users.noreply.github.com"
+        }
+    ],
     "require": {
-        "vlucas/phpdotenv": "^5.6"
+        "catfan/medoo": "^2.2"
     }
 }
