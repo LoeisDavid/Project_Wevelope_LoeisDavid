@@ -92,8 +92,8 @@ $ref_no = $_GET['ref_no'] ?? null;
     </div>
 
     <div class="card-footer">
-    <button type="submit" action="create" class="btn btn-success w-100 mt-3" style="display:block;">Sumbit</button>
-<a href="tableSuppliers.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+    <button type="submit" action="create" class="btn btn-success  float-end">Sumbit</button>
+<a href="tableSuppliers.php" class="btn btn-secondary">Cancel</a>
 
 
   </form>

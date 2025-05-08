@@ -26,7 +26,6 @@ if (
 // Menangani pencarian item dalam invoice
 $type = $_GET['type'] ?? 'iteminv';
 $action = $_GET['action'] ?? 'read';
-$keyword = $_GET['keyword'] ?? '';
 
 
 // Ambil data masing-masing Item berdasarkan hasil pencarian
@@ -45,38 +44,7 @@ $countPage = 5;
 $allitemCustomers = readItemInvByInvoice($invoice);
 
 // Get filters from query string
-$keyword     = $_GET['keyword']    ?? '';
-
-// Determine which set to display
-if (
-    $keyword !== ''
-) {
-    
-  $items = searchItemInvsInInvoice($invoice, $keyword);
-        $isSearch = true;
-} else {
-    $items = $allitemCustomers;
-    $isSearch = false;
-}
-
-$count= count($items);
-
-$page=count($items)/$countPage;
-$selectPage= $_GET['page'] ?? 0;
-$offset = $selectPage*$countPage;
-$contain= [];
-
-for ($i = 0; $i < $countPage; $i++) {
-  if ($offset >= count($items)) {
-      break;
-  } else {
-      $contain[] = $items[$offset];
-      $offset++;
-  }
-}
-
-
-$items = $contain;
+$items = $allitemCustomers;
 ?>
 
 <!-- Mulai dari sini lanjutkan bagian HTML sama seperti sebelumnya -->
@@ -101,7 +69,7 @@ $items = $contain;
       
           <div class="row">
             <div class="col-sm-6">
-              <h3 class="mb-0">Item Inv Table</h3>
+              <h3 class="mb-0">Detail Invoice</h3>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
@@ -115,18 +83,9 @@ $items = $contain;
       <div class="app-content">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-md-8 mx-auto">
-              <div class="card mb-4">
-                <div class="card-body text-center"><h2>Detail Invoice</h2></div>
-
-                <div class="card-body text-center">
-                  <h3 class="card-title">
-                    <button class="btn btn-primary" disabled>
-                      <i class="bi bi-info-circle"></i>
-                    </button> Kode Invoice: <?= htmlspecialchars($inv->getKode()) ?>
-                  </h3>
-                </div>
-
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-body text-center"><h2>Invoice <?= htmlspecialchars($inv->getKode()) ?></h2></div>
                 <div class="card-body text-center">
                   <h3 class="card-title">
                     <button class="btn btn-primary" disabled>
@@ -150,52 +109,39 @@ $items = $contain;
   <a href="printInvoice.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
     <i class="bi bi-printer"></i> Print Invoice
   </a>
+  
 </div>
 
                 <div class="d-flex justify-content-between align-items-center m-3 flex-wrap">
-  <div class="d-flex gap-5 align-items-center fs-5">
-    <p class="mb-0"><strong>Jumlah Barang : </strong><?= $count ?></p>
-    <p class="mb-0"><strong>Harga Total : Rp</strong> 
-      <?php 
-        $subTotal = 0;
-        foreach ($items as $i => $item) {
-          $subTotal += $item->getQty() * $item->getPrice();
-        }
-        echo number_format($subTotal, 0, ',', '.' );
-      ?> 
-    </p>
+  <div class="mb-3">
+  <a href="inputItemInv.php?invoice=<?= $invoice ?>" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add Item
+                  </a>
   </div>
-
-  <form method="GET" action="tableiteminv.php?action=read&invoice=<?= $invoice?>" class="d-flex mt-2 mt-md-0">
-  <input type="hidden" name="type" value="iteminv">
-  <input type="hidden" name="action" value="<?= $action === 'search' ? 'search' : 'read' ?>">
-  <input type="hidden" name="invoice" value="<?= $invoice ?>">
-  <input type="text" name="keyword" class="form-control w-auto me-2" placeholder="Search Item..." value="<?= htmlspecialchars($keyword) ?>">
-  <button type="submit" class="btn btn-secondary">Search</button>
-</form>
-
-</div>
-
-                <table class="table table-bordered mx-auto">
+  <table class="table table-bordered mx-auto">
                   <thead>
                     <tr>
+                      <th>NO</th>
                       <th>REF NO</th>
                       <th>Barang</th>
                       <th>Qty</th>
-                      <th>Price</th>
-                      <th>Total</th>
-                      <th>Actions</th>
+                      <th class="text-end">Price</th>
+                      <th class="text-end">Total</th>
+                      <th class="text-center" style="width: 10%;">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php if (count($items) > 0): ?>
-                      <?php foreach ($items as $i => $item):?>
+                      <?php 
+                        $number=0;
+                        foreach ($items as $i => $item): $number++?>
                         <tr>
+                          <td><?= htmlspecialchars($number)?></td>
                           <td><?= htmlspecialchars(readItemById($item->getItemId())->getRefNo()) ?></td>
                           <td><?= htmlspecialchars(readItemById($item->getItemId())->getName()) ?></td>
                           <td><?= htmlspecialchars($item->getQty()) ?></td>
-                          <td>Rp<?= number_format($item->getPrice(), 0, ',', '.') ?></td>
-                          <td>Rp<?= number_format($item->getQty() * $item->getPrice(), 0, ',', '.') ?></td>
+                          <td class="text-end">Rp<?= number_format($item->getPrice(), 0, ',', '.') ?></td>
+                          <td class="text-end">Rp<?= number_format($item->getQty() * $item->getPrice(), 0, ',', '.') ?></td>
                           <td class="text-center">
                             <div class="d-flex justify-content-center gap-1">
                               <a href="editItemInv.php?method=get&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-warning" title="Edit ItemInv">
@@ -208,47 +154,32 @@ $items = $contain;
                           </td>
                         </tr>
                       <?php endforeach; ?>
+                      <tr>
+                        <td colspan="5" class="text-end">Grand Total</td>
+                        <td colspan="1" class="text-end">Rp<?php 
+        $subTotal = 0;
+        foreach ($items as $i => $item) {
+          $subTotal += $item->getQty() * $item->getPrice();
+        }
+        echo number_format($subTotal, 0, ',', '.' );
+      ?> </td>
+      <td></td>
+                      </tr>
                     <?php else: ?>
                       <tr><td colspan="6" class="text-center">Tidak ada item.</td></tr>
                     <?php endif; ?>
                   </tbody>
                 </table>
+  </div>
+</div>
 
-                <div class="text-start mt-3 clearfix">
-                  <a href="inputItemInv.php?invoice=<?= $invoice ?>" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create New
-                  </a>
-                  <ul class="pagination pagination-sm m-0 float-end">
-    <?php if($page > 1): ?>
-        <?php if($selectPage - 1 >= 0): ?>
-            <li class="page-item">
-                <a class="page-link" href="?page=<?= $selectPage - 1 ?>&keyword=<?= $keyword ?>&invoice=<?= $invoice ?>">«</a>
-            </li>
-        <?php endif; ?>
+                
 
-        <?php for($i = 0; $i < $page; $i++): ?>
-            <li class="page-item <?= ($i == $selectPage) ? 'active' : '' ?>">
-                <a class="page-link" href="?page=<?= $i ?>&keyword=<?= $keyword ?>&invoice=<?= $invoice ?>">
-                    <?= htmlspecialchars($i + 1) ?>
-                </a>
-            </li>
-        <?php endfor; ?>
-
-        <?php if($selectPage + 1 < $page): ?>
-            <li class="page-item">
-                <a class="page-link" href="?page=<?= $selectPage + 1 ?>&keyword=<?= $keyword ?>&invoice=<?= $invoice ?>">»</a>
-            </li>
-        <?php endif; ?>
-    <?php endif; ?>
-</ul>
-
-                </div>
+                
               </div>
             </div>
           </div>
           </div>
-        </div>
-      </div>  
     </main>
 
     <?php include __DIR__ . '/../widget/footer.php'; ?>

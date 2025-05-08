@@ -132,8 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
   <!-- Submit -->
   <div class="card-footer">
-  <button type="submit" action="create" class="btn btn-info w-100 mt-3" style="display:block;">Sumbit</button>
-    <a href="tableItems.php" class="btn btn-secondary w-100 mt-2" >Cancel</a>
+  <button type="submit" action="create" class="btn btn-info  float-end">Sumbit</button>
+    <a href="tableItems.php" class="btn btn-secondary">Cancel</a>
   </div>
 </form>
 

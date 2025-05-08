@@ -32,10 +32,19 @@ $endDate     = $_GET['end_date']   ?? '';
 if (
     $keyword !== ''
     || $customerId !== ''
-    || ($startDate !== '' && $endDate !== '')
+    || ($startDate !== '' || $endDate !== '')
 ) {
-    if ($keyword !== '') {
-        $displayInvoices = searchInvoices($keyword);
+    if ($keyword !== ''
+    || $customerId !== ''
+    || ($startDate !== '' || $endDate !== '')) {
+
+      if($startDate==''){
+        $startDate = $endDate;
+      } elseif ($endDate== ''){
+        $endDate = $startDate;
+      }
+
+        $displayInvoices = searchInvoices($keyword,$startDate,$endDate, $customerId, $keyword);
     } elseif ($customerId !== '') {
         $displayInvoices = readInvoiceByCustomer($customerId);
     } else {
@@ -99,54 +108,79 @@ $displayInvoices = $contain;
           </div>
           <!-- Centered Content -->
           <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
               <!-- Alert Delete -->
               <!-- Search Form -->
-              <form method="GET" class="row row-cols-lg-auto g-2 align-items-end mb-4 justify-content-center">
-                <input type="hidden" name="type" value="invoice">
-                <div class="col">
-                  <label for="keyword" class="form-label">Keyword</label>
-                  <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Search invoice..." value="<?= htmlspecialchars($keyword) ?>">
-                </div>
-                <div class="col">
-                  <label for="customer" class="form-label">Customer</label>
-                  <select name="customer" id="customer" class="form-select">
-                    <option value="">-- Pilih Customer --</option>
-                    <?php foreach ($customers as $cust): ?>
-                      <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($cust->getName()) ?>
-                      </option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
-                <div class="col">
-                  <label for="start_date" class="form-label">Start Date</label>
-                  <input type="date" id="start_date" name="start_date" class="form-control" value="<?= htmlspecialchars($startDate) ?>">
-                </div>
-                <div class="col">
-                  <label for="end_date" class="form-label">End Date</label>
-                  <input type="date" id="end_date" name="end_date" class="form-control" value="<?= htmlspecialchars($endDate) ?>">
-                </div>
-                <div class="col">
-                  <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-search"></i> Search
-                  </button>
-                </div>
-              </form>
+              <div class="card mb-4">
+  <div class="card-body">
+    <form method="GET" class="row g-3 align-items-end">
+      <input type="hidden" name="type" value="invoice">
+
+      <!-- Keyword -->
+      <div class="col-md-3">
+        <label for="keyword" class="form-label">Keyword</label>
+        <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Search invoice..." value="<?= htmlspecialchars($keyword) ?>">
+      </div>
+
+      <!-- Customer -->
+      <div class="col-md-3">
+        <label for="customer" class="form-label">Customer</label>
+        <select name="customer" id="customer" class="form-select">
+          <option value="">-- Pilih Customer --</option>
+          <?php foreach ($customers as $cust): ?>
+            <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : '' ?>>
+              <?= htmlspecialchars($cust->getName()) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <!-- Start Date -->
+      <div class="col-md-2">
+        <label for="start_date" class="form-label">Start Date</label>
+        <input type="date" id="start_date" name="start_date" class="form-control" value="<?= htmlspecialchars($startDate) ?>">
+      </div>
+
+      <!-- End Date -->
+      <div class="col-md-2">
+        <label for="end_date" class="form-label">End Date</label>
+        <input type="date" id="end_date" name="end_date" class="form-control" value="<?= htmlspecialchars($endDate) ?>">
+      </div>
+
+      <!-- Buttons -->
+      <div class="col-md-2 d-flex gap-2">
+        <button type="submit" class="btn btn-primary w-100" title="Cari Data">
+          <i class="bi bi-search me-1"></i> Cari
+        </button>
+
+        <?php if (!empty($keyword) || !empty($customerId) || !empty($startDate) || !empty($endDate)): ?>
+          <a href="?type=invoice" class="btn btn-outline-secondary w-100" title="Reset Filter">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+          </a>
+        <?php endif; ?>
+      </div>
+    </form>
+  </div>
+</div>
+
+              
 
               <!-- Unified Table -->
               <div class="card">
-                <div class="card-header text-center">
-                  <h3 class="card-title"><?= $isSearch ? 'Search Results' : 'All Invoices' ?></h3>
+                <div class="card-header text-start clearfix">
+                  <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Invoices' ?></h3>
+                  <a href="inputInvoices.php" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create New
+                  </a>
                 </div>
-                <div class="card-body p-0">
-                  <table class="table table-bordered mb-0">
+                <div class="card-body">
+                  <table class="table table-bordered">
                   <thead>
   <tr>
-    <th class="text-center align-middle" style="width: 10%;">KODE</th>
-    <th class="text-center align-middle" style="width: 20%;">TANGGAL</th>
-    <th class="text-center align-middle" style="width: 40%;">CUSTOMER</th>
-    <th class="text-center align-middle" style="width: 30%;">ACTIONS</th>
+    <th class="text-start align-middle" style="width: 10%;">KODE</th>
+    <th class="text-start align-middle" style="width: 20%;">TANGGAL</th>
+    <th class="text-start align-middle" style="width: 40%;">CUSTOMER</th>
+    <th class="text-center align-middle" style="width: 10%;">ACTIONS</th>
   </tr>
 </thead>
 <tbody>
@@ -154,17 +188,14 @@ $displayInvoices = $contain;
                       <?php if (count($displayInvoices) > 0): ?>
                         <?php foreach ($displayInvoices as $inv): ?>
                           <tr>
-                          <td class="text-center align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>
-<td class="text-center align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
-<td class="text-center align-middle"><?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?></td>
+                          <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>
+<td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
+<td class="text-start align-middle"><?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?></td>
 <td class="text-center align-middle">
 
                               <div class="btn-group" role="group">
                                 <a href="tableItemInv.php?invoice=<?= $inv->getId() ?>" class="btn btn-sm btn-info" title="Lihat Detail">
                                   <i class="bi bi-eye"></i>
-                                </a>
-                                <a href="editInvoices.php?method=get&amp;id=<?= $inv->getId() ?>&amp;kode=<?= urlencode($inv->getKode()) ?>&amp;customer=<?= $inv->getCustomerId() ?>" class="btn btn-sm btn-warning" title="Edit Invoice">
-                                  <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <a href="?type=invoice&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
                                   <i class="bi bi-trash"></i>
@@ -182,9 +213,6 @@ $displayInvoices = $contain;
                   </table>
                 </div>
                 <div class="card-footer text-start clearfix">
-                  <a href="inputInvoices.php" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create New
-                  </a>
                   <ul class="pagination pagination-sm m-0 float-end">
     <?php if($page > 1): ?>
         <?php if($selectPage - 1 >= 0): ?>

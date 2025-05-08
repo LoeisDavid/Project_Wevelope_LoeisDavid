@@ -99,7 +99,8 @@
       />
     </div>
 
-    <div class="input-group mb-3">
+    <div class="mb-3">
+    <label for="name" class="form-label">NAME ITEM</label>
       <input
         type="text"
         class="form-control"
@@ -110,6 +111,7 @@
       />
     </div>
 
+    <label for="price" class="form-label">PRICE</label>
     <div class="input-group mb-3">
       <span class="input-group-text">Rp</span>
       <input
@@ -123,8 +125,8 @@
     </div>
 
     <div class="card-footer">
-    <button type="submit" class="btn btn-primary w-100 mt-3" style="display:block;">Simpan Perubahan</button>
-<a href="tableItems.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+    <button type="submit" class="btn btn-primary float-end" >Simpan Perubahan</button>
+<a href="tableItems.php" class="btn btn-secondary">Cancel</a>
 <input type="hidden" name="invoice_id" value="<?= $itemInvs->getInvoiceId() ?>">
 
     </div>

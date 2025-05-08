@@ -102,8 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="tanggal" class="form-label">Tanggal</label>
                 <input type="date" name="tanggal" id="tanggal" class="form-control" required value="<?= $tanggal ?>">
               </div>
-              <button type="submit" class="btn btn-primary w-100">Simpan Invoice</button>
-              <a href="tableInvoice.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+              <button type="submit" class="btn btn-primary float-end">Simpan Invoice</button>
+              <a href="tableInvoice.php" class="btn btn-secondary">Cancel</a>
             </form>
         </div>
       </div>

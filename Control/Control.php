@@ -258,7 +258,7 @@ if ($method === 'POST') {
     if ($action === 'create') {
         if(!readInvoiceByKode($kode)) {
             createInvoice($customer_id, $date, $kode);setAlert('success', 'invoice berhasil ditambahkan!');
-            header("Location: ../pages/html/tableInvoice.php");
+            header("Location: ../pages/html/tableItemInv.php?invoice=$id");
         exit();
             
         } else {
@@ -279,7 +279,7 @@ if ($method === 'POST') {
                 header("Location: ../pages/html/tableItemInv.php?invoice=$id");
             exit();
             } else {
-                header("Location: ../pages/html/tableInvoice.php");
+                header("Location: ../pages/html/tableItemInv.php?invoice=$id");
             exit();
             }
 
@@ -297,9 +297,10 @@ if ($method === 'POST') {
 // ITEMINV
  else if ($type === 'iteminv') {
     $item_id = $_POST['item_id'] ?? NULL;
-    $invoice_id = $_GET['id'] ?? NULL;
+    $invoice_id = $_GET['invoice'] ?? NULL;
     $qty = $_POST['qty'] ?? 0;
     $price = $_POST['price'] ?? readItemById($item_id);
+    $id = $_GET['id'];
 
     // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
 
@@ -312,14 +313,19 @@ if ($method === 'POST') {
         header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
         exit();
     } else if ($action === 'update') {
-        if (updateItemInv($_GET['id'],$invoice_id, $item_id, $qty, $price)) {
-            setAlert('success', 'Item dalam Invoice berhasil diperbarui!');
+        $item = readItemInvById($id);
+        if($item->getId()==$id && $item->getInvoiceId() == $invoice_id && $item->getItemId() == $item_id && $item->getPrice() == $price && $item->getQty() == $qty){
+            setAlert('danger', 'tidak ada yang diperbarui!');
             header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
             exit();
         } else {
-            setAlert('danger', 'Gagal memperbarui item invoice.');
-            header("Location: ../pages/html/editItemInvs.php?item_id=$item_id&invoice_id=$invoice_id&qty=$qty&price=$price&id=$id");
-            exit();
+            if (updateItemInv($_GET['id'],$invoice_id, $item_id, $qty, $price)) {
+            
+            } else {
+                setAlert('danger', 'Gagal memperbarui item invoice.');
+                header("Location: ../pages/html/editItemInv.php?item_id=$item_id&invoice_id=$invoice_id&qty=$qty&price=$price&id=$id");
+                exit();
+            }
         }
     }
 

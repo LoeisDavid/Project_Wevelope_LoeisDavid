@@ -90,33 +90,42 @@ $displaySupplier = $contain;
           </div>
           <!-- Centered Content -->
           <div class="row justify-content-center">
-            <div class="col-lg-8">
+            <div class="col-lg-12 ">
               <!-- Search Form -->
-              <form method="GET" class="row row-cols-lg-auto g-2 align-items-end mb-4 justify-content-center">
-                <input type="hidden" name="type" value="supplier">
-                <div class="col">
-                  <label for="keyword" class="form-label">Keyword</label>
-                  <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Search supplier..." value="<?= htmlspecialchars($keyword) ?>">
+              <div class="card mb-4">
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                  <form method="GET" class="d-flex w-100">
+  <input type="hidden" name="type" value="supplier">
+  <input type="text" id="keyword" name="keyword" class="form-control me-2" placeholder="Search Supplier..." value="<?= htmlspecialchars($keyword) ?>">
+  <button type="submit" class="btn btn-primary">
+    <i class="bi bi-search"></i>
+  </button>
+  <?php if (!empty($keyword)): ?>
+    <a href="?type=supplier" class="btn btn-outline-secondary d-flex align-items-center" title="Reset Pencarian">
+      <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+    </a>
+  <?php endif; ?>
+</form>
+                  </div>
+                  <!-- /.card-body -->
                 </div>
-                <div class="col">
-                  <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-search"></i> Search
-                  </button>
-                </div>
-              </form>
 
               <!-- Unified Table -->
               <div class="card">
-                <div class="card-header text-center">
-                  <h3 class="card-title"><?= $isSearch ? 'Search Results' : 'All Suppliers' ?></h3>
+                <div class="card-header text-start clearfix">
+                  <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Suppliers' ?></h3>
+                  <a href="inputSuppliers.php" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Create New
+                  </a>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body">
                   <table class="table table-bordered mb-0">
                   <thead>
   <tr>
-    <th class="text-center align-middle" style="width: 10%;">REF NO</th>
-    <th class="text-center align-middle" style="width: 20%;">NAME</th>
-    <th class="text-center align-middle" style="width: 30%;">ACTIONS</th>
+    <th class="text-start align-middle" style="width: 20%;">REF NO</th>
+    <th class="text-start align-middle" style="width: 60%;">NAME</th>
+    <th class="text-center align-middle" style="width: 10%;">ACTIONS</th>
   </tr>
 </thead>
 <tbody>
@@ -124,8 +133,8 @@ $displaySupplier = $contain;
                       <?php if (count($displaySupplier) > 0): ?>
                         <?php foreach ($displaySupplier as $inv): ?>
                           <tr>
-                          <td class="text-center align-middle"><?= htmlspecialchars($inv->getRefNo()) ?></td>
-<td class="text-center align-middle"><?= htmlspecialchars($inv->getName()) ?></td>
+                          <td class="text-start align-middle"><?= htmlspecialchars($inv->getRefNo()) ?></td>
+<td class="text-start align-middle"><?= htmlspecialchars($inv->getName()) ?></td>
 <td class="text-center align-middle">
 
                             
@@ -148,9 +157,7 @@ $displaySupplier = $contain;
                   </table>
                 </div>
                 <div class="card-footer text-start clearfix">
-                  <a href="inputSuppliers.php" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create New
-                  </a>
+                  
                   <ul class="pagination pagination-sm m-0 float-end">
     <?php if($page > 1): ?>
         <?php if($selectPage - 1 >= 0): ?>

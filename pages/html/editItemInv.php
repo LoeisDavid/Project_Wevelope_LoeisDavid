@@ -2,6 +2,7 @@
 
 include '../../Control/Control.php';
 
+$invoice = ['invoice'];
 $customers = readCustomers(); // ambil semua customer
 $id = $_GET['id'];
 $itemInvs = readItemInvById($id); // ambil item berdasarkan ID invoice
@@ -58,7 +59,7 @@ $items = readItems(); // ambil daftar barang
             <h4>Edit Item</h4>
           </div>
           <div class="card-body">
-            <form method="post" action="../../Control/Control.php?type=iteminv&action=update&id=<?=$itemInvs->getId();?>">
+            <form method="post" action="../../Control/Control.php?type=iteminv&action=update&id=<?=$itemInvs->getId();?>&invoice=<?= $itemInvs->getInvoiceId()?>">
                 <div class="border rounded p-3 mb-3">
                 <div class="mb-3">
                     <label class="form-label">KODE INVOICE</label>
@@ -83,8 +84,8 @@ $items = readItems(); // ambil daftar barang
                     <label class="form-label">Harga</label>
                     <input type="number" name="price" class="form-control" value="<?= $itemInvs->getPrice() ?>">
                   </div>
-                  <button type="submit" class="btn btn-primary w-100 mt-3" style="display:block;">Simpan Perubahan</button>
-<a href="tableItemInv.php?invoice=<?= $itemInvs->getInvoiceId() ?>" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+                  <button type="submit" class="btn btn-primary  float-end">Simpan Perubahan</button>
+<a href="tableItemInv.php?invoice=<?= $itemInvs->getInvoiceId() ?>" class="btn btn-secondary">Cancel</a>
 <input type="hidden" name="invoice_id" value="<?= $itemInvs->getInvoiceId() ?>">
 
                 </div>

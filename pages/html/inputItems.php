@@ -79,7 +79,7 @@ $price = $_GET['price'] ?? null;
     </div>
 
     <div class="mb-3">
-    <label for="ref_no" class="form-label">Name Item</label>
+    <label for="name" class="form-label">Name Item</label>
       <input
         type="text"
         class="form-control"
@@ -90,6 +90,7 @@ $price = $_GET['price'] ?? null;
       />
     </div>
 
+    <label for="price" class="form-label">PRICE</label>
     <div class="input-group mb-3">
       <span class="input-group-text">Rp</span>
       <input
@@ -103,9 +104,10 @@ $price = $_GET['price'] ?? null;
     </div>
 
     <div class="card-footer">
-    <button type="submit" class="btn btn-success w-100 mt-3" style="display:block;">Submit</button>
-<a href="tableItems.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
-
+                      <button type="submit" class="btn btn-success  float-end" >Sumbit</button>
+                      <a href="tableItems.php" class="btn btn-secondary" >Cancel</a>
+                    </div>
+    <div class="card-footer">
     </div>
   </form>
   </div>

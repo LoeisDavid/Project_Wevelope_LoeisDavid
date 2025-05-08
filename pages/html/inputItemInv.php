@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="card card-primary card-outlinr mb-6">
           <div class="card-header text-center"><h4>Input Invoice</h4></div>
           <div class="card-body">
-          <form method="post" action="../../Control/Control.php?type=iteminv&action=create&id=<?=$invoice?>">
+          <form method="post" action="../../Control/Control.php?type=iteminv&action=create&invoice=<?=$invoice?>">
                 <div class="border rounded p-3 mb-3">
                 <div class="mb-3">
                     <label class="form-label">KODE INVOICE</label>
@@ -100,9 +100,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <div class="mb-3">
                     <label class="form-label">Harga</label>
                     <input type="number" name="price" class="form-control" value="">
+                    <div class="form-text">dapat dikosongi - apabila kosong maka akan mengikuti harga dasar dari item yang dipilih</div>
                   </div>
-                  <button type="submit" class="btn btn-primary w-100 mt-3" style="display:block;">Tambah Item ke Invoice</button>
-<a href="tableItemInv.php?invoice=<?= $invoice ?>" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+                  <button type="submit" class="btn btn-primary float-end">Tambah Item ke Invoice</button>
+<a href="tableItemInv.php?invoice=<?= $invoice ?>" class="btn btn-secondary">Cancel</a>
 
                 </div>
                 

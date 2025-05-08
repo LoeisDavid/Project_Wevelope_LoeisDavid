@@ -292,57 +292,77 @@ function deleteInvoice($id) {
     
 }
 
-function searchInvoices($query) {
+function searchInvoices(
+    $kode          = null,
+    $startDate     = null,
+    $endDate       = null,
+    $customerId    = null,
+    $customerName  = null
+) {
     global $database;
-    $invoices  = [];
-    $addedIds  = [];
+    $invoices = [];
+    $addedIds = [];
 
-    // 1) Search Customer by name → get Customer objects
-    $customers = searchCustomersByName($query);
-    foreach ($customers as $customer) {
-        // ambil ID customer
-        $custId = $customer->getId();
+    // Normalize empty strings to null
+    $kode         = $kode === '' ? null : $kode;
+    $startDate    = $startDate === '' ? null : $startDate;
+    $endDate      = $endDate === '' ? null : $endDate;
+    $customerId   = $customerId === '' ? null : $customerId;
+    $customerName = $customerName === '' ? null : $customerName;
 
-        // cari Invoice milik customer ini (mengembalikan array Invoice objects)
-        $custInvs = readInvoiceByCustomer($custId);
-        foreach ($custInvs as $inv) {
-            // hindari duplikat berdasarkan invoice ID
-            if (! in_array($inv->getId(), $addedIds, true)) {
-                $invoices[] = $inv;
-                $addedIds[] = $inv->getId();
-            }
+    // 1) Derive customer IDs if filtering by customerName (only if customerId not provided)
+    $derivedCustomerIds = [];
+    if ($customerName !== null && $customerId === null) {
+        $custRows = $database->select('customers', 'ID', [
+            'NAME[~]' => "%{$customerName}%"
+        ]);
+        if (!empty($custRows)) {
+            $derivedCustomerIds = $custRows;
         }
     }
 
-    // 2) Normal search (KODE, CUSTOMER_ID, DATE)  
-    $queryStr = "%{$query}%";
-    $idQuery  = is_numeric($query) ? (int)$query : null;
+    // 2) Build AND conditions for invoice table
+    $conds = ['AND' => []];
 
-    // bangun kondisi OR-nya
-    $conds = ['OR' => [
-        'KODE[~]'        => $queryStr,
-        'DATE[~]'        => $queryStr,
-    ]];
-    if ($idQuery !== null) {
-        // jika numeric, juga cek CUSTOMER_ID exact match
-        $conds['OR']['CUSTOMER_ID'] = $idQuery;
+    if ($kode !== null) {
+        $conds['AND']['KODE[~]'] = "%{$kode}%";
     }
 
+    // Date condition: range or single
+    if ($startDate !== null && $endDate !== null) {
+        $conds['AND']['DATE[<>]'] = [$startDate, $endDate];
+    } elseif ($startDate !== null) {
+        $conds['AND']['DATE'] = $startDate;
+    } elseif ($endDate !== null) {
+        $conds['AND']['DATE'] = $endDate;
+    }
+
+    // 3) Customer filter: prefer customerId; else use derivedCustomerIds
+    if ($customerId !== null) {
+        $conds['AND']['CUSTOMER_ID'] = (int)$customerId;
+    } elseif (!empty($derivedCustomerIds)) {
+        $conds['AND']['CUSTOMER_ID'] = $derivedCustomerIds;
+    }
+
+    // 4) Fetch invoices
     $rows = $database->select('invoice', '*', $conds);
-    foreach ($rows as $row) {
-        if (! in_array($row['ID'], $addedIds, true)) {
+
+    // 5) Wrap into objects and return
+    foreach ($rows as $r) {
+        if (!in_array($r['ID'], $addedIds, true)) {
             $invoices[] = new Invoice(
-                $row['ID'],
-                $row['KODE'],
-                $row['DATE'],
-                $row['CUSTOMER_ID']
+                $r['ID'],
+                $r['KODE'],
+                $r['DATE'],
+                $r['CUSTOMER_ID']
             );
-            $addedIds[] = $row['ID'];
+            $addedIds[] = $r['ID'];
         }
     }
 
     return $invoices;
 }
+
 
 
 

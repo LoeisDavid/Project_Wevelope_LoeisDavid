@@ -11,6 +11,7 @@ $tanggal = $invoice->getDate();
 $kode = $invoice->getKode();
 
 $customer = readCustomerById($invoice->getCustomerId());
+
 ?>
 
 <!doctype html>
@@ -82,8 +83,8 @@ $customer = readCustomerById($invoice->getCustomerId());
                 <label for="tanggal" class="form-label">Tanggal</label>
                 <input type="date" name="date" id="date" class="form-control" required value="<?=$tanggal?>">
               </div>
-              <button type="submit" class="btn btn-primary w-100 mt-3" style="display:block;">Simpan Perubahan</button>
-<a href="tableInvoice.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+              <button type="submit" class="btn btn-primary float-end">Simpan Perubahan</button>
+<a href="tableItemInv.php?invoice=<?= $id?>" class="btn btn-secondary">Cancel</a>
 <input type="hidden" name="invoice_id" value="<?= $itemInvs->getInvoiceId() ?>">
             </form>
           </div>

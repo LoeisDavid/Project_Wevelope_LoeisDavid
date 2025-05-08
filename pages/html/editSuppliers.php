@@ -108,8 +108,8 @@ session_start();
     </div>
 
     <div class="card-footer">
-    <button type="submit" class="btn btn-primary w-100 mt-3" style="display:block;">Simpan Perubahan</button>
-<a href="tableSuppliers.php" class="btn btn-secondary w-100 mt-2" style="display:block;">Cancel</a>
+    <button type="submit" class="btn btn-primary  float-end">Simpan Perubahan</button>
+<a href="tableSuppliers.php" class="btn btn-secondary">Cancel</a>
 <input type="hidden" name="invoice_id" value="<?= $itemInvs->getInvoiceId() ?>">
 
   </form>
