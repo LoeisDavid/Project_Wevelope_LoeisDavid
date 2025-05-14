@@ -6,6 +6,14 @@ $id = $_GET['id'] ?? null;
 $name = $_GET['name'] ?? null;
 $ref_no = $_GET['ref_no']?? null;
 $price = $_GET['price'] ?? null;
+$customer_id = null;
+$it = null;
+
+if($id){
+  $customer_id = readItemCustomerById($id)->getCustomer();
+$it = readItemCustomerById($id)->getItem();
+$price = readItemCustomerById($id)->getHarga();
+}
 
 $customers = [];
 
@@ -30,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $items = readItems();
   }
 }
+
 
 ?>
 
@@ -86,8 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         </div>
         <!--end::Header-->
         <!--begin::Form-->
-        <form class="needs-validation" novalidate method="post" action="../../Control/Control.php?type=itemcustomer&action=create">
+        <form class="needs-validation" novalidate method="post" action="../../Control/Control.php?type=itemcustomer">
   <div class="card-body">
+  <input type="text" value="<?= $id?>" name="id" hidden>
     <div class="row g-3">
       <!-- Nama Item -->
       <div class="col-md-6">
@@ -95,9 +105,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         <select class="form-select" id="item_id" name="item_id" required>
           <option value="">-- Select Item --</option>
           <?php foreach ($items as $item): ?>
-            <option value="<?= $item->getId() ?>" <?= $item->getId() == 'selected'?> data-price="<?= $item->getPrice() ?>">
-              <?= htmlspecialchars($item->getName()) ?>
-            </option>
+           <option value="<?= $item->getId() ?>" <?= $item->getId() == $it ? 'selected' : '' ?> data-price="<?= $item->getPrice() ?>">
+        <?= htmlspecialchars($item->getName()) ?>
+      </option>
           <?php endforeach; ?>
         </select>
         <div class="valid-feedback">Looks good!</div>
@@ -109,9 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         <select class="form-select" id="customer_id" name="customer_id" required>
           <option value="">-- Select Customer --</option>
           <?php foreach ($customers as $customer): ?>
-            <option value="<?= $customer->getId() ?>" <?= $customer->getId() == 'selected' ?>>
-              <?= htmlspecialchars($customer->getname()) ?>
-            </option>
+            <option value="<?= $customer->getId() ?>" <?= $customer->getId() == $customer_id ? 'selected' : '' ?>>
+        <?= htmlspecialchars($customer->getName()) ?>
+      </option>
           <?php endforeach; ?>
         </select>
         <div class="valid-feedback">Looks good!</div>
@@ -122,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         <label for="price" class="form-label">Price</label>
         <div class="input-group mb-3">
           <span class="input-group-text">Rp</span>
-          <input type="text" class="form-control" id="price" value="" required name="price" />
+          <input type="text" class="form-control" id="price" value="<?= $price?>" required name="price" />
           <span class="input-group-text">.00</span>
         </div>
         <div class="valid-feedback">Looks good!</div>

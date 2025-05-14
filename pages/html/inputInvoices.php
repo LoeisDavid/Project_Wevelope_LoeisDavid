@@ -7,34 +7,40 @@ $customers = readCustomers(); // ambil semua customer
 $customerId = $_GET['customer'] ?? '';
     $tanggal = $_GET['tanggal'] ?? '';
     $kode = $_GET['kode'] ?? '';
+     $id = $_GET['id'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $action = 'create';
-  $type = 'invoice';
-    $customerId = $_POST['customer'] ?? '';
-    $tanggal = $_POST['tanggal'] ?? '';
-    $kode = $_POST['kode'] ?? ''; // Ambil input kode
 
-    if ($customerId && $tanggal && $kode) { // Pastikan kode juga terisi
-              // Buat invoice dengan kode, tanggal, dan customerId
+     if($id){
+      $tanggal = readInvoiceById($id)->getDate();
+     }
 
-              // var_dump($customerId, $tanggal, $kode);die();
-              $contain= readInvoiceByKode($kode);
-              if (!empty($contain)) {
-                setAlert('danger', 'Gagal menambahkan invoice.');
-                header("Location: ../html/inputInvoices.php?tanggal=$tanggal&customer=$customerId&kode=$kode");
-                exit();
-            } else {
-              createInvoice($customerId, $tanggal, $kode);
-                setAlert('success', 'invoice berhasil ditambahkan!');
-                header("Location: ../html/tableInvoice.php");
-            exit();
-            }
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//   $action = 'create';
+//   $type = 'invoice';
+//     $customerId = $_POST['customer'] ?? '';
+//     $tanggal = $_POST['tanggal'] ?? '';
+//     $kode = $_POST['kode'] ?? ''; // Ambil input kode
+
+//     if ($customerId && $tanggal && $kode) { // Pastikan kode juga terisi
+//               // Buat invoice dengan kode, tanggal, dan customerId
+
+//               // var_dump($customerId, $tanggal, $kode);die();
+//               $contain= readInvoiceByKode($kode);
+//               if (!empty($contain)) {
+//                 setAlert('danger', 'Gagal menambahkan invoice.');
+//                 header("Location: ../html/inputInvoices.php?tanggal=$tanggal&customer=$customerId&kode=$kode");
+//                 exit();
+//             } else {
+//               createInvoice($customerId, $tanggal, $kode);
+//                 setAlert('success', 'invoice berhasil ditambahkan!');
+//                 header("Location: ../html/tableInvoice.php");
+//             exit();
+//             }
     
-    } else {
-        $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Mohon isi semua field'];
-    }
-}
+//     } else {
+//         $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Mohon isi semua field'];
+//     }
+// }
 ?>
 
 <!doctype html>
@@ -84,14 +90,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="card card-primary card-outlinr mb-6">
           <div class="card-header text-center"><h4>Input Invoice</h4></div>
           <div class="card-body">
-            <form method="POST">
+            <form method="POST" action="../../Control/Control.php?type=invoice">
+            <input type="text" value="<?= $id?>" name="id" hidden>
               <div class="mb-3">
                 <label for="kode" class="form-label">Kode Invoice</label>
                 <input type="text" name="kode" id="kode" class="form-control" required placeholder="Masukkan Kode Invoice" value="<?= $kode?>">
               </div>
               <div class="mb-3">
                 <label for="customer" class="form-label">Customer</label>
-                <select name="customer" id="customer" class="form-select" required>
+                <select name="customer_id" id="customer" class="form-select" required>
                   <option value="">-- Pilih Customer --</option>
                   <?php foreach ($customers as $cust): ?>
                     <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : ''?>><?= htmlspecialchars($cust->getName()) ?></option>

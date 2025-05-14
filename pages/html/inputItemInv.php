@@ -79,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <form method="post" action="../../Control/Control.php?type=iteminv&action=create&invoice=<?=$invoice?>">
                 <div class="border rounded p-3 mb-3">
                 <div class="mb-3">
+                <input type="text" value="<?= $id?>" name="id" hidden>
                     <label class="form-label">KODE INVOICE</label>
                     <input type="number" name="id" class="form-control" value="<?= $kode ?>" disabled>
                   </div>

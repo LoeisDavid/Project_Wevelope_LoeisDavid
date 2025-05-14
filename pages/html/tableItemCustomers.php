@@ -132,7 +132,10 @@ $displayitemCustomer = $contain;
 <tbody>
 
                       <?php if (count($displayitemCustomer) > 0): ?>
-                        <?php foreach ($displayitemCustomer as $inv): ?>
+                        <?php foreach ($displayitemCustomer as $inv): 
+                          
+                          $inv=readItemCustomerById($inv['ID'])
+                          ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars(readItemById($inv->getItem())->getName()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars(readCustomerById($inv->getCustomer())->getName()) ?></td>
@@ -141,7 +144,7 @@ $displayitemCustomer = $contain;
 
                             
 <a
-  href="editItemCustomers.php?method=get&id=<?= $inv->getId() ?>"
+  href="InputItemCustomers.php?method=get&id=<?= $inv->getId() ?>"
   class="btn btn-sm btn-warning me-1"
   title="Edit Item-Customer"
 >

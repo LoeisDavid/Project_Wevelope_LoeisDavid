@@ -31,7 +31,7 @@ $action = $_GET['action'] ?? 'read';
 // Ambil data masing-masing Item berdasarkan hasil pencarian
 $it = [];
 foreach ($items as $i => $item) {
-    $it[$i] = readItemById($item->getItemId());
+    $it[$i] = readItemById($item['ITEM_ID']);
 }
 
 $count = 0;
@@ -103,7 +103,7 @@ $items = $allitemCustomers;
                 </div>
 
   <div class="card-header d-flex justify-content-start gap-2 flex-wrap">
-  <a href="editInvoices.php?method=get&id=<?= $inv->getId() ?>&kode=<?= $inv->getKode()?>&customer=<?= $inv->getCustomerId()?>&kondisi=<?=true?>" class="btn btn-warning">
+  <a href="inputInvoices.php?method=get&id=<?= $inv->getId() ?>&kode=<?= $inv->getKode()?>&customer=<?= $inv->getCustomerId()?>&kondisi=<?=true?>" class="btn btn-warning">
     <i class="bi bi-pencil-square"></i> Edit Invoice
   </a>
   <a href="printInvoice.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
@@ -134,7 +134,11 @@ $items = $allitemCustomers;
                     <?php if (count($items) > 0): ?>
                       <?php 
                         $number=0;
-                        foreach ($items as $i => $item): $number++?>
+                        foreach ($items as $i => $item): $number++;
+                        
+                        $item = readItemInvById($item['ID']);
+
+                        ?>
                         <tr>
                           <td><?= htmlspecialchars($number)?></td>
                           <td><?= htmlspecialchars(readItemById($item->getItemId())->getRefNo()) ?></td>
@@ -144,7 +148,7 @@ $items = $allitemCustomers;
                           <td class="text-end">Rp<?= number_format($item->getQty() * $item->getPrice(), 0, ',', '.') ?></td>
                           <td class="text-center">
                             <div class="d-flex justify-content-center gap-1">
-                              <a href="editItemInv.php?method=get&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-warning" title="Edit ItemInv">
+                              <a href="InputItemInv.php?method=get&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-warning" title="Edit ItemInv">
                                 <i class="bi bi-pencil-square"></i>
                               </a>
                               <a href="?type=iteminv&action=delete&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus item ini?');" title="Delete Item">
@@ -159,6 +163,7 @@ $items = $allitemCustomers;
                         <td colspan="1" class="text-end">Rp<?php 
         $subTotal = 0;
         foreach ($items as $i => $item) {
+          $item = readItemInvById($item['ID']);
           $subTotal += $item->getQty() * $item->getPrice();
         }
         echo number_format($subTotal, 0, ',', '.' );

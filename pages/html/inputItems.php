@@ -4,6 +4,17 @@ $id = $_GET['id'] ?? null;
 $name = $_GET['name'] ?? null;
 $ref_no = $_GET['ref_no']?? null;
 $price = $_GET['price'] ?? null;
+
+$kondisi = $_GET['kondisi'] ?? 'create';
+
+
+if($kondisi === 'create'){
+  $action = 'create';
+} else {
+  $action = 'update';
+}
+
+// var_dump($action);die;
 ?>
 
 <!doctype html>
@@ -64,9 +75,11 @@ $price = $_GET['price'] ?? null;
                   <!--begin::Body-->
                   <div class="card-body">
         <!--end::Header-->
-        <form method="post" action="../../Control/Control.php?type=item&action=create">
+        <form method="post" action="../../Control/Control.php?type=item">
 
         <div class="mb-3">
+          <input type="text" value="<?= $action?>" name="kondisi" hidden>
+          <input type="text" value="<?= $id?>" name="id" hidden>
       <label for="ref_no" class="form-label">REF_NO</label>
       <input
         type="text"

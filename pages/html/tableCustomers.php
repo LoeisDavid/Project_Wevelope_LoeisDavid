@@ -129,14 +129,17 @@ $displayCustomer = $contain;
 <tbody>
 
                       <?php if (count($displayCustomer) > 0): ?>
-                        <?php foreach ($displayCustomer as $inv): ?>
+                        <?php foreach ($displayCustomer as $inv): 
+                          
+                          $inv=readCustomerById($inv['ID']);
+                          ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getRefNo()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars($inv->getName()) ?></td>
 <td class="text-center align-middle">
 
                             
-                                <a href="editCustomers.php?method=get&amp;id=<?= $inv->getId() ?>&amp;ref_no=<?= urlencode($inv->getRefNo()) ?>&amp;name=<?= $inv->getName() ?>" class="btn btn-sm btn-warning" title="Edit Customer">
+                                <a href="inputCustomers.php?method=get&amp;id=<?= $inv->getId() ?>&amp;ref_no=<?= urlencode($inv->getRefNo()) ?>&amp;name=<?= $inv->getName() ?>" class="btn btn-sm btn-warning" title="Edit Customer">
                                   <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <a href="?type=customer&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Customer ini?');" title="Delete Customer">

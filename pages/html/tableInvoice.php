@@ -127,7 +127,10 @@ $displayInvoices = $contain;
         <label for="customer" class="form-label">Customer</label>
         <select name="customer" id="customer" class="form-select">
           <option value="">-- Pilih Customer --</option>
-          <?php foreach ($customers as $cust): ?>
+          <?php foreach ($customers as $cust): 
+            
+            $cust = readCustomerById($cust['ID']);
+            ?>
             <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : '' ?>>
               <?= htmlspecialchars($cust->getName()) ?>
             </option>
@@ -186,7 +189,10 @@ $displayInvoices = $contain;
 <tbody>
 
                       <?php if (count($displayInvoices) > 0): ?>
-                        <?php foreach ($displayInvoices as $inv): ?>
+                        <?php foreach ($displayInvoices as $inv): 
+                          
+                          $inv=readInvoiceById($inv['ID'])
+                          ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>

@@ -22,18 +22,20 @@ function createItemInv($invoiceId, $itemId, $qty, $price) {
 function readItemInvs() {
     global $database;
     $rows = $database->select('itemInv', '*');
-    $entries = [];
-    foreach ($rows as $row) {
-        $entries[] = new ItemInv(
-            $row['ID'],
-            $row['INVOICE_ID'],
-            $row['ITEM_ID'],
-            $row['QTY'],
-            $row['PRICE'],
-            $row['TOTAL']
-        );
-    }
-    return $entries;
+    // $entries = [];
+    // foreach ($rows as $row) {
+    //     $entries[] = new ItemInv(
+    //         $row['ID'],
+    //         $row['INVOICE_ID'],
+    //         $row['ITEM_ID'],
+    //         $row['QTY'],
+    //         $row['PRICE'],
+    //         $row['TOTAL']
+    //     );
+    // }
+    // return $entries;
+
+    return $rows;
 }
 
 function readItemInvById($id) {
@@ -55,35 +57,39 @@ function readItemInvById($id) {
 function readItemInvByItemId($itemId) {
     global $database;
     $rows = $database->select('itemInv', '*', ['ITEM_ID' => $itemId]);
-    $entries = [];
-    foreach ($rows as $row) {
-        $entries[] = new ItemInv(
-            $row['ID'],
-            $row['INVOICE_ID'],
-            $row['ITEM_ID'],
-            $row['QTY'],
-            $row['PRICE'],
-            $row['TOTAL']
-        );
-    }
-    return $entries;
+    // $entries = [];
+    // foreach ($rows as $row) {
+    //     $entries[] = new ItemInv(
+    //         $row['ID'],
+    //         $row['INVOICE_ID'],
+    //         $row['ITEM_ID'],
+    //         $row['QTY'],
+    //         $row['PRICE'],
+    //         $row['TOTAL']
+    //     );
+    // }
+    // return $entries;
+
+    return $rows;
 }
 
 function readItemInvByInvoice($invoiceId) {
     global $database;
     $rows = $database->select('itemInv', '*', ['INVOICE_ID' => $invoiceId]);
-    $entries = [];
-    foreach ($rows as $row) {
-        $entries[] = new ItemInv(
-            $row['ID'],
-            $row['INVOICE_ID'],
-            $row['ITEM_ID'],
-            $row['QTY'],
-            $row['PRICE'],
-            $row['TOTAL']
-        );
-    }
-    return $entries;
+    // $entries = [];
+    // foreach ($rows as $row) {
+    //     $entries[] = new ItemInv(
+    //         $row['ID'],
+    //         $row['INVOICE_ID'],
+    //         $row['ITEM_ID'],
+    //         $row['QTY'],
+    //         $row['PRICE'],
+    //         $row['TOTAL']
+    //     );
+    // }
+    // return $entries;
+
+    return $rows;
 }
 
 function updateItemInv($id, $invoiceId, $itemId, $qty, $price) {
@@ -197,16 +203,18 @@ function createInvoice($customerId, $tanggal, $kode) {
 function readInvoices() {
     global $database;
     $rows = $database->select('invoice', '*');
-    $invoices = [];
-    foreach ($rows as $row) {
-        $invoices[] = new Invoice(
-            $row['ID'],
-            $row['KODE'],
-            $row['DATE'],
-            $row['CUSTOMER_ID']
-        );
-    }
-    return $invoices;
+    // $invoices = [];
+    // foreach ($rows as $row) {
+    //     $invoices[] = new Invoice(
+    //         $row['ID'],
+    //         $row['KODE'],
+    //         $row['DATE'],
+    //         $row['CUSTOMER_ID']
+    //     );
+    // }
+    // return $invoices;
+
+    return $rows;
 }
 
 function readInvoiceById($id) {
@@ -240,16 +248,18 @@ function readInvoiceByKode($kode) {
 function readInvoiceByCustomer($customerId) {
     global $database;
     $rows = $database->select('invoice', '*', ['CUSTOMER_ID' => $customerId]);
-    $invoices = [];
-    foreach ($rows as $row) {
-        $invoices[] = new Invoice(
-            $row['ID'],
-            $row['KODE'],
-            $row['DATE'],
-            $row['CUSTOMER_ID']
-        );
-    }
-    return $invoices;
+    // $invoices = [];
+    // foreach ($rows as $row) {
+    //     $invoices[] = new Invoice(
+    //         $row['ID'],
+    //         $row['KODE'],
+    //         $row['DATE'],
+    //         $row['CUSTOMER_ID']
+    //     );
+    // }
+    // return $invoices;
+
+    return $rows;
 }
 
 function readInvoiceByRangeDate($startDate, $endDate) {
@@ -257,16 +267,18 @@ function readInvoiceByRangeDate($startDate, $endDate) {
     $rows = $database->select("invoice", "*", [
         "DATE[<>]" => [$startDate, $endDate]
     ]);
-    $invoices = [];
-    foreach ($rows as $row) {
-        $invoices[] = new Invoice(
-            $row['ID'],
-            $row['KODE'],
-            $row['DATE'],
-            $row['CUSTOMER_ID']
-        );
-    }
-    return $invoices;
+    // $invoices = [];
+    // foreach ($rows as $row) {
+    //     $invoices[] = new Invoice(
+    //         $row['ID'],
+    //         $row['KODE'],
+    //         $row['DATE'],
+    //         $row['CUSTOMER_ID']
+    //     );
+    // }
+    // return $invoices;
+
+    return $rows;
 }
 
 function updateInvoice($id, $customerId, $tanggal, $kode) {
@@ -348,20 +360,62 @@ function searchInvoices(
     $rows = $database->select('invoice', '*', $conds);
 
     // 5) Wrap into objects and return
-    foreach ($rows as $r) {
-        if (!in_array($r['ID'], $addedIds, true)) {
-            $invoices[] = new Invoice(
-                $r['ID'],
-                $r['KODE'],
-                $r['DATE'],
-                $r['CUSTOMER_ID']
-            );
-            $addedIds[] = $r['ID'];
-        }
+    // foreach ($rows as $r) {
+    //     if (!in_array($r['ID'], $addedIds, true)) {
+    //         $invoices[] = new Invoice(
+    //             $r['ID'],
+    //             $r['KODE'],
+    //             $r['DATE'],
+    //             $r['CUSTOMER_ID']
+    //         );
+    //         $addedIds[] = $r['ID'];
+    //     }
+    // }
+
+    // return $invoices;
+
+    return $rows;
+}
+
+use Medoo\Raw;
+function SearchInvoicesWeek($mingguKe) {
+    global $database;
+    // Validasi input
+    if ($mingguKe < 1 || $mingguKe > 5) {
+        return ['error' => 'Minggu ke harus antara 1 dan 5'];
     }
 
-    return $invoices;
+    // Inisialisasi koneksi database (ganti sesuai konfigurasi kamu)
+
+    // Hitung tanggal awal dan akhir untuk minggu ke-n
+    $tanggalMulai = ($mingguKe - 1) * 7 + 1;
+    $tanggalAkhir = min($mingguKe * 7, 31); // Hindari lebih dari 31
+
+    // Ambil data invoice berdasarkan rentang hari dalam bulan
+    $data = $database->select('invoice', '*', [
+        'AND' => [
+            new Raw("DAY(`DATE`) >= $tanggalMulai"),
+            new Raw("DAY(`DATE`) <= $tanggalAkhir")
+        ]
+    ]);
+
+    // $invoices = [];
+
+    // foreach ($data as $r) {
+        
+    //         $invoices[] = new Invoice(
+    //             $r['ID'],
+    //             $r['KODE'],
+    //             $r['DATE'],
+    //             $r['CUSTOMER_ID']
+    //         );       
+    // }
+
+    // return $invoices;
+
+    return $data;
 }
+
 
 
 
@@ -378,30 +432,34 @@ function createCustomer($ref_no, $name) {
 function readCustomers() {
     global $database;
     $rows = $database->select('customers', '*');
-    $customers = [];
-    foreach ($rows as $row) {
-        $customers[] = new Customer(
-            $row['ID'],
-            $row['NAME'],
-            $row['REF_NO']
-        );
-    }
-    return $customers;
+    // $customers = [];
+    // foreach ($rows as $row) {
+    //     $customers[] = new Customer(
+    //         $row['ID'],
+    //         $row['NAME'],
+    //         $row['REF_NO']
+    //     );
+    // }
+    // return $customers;
+
+    return $rows;
 }
 
 function searchCustomersByName($query) {
     global $database;
     $queryStr = "%$query%";
     $rows = $database->select('customers', '*', ['NAME[~]' => $queryStr]);
-    $customers = [];
-    foreach ($rows as $row) {
-        $customers[] = new Customer(
-            $row['ID'],
-            $row['NAME'],
-            $row['REF_NO']
-        );
-    }
-    return $customers;
+    // $customers = [];
+    // foreach ($rows as $row) {
+    //     $customers[] = new Customer(
+    //         $row['ID'],
+    //         $row['NAME'],
+    //         $row['REF_NO']
+    //     );
+    // }
+    // return $customers;
+
+    return $rows;
 }
 
 
@@ -430,7 +488,7 @@ function readCustomerByRefNo($refNo) {
     global $database;
     $row = $database->get('customers', '*', ['REF_NO' => $refNo]);
     if ($row) {
-        return new Customer($row['ID'], $row['NAME'], $row['REF_NO'], $row['ADDRESS']);
+        return new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
     }
     return null;
 }
@@ -445,10 +503,12 @@ function searchCustomers($query) {
     ]);
 
     $customers = [];
-    foreach ($rows as $row) {
-        $customers[] = new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
-    }
-    return $customers;
+    // foreach ($rows as $row) {
+    //     $customers[] = new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
+    // }
+    // return $customers;
+
+    return $rows;
 }
 
 
@@ -475,30 +535,34 @@ function createSupplier($ref_no, $name) {
 function readSuppliers() {
     global $database;
     $rows = $database->select('suppliers', '*');
-    $suppliers = [];
-    foreach ($rows as $row) {
-        $suppliers[] = new Supplier(
-            $row['ID'],
-            $row['NAME'],
-            $row['REF_NO']
-        );
-    }
-    return $suppliers;
+    // $suppliers = [];
+    // foreach ($rows as $row) {
+    //     $suppliers[] = new Supplier(
+    //         $row['ID'],
+    //         $row['NAME'],
+    //         $row['REF_NO']
+    //     );
+    // }
+    // return $suppliers;
+
+    return $rows;
 }
 
 function searchSuppliersByName($query) {
     global $database;
     $queryStr = "%$query%";
     $rows = $database->select('suppliers', '*', ['NAME[~]' => $queryStr]);
-    $suppliers = [];
-    foreach ($rows as $row) {
-        $suppliers[] = new Supplier(
-            $row['ID'],
-            $row['NAME'],
-            $row['REF_NO']
-        );
-    }
-    return $suppliers;
+    // $suppliers = [];
+    // foreach ($rows as $row) {
+    //     $suppliers[] = new Supplier(
+    //         $row['ID'],
+    //         $row['NAME'],
+    //         $row['REF_NO']
+    //     );
+    // }
+    // return $suppliers;
+
+    return $rows;
 }
 
 
@@ -506,7 +570,7 @@ function readSupplierByRefNo($refNo) {
     global $database;
     $row = $database->get('suppliers', '*', ['REF_NO' => $refNo]);
     if ($row) {
-        return new Supplier($row['ID'], $row['NAME'], $row['REF_NO'], $row['ADDRESS']);
+        return new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
     }
     return null;
 }
@@ -520,11 +584,13 @@ function searchSuppliers($query) {
         ]
     ]);
 
-    $suppliers = [];
-    foreach ($rows as $row) {
-        $suppliers[] = new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
-    }
-    return $suppliers;
+    // $suppliers = [];
+    // foreach ($rows as $row) {
+    //     $suppliers[] = new Supplier($row['ID'], $row['NAME'], $row['REF_NO']);
+    // }
+    // return $suppliers;
+
+    return $rows;
 }
 
 
@@ -566,32 +632,36 @@ function createItem($ref_no, $name, $price) {
 function readItems() {
     global $database;
     $rows = $database->select('items', '*');
-    $items = [];
-    foreach ($rows as $row) {
-        $items[] = new Item(
-            $row['ID'],
-            $row['NAME'],
-            $row['REF_NO'],
-            $row['PRICE']
-        );
-    }
-    return $items;
+    // $items = [];
+    // foreach ($rows as $row) {
+    //     $items[] = new Item(
+    //         $row['ID'],
+    //         $row['NAME'],
+    //         $row['REF_NO'],
+    //         $row['PRICE']
+    //     );
+    // }
+    // return $items;
+
+    return $rows;
 }
 
 function searchItemsByName($query) {
     global $database;
     $queryStr = "%$query%";
     $rows = $database->select('items', '*', ['NAME[~]' => $queryStr]);
-    $items = [];
-    foreach ($rows as $row) {
-        $items[] = new Item(
-            $row['ID'],
-            $row['NAME'],
-            $row['REF_NO'],
-            $row['PRICE']
-        );
-    }
-    return $items;
+    // $items = [];
+    // foreach ($rows as $row) {
+    //     $items[] = new Item(
+    //         $row['ID'],
+    //         $row['NAME'],
+    //         $row['REF_NO'],
+    //         $row['PRICE']
+    //     );
+    // }
+    // return $items;
+
+    return $rows;
 }
 
 
@@ -661,16 +731,18 @@ function createItemCustomer($item_id, $customer_id, $harga) {
 function readItemCustomers() {
     global $database;
     $rows = $database->select('items_customers', '*');
-    $entries = [];
-    foreach ($rows as $row) {
-        $entries[] = new ItemCustomer(
-            $row['ID'],
-            $row['Item'],
-            $row['Customer'],
-            $row['Harga']
-        );
-    }
-    return $entries;
+    // $entries = [];
+    // foreach ($rows as $row) {
+    //     $entries[] = new ItemCustomer(
+    //         $row['ID'],
+    //         $row['Item'],
+    //         $row['Customer'],
+    //         $row['Harga']
+    //     );
+    // }
+    // return $entries;
+
+    return $rows;
 }
 
 function readItemCustomerById($id) {
@@ -682,31 +754,35 @@ function readItemCustomerById($id) {
 function readItemCustomerByCustomerId($customerId) {
     global $database;
     $rows = $database->select('items_customers', '*', ['Customer' => $customerId]);
-    $entries = [];
-    foreach ($rows as $row) {
-        $entries[] = new ItemCustomer(
-            $row['ID'],
-            $row['Item'],
-            $row['Customer'],
-            $row['Harga']
-        );
-    }
-    return $entries;
+    // $entries = [];
+    // foreach ($rows as $row) {
+    //     $entries[] = new ItemCustomer(
+    //         $row['ID'],
+    //         $row['Item'],
+    //         $row['Customer'],
+    //         $row['Harga']
+    //     );
+    // }
+    // return $entries;
+
+    return $rows;
 }
 
 function readItemCustomerByItemId($itemId) {
     global $database;
     $rows = $database->select('items_customers', '*', ['Item' => $itemId]);
-    $entries = [];
-    foreach ($rows as $row) {
-        $entries[] = new ItemCustomer(
-            $row['ID'],
-            $row['Item'],
-            $row['Customer'],
-            $row['Harga']
-        );
-    }
-    return $entries;
+    // $entries = [];
+    // foreach ($rows as $row) {
+    //     $entries[] = new ItemCustomer(
+    //         $row['ID'],
+    //         $row['Item'],
+    //         $row['Customer'],
+    //         $row['Harga']
+    //     );
+    // }
+    // return $entries;
+
+    return $rows;
 }
 
 function updateItemCustomer($id, $item_id, $customer_id, $harga) {
@@ -770,17 +846,19 @@ function searchItemCustomers($query) {
     }
 
     $rows = $database->select('items_customers', '*', $conds);
-    foreach ($rows as $row) {
-        if (! in_array($row['ID'], $addedIds, true)) {
-            $entries[]  = new ItemCustomer(
-                $row['ID'],
-                $row['Item'],
-                $row['Customer'],
-                $row['Harga']
-            );
-            $addedIds[] = $row['ID'];
-        }
-    }
+    // foreach ($rows as $row) {
+    //     if (! in_array($row['ID'], $addedIds, true)) {
+    //         $entries[]  = new ItemCustomer(
+    //             $row['ID'],
+    //             $row['Item'],
+    //             $row['Customer'],
+    //             $row['Harga']
+    //         );
+    //         $addedIds[] = $row['ID'];
+    //     }
+    // }
 
-    return $entries;
+    // return $entries;
+
+    return $rows;
 }

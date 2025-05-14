@@ -63,6 +63,7 @@ $ref_no = $_GET['ref_no'] ?? null;
                   <div class="card-body">
   <form method="post" action="../../Control/Control.php?type=customer&action=create">
 
+  <input type="text" value="<?= $id?>" name="id" hidden>
     <div class="mb-3">
       <label for="ref_no" class="form-label">REF_NO</label>
       <input

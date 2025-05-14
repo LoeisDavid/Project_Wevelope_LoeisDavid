@@ -133,7 +133,11 @@ $displayitem = $contain;
 <tbody>
 
                       <?php if (count($displayitem) > 0): ?>
-                        <?php foreach ($displayitem as $inv): ?>
+                        <?php foreach ($displayitem as $inv): 
+                          
+                          $inv=readItemById($inv['ID'])
+                          
+                          ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getRefNo()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars($inv->getName()) ?></td>
@@ -141,7 +145,7 @@ $displayitem = $contain;
 <td class="text-center align-middle">
 
                             
-                                <a href="editItems.php?method=get&amp;id=<?= $inv->getId() ?>&amp;ref_no=<?= urlencode($inv->getRefNo()) ?>&amp;name=<?= $inv->getName() ?>&amp;price=<?= $inv->getPrice() ?>" class="btn btn-sm btn-warning" title="Edit Item">
+                                <a href="inputItems.php?method=get&amp;id=<?= $inv->getId() ?>&amp;ref_no=<?= urlencode($inv->getRefNo()) ?>&amp;name=<?= $inv->getName() ?>&amp;price=<?= $inv->getPrice() ?>&kondisi=update" class="btn btn-sm btn-warning" title="Edit Item">
                                   <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <a href="?type=item&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Item ini?');" title="Delete Item">
