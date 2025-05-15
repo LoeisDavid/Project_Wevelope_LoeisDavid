@@ -100,7 +100,10 @@ $customerId = $_GET['customer'] ?? '';
                 <label for="customer" class="form-label">Customer</label>
                 <select name="customer_id" id="customer" class="form-select" required>
                   <option value="">-- Pilih Customer --</option>
-                  <?php foreach ($customers as $cust): ?>
+                  <?php foreach ($customers as $cust): 
+                    
+                    $cust = new Customer($cust['ID'],$cust['NAME'], $cust['REF_NO']);
+                    ?>
                     <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : ''?>><?= htmlspecialchars($cust->getName()) ?></option>
                   <?php endforeach; ?>
                 </select>

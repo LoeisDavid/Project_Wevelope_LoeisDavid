@@ -2,32 +2,34 @@
 
 include '../../Control/Control.php';
 
+$id = $_GET['id'] ?? NULL;
 $items = readItems();
-$kode = readInvoiceById($_GET['invoice'])->getKode();
-$invoice = $_GET['invoice'] ?? '';
-$customerId = $_GET['customer'] ?? '';
-$tanggal = $_GET['date'] ?? '';
+$invoice = readInvoiceById($_GET['invoice']);
+ $invoice_id = $invoice->getId();
+$item_id = null;
+$qty = null;
+$price = null;
+$tanggal = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-   // Ambil kode invoice dari form // Ubah method createInvoice sesuai dengan parameter // Ambil invoice berdasarkan kode
+if(isset($id)){
+  $iteminv = readItemInvById($id);
+  $invoice = readInvoiceById($iteminv->getInvoiceId());
+  $invoice_id = $invoice->getId();
+  $item_id = $iteminv->getItemId(); 
+  $qty = $iteminv->getQty();
+$price = $iteminv->getPrice();
 
-  $itemId = $_POST['item'] ?? '';
-  $qty = $_POST['qty'] ?? '';
-  $harga = $_POST['harga'] ?? null;
-
-  if ($itemId && $qty && $invoice) {
-    if($harga === ""){
-      $harga= readItemById($itemId)->getPrice();
-    }
-      createItemInv($invoice, $itemId, $qty, $harga);
-      $_SESSION['alert'] = ['type' => 'success', 'message' => 'Item berhasil ditambahkan ke invoice'];
-      header("Location: tableItemInv.php?invoice=$invoice");
-      exit;
-  } else {
-      $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Mohon isi semua field'];
-  }
+} else {
+  $kode = null;
 }
 
+ $kode = $invoice->getKode();
+
+
+// $kode = readInvoiceById($_GET['invoice'])->getKode();
+// $invoice = $_GET['invoice'] ?? '';
+// $customerId = $_GET['customer'] ?? '';
+// $tanggal = $_GET['date'] ?? '';
 ?>
 
 
@@ -76,31 +78,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="card card-primary card-outlinr mb-6">
           <div class="card-header text-center"><h4>Input Invoice</h4></div>
           <div class="card-body">
-          <form method="post" action="../../Control/Control.php?type=iteminv&action=create&invoice=<?=$invoice?>">
+          <form method="post" action="../../Control/Control.php?type=iteminv">
                 <div class="border rounded p-3 mb-3">
                 <div class="mb-3">
                 <input type="text" value="<?= $id?>" name="id" hidden>
+                <input type="text" value="<?= $invoice_id?>" name="invoice_id" hidden>
                     <label class="form-label">KODE INVOICE</label>
-                    <input type="number" name="id" class="form-control" value="<?= $kode ?>" disabled>
+                    <input type="text" name="kode" class="form-control" value="<?= $kode ?>" disabled>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Barang</label>
                     <select name="item_id" id="item_id" class="form-select" required>
       <option value="">-- Pilih Item --</option>
-      <?php foreach ($items as $item): ?>
-        <option value="<?= $item->getId() ?>" data-price="<?= $item->getPrice() ?>">
-          <?= $item->getName() ?>
+      <?php foreach ($items as $item): 
+        
+        $item = new Item($item['ID'], $item['NAME'], $item['REF_NO'], $item['PRICE']);
+        ?>
+       <option value="<?= $item->getId() ?>" <?= $item->getId() == $item_id ? 'selected' : '' ?>>
+                          <?= htmlspecialchars($item->getName()) ?>
         </option>
       <?php endforeach; ?>
     </select>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Qty</label>
-                    <input type="number" name="qty" class="form-control" required value="">
+                    <input type="number" name="qty" class="form-control" required value="<?= $qty?>">
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Harga</label>
-                    <input type="number" name="price" class="form-control" value="">
+                    <input type="number" name="price" class="form-control" value="<?= $price?>">
                     <div class="form-text">dapat dikosongi - apabila kosong maka akan mengikuti harga dasar dari item yang dipilih</div>
                   </div>
                   <button type="submit" class="btn btn-primary float-end">Tambah Item ke Invoice</button>

@@ -131,7 +131,7 @@ if ($method === 'POST') {
                 exit();
             } else {
                 setAlert('danger', 'Gagal memperbarui item customer.');
-                header("Location: ../pages/html/InputItemCustomers.php?name=$name&ref_no=$ref_no&price=$price&id=$id");
+                header("Location: ../pages/html/InputItemCustomers.php?id=$id");
                 exit();
             }
         }
@@ -163,7 +163,7 @@ if ($method === 'POST') {
             } else {
                 if (readCustomerByRefNo($ref_no)) {
                     setAlert('danger', 'Gagal memperbarui customer. Ref No sudah digunakan');
-                header("Location: ../pages/html/InputCustomers.php?name=$name&ref_no=$ref_no&id=$id");
+                header("Location: ../pages/html/InputCustomers.php?id=$id");
                 exit();
                 } else {
                     updateCustomer($_POST['id'], $ref_no, $_POST['name']);
@@ -206,7 +206,7 @@ if ($method === 'POST') {
                     exit();
                 } else {
                     setAlert('danger', 'Gagal memperbarui supplier. Ref No sudah digunakan.');
-                header("Location: ../pages/html/InputSuppliers.php?name=$name&ref_no=$ref_no&id=$id");
+                header("Location: ../pages/html/InputSuppliers.php?id=$id");
                 exit();
                 }
                 
@@ -245,7 +245,7 @@ if ($method === 'POST') {
                 exit();
                 } else {
                     setAlert('danger', 'Gagal memperbarui item. Ref No sudah digunakan.');
-                header("Location: ../pages/html/inputItems.php?name=$name&ref_no=$ref_no&price=$price&id=$id&kondisi=$action");
+                header("Location: ../pages/html/inputItems.php?id=$id");
                 exit();
                 }
                 
@@ -268,7 +268,7 @@ if ($method === 'POST') {
             
         } else {
             setAlert('danger', 'Gagal menambahkan invoice.');
-            header("Location: ../pages/html/inputInvoices.php?tanggal=$date&customer=$customer_id&kode=$kode&id=$id");
+            header("Location: ../pages/html/inputInvoices.php?id=$id");
             exit();
         }
 
@@ -291,7 +291,7 @@ if ($method === 'POST') {
             
         } else {
             setAlert('danger', 'Gagal memperbarui invoice.');
-            header("Location: ../pages/html/InputInvoices.php?date=$date&customer=$customer_id&kode=$kode&id=$id&kondisi=$kondisi");
+            header("Location: ../pages/html/InputInvoices.php?id=$id");
             exit();
         }
     }
@@ -302,10 +302,13 @@ if ($method === 'POST') {
 // ITEMINV
  else if ($type === 'iteminv') {
     $item_id = $_POST['item_id'] ?? NULL;
-    $invoice_id = $_GET['invoice'] ?? NULL;
+    $invoice_id = $_POST['invoice_id'] ?? NULL;
     $qty = $_POST['qty'] ?? 0;
-    $price = $_POST['price'] ?? readItemById($item_id);
-    $id = $_GET['id'];
+    $price = $_POST['price'] ?? 0;
+
+    if(!$price){
+        $price = readItemById($item_id)->getPrice();
+    }
 
     // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
 
@@ -317,18 +320,19 @@ if ($method === 'POST') {
         setAlert('success', 'Item dalam Invoice berhasil ditambahkan!');
         header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
         exit();
-    } else if ($action === 'update') {
-        $item = readItemInvById($id);   
-        if($item->getId()==$id && $item->getInvoiceId() == $invoice_id && $item->getItemId() == $item_id && $item->getPrice() == $price && $item->getQty() == $qty){
+    } else if ($action === 'update') {  
+        if(!($id && $invoice_id && $item_id && $price && $qty)){
             setAlert('danger', 'tidak ada yang diperbarui!');
             header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
             exit();
         } else {
-            if (updateItemInv($_GET['id'],$invoice_id, $item_id, $qty, $price)) {
-            
+            if (updateItemInv($id,$invoice_id, $item_id, $qty, $price)) {
+            setAlert('success', 'Item dalam Invoice berhasil diperbarui!');
+        header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
+        exit();
             } else {
                 setAlert('danger', 'Gagal memperbarui item invoice.');
-                header("Location: ../pages/html/InputItemInv.php?item_id=$item_id&invoice_id=$invoice_id&qty=$qty&price=$price&id=$id");
+                header("Location: ../pages/html/InputItemInv.php?id=$id");
                 exit();
             }
         }
