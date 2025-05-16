@@ -133,7 +133,7 @@ $displaySupplier = $contain;
                       <?php if (count($displaySupplier) > 0): ?>
                         <?php foreach ($displaySupplier as $inv): ;
                         
-                        $inv = readSupplierById($inv['ID']);
+                        $inv = new Supplier($inv['ID'],$inv['NAME'], $inv['REF_NO']);
 
                         ?>
                           <tr>

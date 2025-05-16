@@ -4,6 +4,139 @@
 
 require_once __DIR__ . '/connection.php'; // atau path sesuai struktur folder kamu
 
+// --------------------- Omzet ---------------------------
+
+function omzetDay() {
+    global $database;
+    
+    
+    $tahun = (int)2025; // pastikan integer
+
+$query = "
+    SELECT 
+    DATE(i.DATE) AS tgl,
+    SUM(iv.TOTAL) AS total_omzet,
+    GROUP_CONCAT(DISTINCT i.KODE ORDER BY i.KODE SEPARATOR ', ') AS daftar_kode_invoice
+FROM 
+    invoice i
+JOIN 
+    iteminv iv ON i.ID = iv.INVOICE_ID
+WHERE 
+    YEAR(i.DATE) = 2025
+GROUP BY 
+    tgl
+ORDER BY 
+    tgl;";
+
+
+$results = $database->query($query)->fetchAll();
+
+
+    // $invoices = [];
+
+    // foreach ($data as $r) {
+        
+    //         $invoices[] = new Invoice(
+    //             $r['ID'],
+    //             $r['KODE'],
+    //             $r['DATE'],
+    //             $r['CUSTOMER_ID']
+    //         );       
+    // }
+
+    // return $invoices;
+
+    return $results;
+}
+
+function omzetMonth() {
+    global $database;
+    
+    
+    $tahun = (int)2025; // pastikan integer
+
+$query = "
+    SELECT 
+    MONTH(i.DATE) AS tgl,
+    SUM(iv.TOTAL) AS total_omzet,
+    GROUP_CONCAT(DISTINCT i.KODE ORDER BY i.KODE SEPARATOR ', ') AS daftar_kode_invoice
+FROM 
+    invoice i
+JOIN 
+    iteminv iv ON i.ID = iv.INVOICE_ID
+WHERE 
+    YEAR(i.DATE) = 2025
+GROUP BY 
+    tgl
+ORDER BY 
+    tgl";
+
+
+$results = $database->query($query)->fetchAll();
+
+
+    // $invoices = [];
+
+    // foreach ($data as $r) {
+        
+    //         $invoices[] = new Invoice(
+    //             $r['ID'],
+    //             $r['KODE'],
+    //             $r['DATE'],
+    //             $r['CUSTOMER_ID']
+    //         );       
+    // }
+
+    // return $invoices;
+
+    return $results;
+}
+
+use Medoo\Medoo; 
+function omzetWeek() {
+    global $database;
+    
+    
+    $tahun = (int)2025; // pastikan integer
+
+$query = "
+    SELECT 
+    WEEK(i.DATE, 1) AS tgl,
+    SUM(iv.TOTAL) AS total_omzet,
+    GROUP_CONCAT(DISTINCT i.KODE ORDER BY i.KODE SEPARATOR ', ') AS kode_invoice
+FROM 
+    invoice i
+JOIN 
+    iteminv iv ON i.ID = iv.INVOICE_ID
+WHERE 
+    YEAR(i.DATE) = 2025
+GROUP BY 
+    tgl
+ORDER BY 
+    tgl;
+
+";
+
+$results = $database->query($query)->fetchAll();
+
+
+    // $invoices = [];
+
+    // foreach ($data as $r) {
+        
+    //         $invoices[] = new Invoice(
+    //             $r['ID'],
+    //             $r['KODE'],
+    //             $r['DATE'],
+    //             $r['CUSTOMER_ID']
+    //         );       
+    // }
+
+    // return $invoices;
+
+    return $results;
+}
+
 
 // ---------------------- ItemInv ----------------------
 function createItemInv($invoiceId, $itemId, $qty, $price) {
@@ -376,49 +509,6 @@ function searchInvoices(
 
     return $rows;
 }
-
-use Medoo\Raw;
-function SearchInvoicesWeek($mingguKe) {
-    global $database;
-    // Validasi input
-    if ($mingguKe < 1 || $mingguKe > 5) {
-        return ['error' => 'Minggu ke harus antara 1 dan 5'];
-    }
-
-    // Inisialisasi koneksi database (ganti sesuai konfigurasi kamu)
-
-    // Hitung tanggal awal dan akhir untuk minggu ke-n
-    $tanggalMulai = ($mingguKe - 1) * 7 + 1;
-    $tanggalAkhir = min($mingguKe * 7, 31); // Hindari lebih dari 31
-
-    // Ambil data invoice berdasarkan rentang hari dalam bulan
-    $data = $database->select('invoice', '*', [
-        'AND' => [
-            new Raw("DAY(`DATE`) >= $tanggalMulai"),
-            new Raw("DAY(`DATE`) <= $tanggalAkhir")
-        ]
-    ]);
-
-    // $invoices = [];
-
-    // foreach ($data as $r) {
-        
-    //         $invoices[] = new Invoice(
-    //             $r['ID'],
-    //             $r['KODE'],
-    //             $r['DATE'],
-    //             $r['CUSTOMER_ID']
-    //         );       
-    // }
-
-    // return $invoices;
-
-    return $data;
-}
-
-
-
-
 
 // ---------------------- Customers ----------------------
 function createCustomer($ref_no, $name) {

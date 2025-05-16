@@ -136,7 +136,7 @@ $items = $allitemCustomers;
                         $number=0;
                         foreach ($items as $i => $item): $number++;
                         
-                        $item = readItemInvById($item['ID']);
+                        $item = new ItemInv($item['ID'],$item['INVOICE_ID'],$item['ITEM_ID'],$item['QTY'],$item['PRICE'],$item['TOTAL']);
 
                         ?>
                         <tr>

@@ -135,7 +135,7 @@ $displayitem = $contain;
                       <?php if (count($displayitem) > 0): ?>
                         <?php foreach ($displayitem as $inv): 
                           
-                          $inv=readItemById($inv['ID'])
+                          $inv= new Item($inv['ID'],$inv['NAME'], $inv['REF_NO'], $inv['PRICE']);
                           
                           ?>
                           <tr>

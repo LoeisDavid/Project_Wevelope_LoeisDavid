@@ -1,3 +1,37 @@
+<?php
+include_once '../../Control/Control.php';
+
+$periode = $_GET['periode'] ?? 'harian';
+
+if($periode == 'harian'){
+  $displayInvoices=omzetDay();
+} elseif ($periode == 'mingguan'){
+  $displayInvoices=omzetWeek();
+} else {
+  $displayInvoices=omzetMonth();
+}
+                      
+                      $countPage = 5;
+
+$page=count($displayInvoices)/$countPage;
+$selectPage= $_GET['page'] ?? 0;
+$offset = $selectPage*$countPage;
+$contain= [];
+
+for ($i = 0; $i < $countPage; $i++) {
+  if ($offset >= count($displayInvoices)) {
+      break;
+  } else {
+      $contain[] = $displayInvoices[$offset];
+      $offset++;
+  }
+}
+
+$displayInvoices = $contain;
+                      
+
+?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -20,12 +54,12 @@
           <!-- Page Header -->
           <div class="row mb-3">
             <div class="col-sm-6">
-              <h3 class="mb-0">Customer Table</h3>
+              <h3 class="mb-0">Omzet</h3>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item"><a href="../../index.php">Dashboard</a></li>
-                <li class="breadcrumb-item active">Customer</li>
+                <li class="breadcrumb-item active">Omzet</li>
               </ol>
             </div>
           </div>
@@ -33,15 +67,81 @@
           <div class="row justify-content-center">
             <div class="col-lg-12">
               <!-- Search Form -->
-
-              <div class="card mb-4">
-                <div class="card-body">
-                
-                </div>
-              </div>
               <!-- Unified Table -->
 
-              <?php include "omzet/harian.php" ?>
+              <div class="card">
+                <div class="card-header">
+                  <div class="card-tools">
+              <ul class="nav nav-pills ml-auto">
+                <li class="nav-item">
+                  <a class="nav-link me-2 <?= ($_GET['periode'] ?? 'harian') == 'harian' ? 'active' : '' ?>" 
+                    href="?periode=harian">Harian</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link me-2 <?= ($_GET['periode'] ?? '') == 'mingguan' ? 'active' : '' ?>" 
+                    href="?periode=mingguan">Mingguan</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link me-2 <?= ($_GET['periode'] ?? '') == 'bulanan' ? 'active' : '' ?>" 
+                    href="?periode=bulanan">Bulanan</a>
+                </li>
+              </ul>
+
+            </div>
+                </div>
+                <div class="card-body">
+                  <table class="table table-bordered">
+                  <thead>
+  <tr>
+    <th class="text-center align-middle" style="width: 10%;"><?= $periode === 'bulanan' ? 'Periode (Bulan-Tahun)' : ($periode === 'mingguan' ? 'Periode (Minggu-ke)' : 'Tanggal')?></th>
+    <th class="text-end align-middle" style="width: 25%;">TOTAL</th>
+  </tr>
+</thead>
+<tbody>
+                      <?php 
+                      
+                      if (count($displayInvoices) > 0): ?>
+                        <?php foreach ($displayInvoices as $inv):
+                        
+                        ?>
+                            
+                          <tr>
+                          <td class="text-center align-middle"><?= htmlspecialchars($inv['tgl']) ?></td>
+<td class="text-end align-middle">Rp<?= htmlspecialchars($inv['total_omzet']) ?></td>
+                          </tr>
+                        <?php endforeach ?>
+                      <?php else: ?>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card-footer text-start clearfix">
+                  <ul class="pagination pagination-sm m-0 float-end">
+    <?php if($page > 1): ?>
+        <?php if($selectPage - 1 >= 0): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?= $selectPage - 1 ?>&periode=<?= $periode?>">«</a>
+            </li>
+        <?php endif; ?>
+
+        <?php for($i = 0; $i < $page; $i++): ?>
+            <li class="page-item <?= ($i == $selectPage) ? 'active' : '' ?>">
+                <a class="page-link" href="?page=<?= $i ?>&periode=<?= $periode?>">
+                    <?= htmlspecialchars($i + 1) ?>
+                </a>
+            </li>
+        <?php endfor; ?>
+
+        <?php if($selectPage + 1 < $page): ?>
+            <li class="page-item">
+                <a class="page-link" href="?page=<?= $selectPage + 1 ?>&periode=<?= $periode?>">»</a>
+            </li>
+        <?php endif; ?>
+    <?php endif; ?>
+</ul>
+
+                </div>
+              </div>
 
             </div>
           </div>

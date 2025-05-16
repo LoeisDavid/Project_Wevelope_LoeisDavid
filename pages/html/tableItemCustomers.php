@@ -20,9 +20,6 @@ if (
 
 $countPage = 5;
 
-// Fetch all data
-$allitemCustomers = readitemCustomers();
-
 // Get filters from query string
 $keyword     = $_GET['keyword']    ?? '';
 
@@ -34,7 +31,7 @@ if (
         $displayitemCustomer = searchitemCustomers($keyword);
         $isSearch = true;
 } else {
-    $displayitemCustomer = $allitemCustomers;
+    $displayitemCustomer = readitemCustomers();
     $isSearch = false;
 }
 
@@ -134,7 +131,7 @@ $displayitemCustomer = $contain;
                       <?php if (count($displayitemCustomer) > 0): ?>
                         <?php foreach ($displayitemCustomer as $inv): 
                           
-                          $inv=readItemCustomerById($inv['ID'])
+                          $inv= new ItemCustomer($inv['ID'],$inv['Item'],$inv['Customer'],$inv['Harga']);
                           ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars(readItemById($inv->getItem())->getName()) ?></td>

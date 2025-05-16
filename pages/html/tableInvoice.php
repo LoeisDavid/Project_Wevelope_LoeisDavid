@@ -129,7 +129,7 @@ $displayInvoices = $contain;
           <option value="">-- Pilih Customer --</option>
           <?php foreach ($customers as $cust): 
             
-            $cust = readCustomerById($cust['ID']);
+            $cust = new Customer($cust['ID'],$cust['NAME'], $cust['REF_NO']);
             ?>
             <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : '' ?>>
               <?= htmlspecialchars($cust->getName()) ?>
@@ -191,7 +191,7 @@ $displayInvoices = $contain;
                       <?php if (count($displayInvoices) > 0): ?>
                         <?php foreach ($displayInvoices as $inv): 
                           
-                          $inv=readInvoiceById($inv['ID'])
+                          $inv= new Invoice($inv['ID'],$inv['KODE'], $inv['DATE'], $inv['CUSTOMER_ID']);
                           ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>

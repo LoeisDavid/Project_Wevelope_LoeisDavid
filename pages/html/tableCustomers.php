@@ -131,7 +131,7 @@ $displayCustomer = $contain;
                       <?php if (count($displayCustomer) > 0): ?>
                         <?php foreach ($displayCustomer as $inv): 
                           
-                          $inv=readCustomerById($inv['ID']);
+                          $inv= new Customer($inv['ID'],$inv['NAME'], $inv['REF_NO']);
                           ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getRefNo()) ?></td>
