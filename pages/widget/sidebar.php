@@ -73,6 +73,12 @@ include_once __DIR__ . '/../../Control/Control.php';
             <p>Payments</p>
           </a>
         </li>
+        <li class="nav-item">
+          <a href="<?= $base_url ?>pages/html/tableBestSeller.php" class="nav-link">
+            <i class="nav-icon bi bi-fire"></i>
+            <p>Best Seller</p>
+          </a>
+        </li>
       </ul>
     </nav>
   </div>

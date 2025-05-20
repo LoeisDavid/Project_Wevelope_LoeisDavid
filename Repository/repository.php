@@ -264,6 +264,24 @@ function readItemInvs() {
     return $rows;
 }
 
+function itemBestSeller(){
+    global $database;
+    $query = "SELECT 
+    ITEM_ID AS item_id, 
+    SUM(QTY) AS total_qty
+FROM 
+    iteminv
+GROUP BY 
+    ITEM_ID
+ORDER BY 
+    total_qty DESC
+LIMIT 10;
+";
+
+$row = $database->query($query)->fetchAll();
+return $row;
+}
+
 function readItemInvById($id) {
     global $database;
     $row = $database->get('itemInv', '*', ['ID' => $id]);
