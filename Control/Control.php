@@ -12,6 +12,7 @@ require_once __DIR__ . '/../Models/Supplier.php';
 require_once __DIR__ . '/../Models/ItemCustomer.php';
 require_once __DIR__ . '/../Models/Invoice.php';
 require_once __DIR__ . '/../Models/ItemInv.php';
+require_once __DIR__ . '/../Models/Payment.php';
 require_once __DIR__ . '/../env.php';
 
 // if (!isset($_SESSION['executed'])) {
@@ -332,7 +333,40 @@ if ($method === 'POST') {
         exit();
             } else {
                 setAlert('danger', 'Gagal memperbarui item invoice.');
-                header("Location: ../pages/html/InputItemInv.php?id=$id");
+                header("Location: ../pages/html/inputItemInv.php?id=$id");
+                exit();
+            }
+        }
+    }
+
+    else {
+        echo "Invalid action.";
+    }
+} else if ($type === 'payment') {
+    $id = $_POST['id'] ?? null;
+    $nominal = $_POST['nominal'] ?? null;
+    $invoice = $_POST['invoice_id'] ?? null;
+
+    // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
+
+    if ($action === 'create') {
+        createPayment($nominal, $invoice , null);
+        setAlert('success', 'Berhasil melakukan pembayaran!');
+        header("Location: ../pages/html/tablePayments.php");
+        exit();
+    } else if ($action === 'update') {  
+        if(!($id && $nominal && $invoice)){
+            setAlert('danger', 'Payment tidak ditemukan!');
+            header("Location: ../pages/html/tablePayments.php");
+            exit();
+        } else {
+            if (updatePayment($id,$nominal, $invoice, null)) {
+            setAlert('success', 'Payment berhasil diperbarui!');
+        header("Location: ../pages/html/tablePayments.php");
+        exit();
+            } else {
+                setAlert('danger', 'Gagal memperbarui payment!');
+                header("Location: ../pages/html/inputPayment.php?id=$id");
                 exit();
             }
         }
@@ -366,8 +400,13 @@ if ($method === 'POST') {
             $success = deleteInvoice($id);
             $redirectUrl = '../html/tableInvoice.php';
         } else if ($type === 'iteminv') {
+            $type = 'item dalam invoice';
             $success = deleteItemInv($id);
-            $redirectUrl = '../html/tableItemInv.php?invoice';
+            $redirectUrl = '../pages/html/tableItemInv.php?invoice='. $_GET['invoice'];   
+        
+        } else if ($type === 'payment') {
+            $success = deletePayment(id: $id);
+            $redirectUrl = '../html/tablePayments.php';
         
         }
         if ($success) {

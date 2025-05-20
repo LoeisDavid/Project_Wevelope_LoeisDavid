@@ -151,7 +151,7 @@ $items = $allitemCustomers;
                               <a href="InputItemInv.php?method=get&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-warning" title="Edit ItemInv">
                                 <i class="bi bi-pencil-square"></i>
                               </a>
-                              <a href="?type=iteminv&action=delete&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus item ini?');" title="Delete Item">
+                              <a href="../../Control/Control.php?type=iteminv&action=delete&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus item ini?');" title="Delete Item">
                                 <i class="bi bi-trash"></i>
                               </a>
                             </div>

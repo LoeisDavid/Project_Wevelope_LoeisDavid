@@ -60,6 +60,19 @@ include_once __DIR__ . '/../../Control/Control.php';
           </a>
         </li>
         
+        <li class="nav-item">
+          <a href="<?= $base_url ?>pages/html/omzet.php" class="nav-link">
+            <i class="nav-icon bi bi-bookmark-fill"></i>
+            <p>Omzet</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="<?= $base_url ?>pages/html/tablePayments.php" class="nav-link">
+            <i class="nav-icon bi bi-bookmark-fill"></i>
+            <p>Payments</p>
+          </a>
+        </li>
       </ul>
     </nav>
   </div>

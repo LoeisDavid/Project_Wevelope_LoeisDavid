@@ -4,6 +4,99 @@
 
 require_once __DIR__ . '/connection.php'; // atau path sesuai struktur folder kamu
 
+// ---------------------- Payment ----------------------
+
+function createPayment($nominal, $idInvoice, $tanggal = null) {
+    global $database;
+
+    $data = [
+        'NOMINAL'     => $nominal,
+        'ID_INVOICE'  => $idInvoice,
+        'DATE'        => $tanggal ?? date('Y-m-d')  // pakai tanggal sekarang jika null
+    ];
+    
+    return (bool) $database->insert('payment', $data);
+}
+
+function readPayments() {
+    global $database;
+    return $database->select('payment', '*');
+}
+
+function readPaymentById($id) {
+    global $database;
+    $row = $database->get('payment', '*', ['ID' => $id]);
+    if ($row) {
+        return new Payment(
+            $row['ID'],
+            $row['DATE'],
+            $row['NOMINAL'],
+            $row['ID_INVOICE']
+        );
+    }
+    return null;
+}
+
+function readPaymentByInvoice($idInvoice) {
+    global $database;
+    return $database->select('payment', '*', ['ID_INVOICE' => $idInvoice]);
+}
+
+function readPaymentByRangeDate($startDate, $endDate) {
+    global $database;
+    return $database->select('payment', '*', [
+        'DATE[<>]' => [$startDate, $endDate]
+    ]);
+}
+
+function updatePayment($id, $nominal, $idInvoice, $tanggal = null) {
+    global $database;
+    $data = [
+        'NOMINAL'     => $nominal,
+        'ID_INVOICE'  => $idInvoice,
+        'DATE'        => $tanggal ?? date('Y-m-d')
+    ];
+    return (bool) $database->update('payment', $data, ['ID' => $id])->rowCount();
+}
+
+function deletePayment($id) {
+    global $database;
+    try {
+        return (bool) $database->delete('payment', ['ID' => $id]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function searchPayments($idInvoice = null, $startDate = null, $endDate = null, $minNominal = null, $maxNominal = null) {
+    global $database;
+
+    $conditions = ['AND' => []];
+
+    if ($idInvoice !== null) {
+        $conditions['AND']['ID_INVOICE'] = $idInvoice;
+    }
+
+    if ($startDate !== null && $endDate !== null) {
+        $conditions['AND']['DATE[<>]'] = [$startDate, $endDate];
+    } elseif ($startDate !== null) {
+        $conditions['AND']['DATE[>=]'] = $startDate;
+    } elseif ($endDate !== null) {
+        $conditions['AND']['DATE[<=]'] = $endDate;
+    }
+
+    if ($minNominal !== null) {
+        $conditions['AND']['NOMINAL[>=]'] = $minNominal;
+    }
+
+    if ($maxNominal !== null) {
+        $conditions['AND']['NOMINAL[<=]'] = $maxNominal;
+    }
+
+    return $database->select('payment', '*', $conditions);
+}
+
+
 // --------------------- Omzet ---------------------------
 
 function omzetDay() {

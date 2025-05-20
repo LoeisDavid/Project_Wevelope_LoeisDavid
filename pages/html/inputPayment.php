@@ -2,34 +2,26 @@
 
 include '../../Control/Control.php';
 
-$id = $_GET['id'] ?? NULL;
-$items = readItems();
-$invoice = readInvoiceById($_GET['invoice']);
- $invoice_id = $invoice->getId();
-$item_id = null;
-$qty = null;
-$price = null;
-$tanggal = null;
+$id = $_GET['id'] ?? null;
+$date = $_GET['date'] ?? null;
+$nominal = $_GET['nominal'] ?? null;
+$invoice_id = $_GET['invoice'] ?? null;
 
-if(isset($id)){
-  $iteminv = readItemInvById($id);
-  $invoice = readInvoiceById($iteminv->getInvoiceId());
-  $invoice_id = $invoice->getId();
-  $item_id = $iteminv->getItemId(); 
-  $qty = $iteminv->getQty();
-$price = $iteminv->getPrice();
-
-} else {
-  $kode = null;
+if ($id) {
+	$payment = readPaymentById($id);
+    $date = $payment->getDate();
+    $nominal = $payment->getNomial();
+    $invoice_id = $payment->getInvoice();
 }
 
- $kode = $invoice->getKode();
+$invoice = readInvoiceById($invoice_id);
 
+$allinvoice= null;
 
-// $kode = readInvoiceById($_GET['invoice'])->getKode();
-// $invoice = $_GET['invoice'] ?? '';
-// $customerId = $_GET['customer'] ?? '';
-// $tanggal = $_GET['date'] ?? '';
+if (!$invoice) {
+	$items=readInvoices();
+}
+
 ?>
 
 
@@ -76,46 +68,60 @@ $price = $iteminv->getPrice();
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
           <main class="app-main">
         <div class="card card-primary card-outlinr mb-6">
-          <div class="card-header text-center"><h4>Input Invoice</h4></div>
+          <div class="card-header text-center"><h4>Payment</h4></div>
           <div class="card-body">
-          <form method="post" action="../../Control/Control.php?type=iteminv">
+          <?php if($invoice) : ?>
+          <form method="post" action="../../Control/Control.php?type=payment">
                 <div class="border rounded p-3 mb-3">
                 <div class="mb-3">
                 <input type="text" value="<?= $id?>" name="id" hidden>
-                <input type="text" value="<?= $invoice_id?>" name="invoice_id" hidden>
+                <input type="text" value="<?= $invoice->getId()?>" name="invoice_id" hidden>
                     <label class="form-label">KODE INVOICE</label>
-                    <input type="text" name="kode" class="form-control" value="<?= $kode ?>" disabled>
+                    <input type="text" name="kode" class="form-control" value="<?= $invoice->getKode() ?>" disabled>
                   </div>
                   <div class="mb-3">
-                    <label class="form-label">Barang</label>
-                    <select name="item_id" id="item_id" class="form-select" required>
+                    <label class="form-label">Nominal Pembayaran</label>
+                    <div class="input-group mb-3">
+      <span class="input-group-text">Rp</span>
+      <input
+        type="number"
+        class="form-control"
+        name="nominal"
+        value="<?=$nominal ?>"
+        required
+      />
+    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary float-end">Bayar</button>
+<a href="?" class="btn btn-secondary">Back
+
+</a>
+
+                </div>
+                    
+            </form>
+            <?php else: ?>
+            <form method="get" action="?">
+              <div class="border rounded p-3 mb-3">
+
+                <div class="mb-3">
+                    <label class="form-label">KODE INVOICE</label>
+                   <select name="invoice" id="invoice" class="form-select" required>
       <option value="">-- Pilih Item --</option>
       <?php foreach ($items as $item): 
         
-        $item = new Item($item['ID'], $item['NAME'], $item['REF_NO'], $item['PRICE']);
         ?>
-       <option value="<?= $item->getId() ?>" <?= $item->getId() == $item_id ? 'selected' : '' ?>>
-                          <?= htmlspecialchars($item->getName()) ?>
+       <option value="<?= $item['ID'] ?>">
+                          <?= htmlspecialchars($item['KODE']) ?>
         </option>
       <?php endforeach; ?>
     </select>
                   </div>
-                  <div class="mb-3">
-                    <label class="form-label">Qty</label>
-                    <input type="number" name="qty" class="form-control" required value="<?= $qty?>">
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Harga</label>
-                    <?php //var_dump($price);die();?>
-                    <input type="text" name="price" class="form-control" value="<?= $price?>">
-                    <div class="form-text">dapat dikosongi - apabila kosong maka akan mengikuti harga dasar dari item yang dipilih</div>
-                  </div>
                   <button type="submit" class="btn btn-primary float-end">Tambah Item ke Invoice</button>
-<a href="tableItemInv.php?invoice=<?= $invoice ?>" class="btn btn-secondary">Cancel</a>
-
-                </div>
-                
-            </form>
+            <a href="tablePayments.php" class="btn btn-secondary">Cancel</a>
+          </div>        
+          </form>
+            <?php endif; ?>
         </div>
     </main>
     <!--end::App Main-->
