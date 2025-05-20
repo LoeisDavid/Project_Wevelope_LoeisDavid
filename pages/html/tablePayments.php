@@ -167,8 +167,8 @@ $displayPayments = $contain;
   
 
                               <div class="btn-group" role="group">
-                                <a href="tableItemInv.php?invoice=<?= $inv->getId() ?>" class="btn btn-sm btn-info" title="Lihat Detail">
-                                  <i class="bi bi-eye"></i>
+                                <a href="inputPayment.php?id=<?= $inv->getId() ?>" class="btn btn-sm btn-warning" title="Lihat Detail">
+                                  <i class="bi bi-pencil"></i>
                                 </a>
                                 <a href="?type=payment&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
                                   <i class="bi bi-trash"></i>

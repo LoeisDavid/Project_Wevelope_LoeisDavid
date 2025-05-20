@@ -183,13 +183,23 @@ $displayInvoices = $contain;
     <th class="text-start align-middle" style="width: 10%;">KODE</th>
     <th class="text-start align-middle" style="width: 20%;">TANGGAL</th>
     <th class="text-start align-middle" style="width: 40%;">CUSTOMER</th>
+    <th class="text-start align-middle" style="width: 20%;">KODE CUSTOMR</th>
+    <th class="text-start align-middle" style="width: 20%;">GRAND TOTAL</th>
+        <th class="text-start align-middle" style="width: 20%;">STATUS</th>
     <th class="text-center align-middle" style="width: 10%;">ACTIONS</th>
   </tr>
 </thead>
 <tbody>
 
-                      <?php if (count($displayInvoices) > 0): ?>
-                        <?php foreach ($displayInvoices as $inv): 
+                      <?php if (count($displayInvoices) > 0): $index=0;?>
+                        <?php foreach ($displayInvoices as $inv):
+                        $status = invoiceStatusById($inv['ID']);
+                        $grand = invoiceGrandTotalById($inv['ID']);
+                        if(!$grand){
+                          $total=0;
+                        } else {
+                          $total=$grand;
+                        }
                           
                           $inv= new Invoice($inv['ID'],$inv['KODE'], $inv['DATE'], $inv['CUSTOMER_ID']);
                           ?>
@@ -197,6 +207,9 @@ $displayInvoices = $contain;
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?></td>
+<td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
+<td class="text-start align-middle"><?= htmlspecialchars($total) ?></td>
+<td class="text-start align-middle"><?= htmlspecialchars($status['status']) ?></td>
 <td class="text-center align-middle">
 
                               <div class="btn-group" role="group">

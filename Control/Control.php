@@ -350,12 +350,24 @@ if ($method === 'POST') {
     // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
 
     if ($action === 'create') {
-        createPayment($nominal, $invoice , null);
+        $countainer= invoiceTersisa($invoice); 
+        if($nominal+$countainer['total_payment']<=$countainer['grand_total']){
+            createPayment($nominal, $invoice , null);
         setAlert('success', 'Berhasil melakukan pembayaran!');
         header("Location: ../pages/html/tablePayments.php");
         exit();
+        } else {
+            setAlert('danger', 'Gagal melakukan payment!');
+                header("Location: ../pages/html/inputPayment.php?invoice=$id");
+                exit();
+        }
+        
     } else if ($action === 'update') {  
-        if(!($id && $nominal && $invoice)){
+        $countainer= invoiceTersisa($id);
+        $payment= readPaymentById($id);
+
+        if($countainer['total_payment']-$payment->getNomial()+$nominal<=$countainer['grand_total']){
+            if(!($id && $nominal && $invoice)){
             setAlert('danger', 'Payment tidak ditemukan!');
             header("Location: ../pages/html/tablePayments.php");
             exit();
@@ -370,6 +382,12 @@ if ($method === 'POST') {
                 exit();
             }
         }
+        } else {
+            setAlert('danger', 'Gagal memperbarui payment!');
+                header("Location: ../pages/html/inputPayment.php?id=$id");
+                exit();
+        }
+        
     }
 
     else {

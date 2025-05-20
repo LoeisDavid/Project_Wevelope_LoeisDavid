@@ -115,7 +115,7 @@ FROM
 JOIN 
     iteminv iv ON i.ID = iv.INVOICE_ID
 WHERE 
-    YEAR(i.DATE) = 2025
+    YEAR(i.DATE) = $tahun
 GROUP BY 
     tgl
 ORDER BY 
@@ -158,7 +158,7 @@ FROM
 JOIN 
     iteminv iv ON i.ID = iv.INVOICE_ID
 WHERE 
-    YEAR(i.DATE) = 2025
+    YEAR(i.DATE) = $tahun
 GROUP BY 
     tgl
 ORDER BY 
@@ -202,7 +202,7 @@ FROM
 JOIN 
     iteminv iv ON i.ID = iv.INVOICE_ID
 WHERE 
-    YEAR(i.DATE) = 2025
+    YEAR(i.DATE) = $tahun
 GROUP BY 
     tgl
 ORDER BY 
@@ -426,8 +426,83 @@ function createInvoice($customerId, $tanggal, $kode) {
     return (bool) $database->insert('invoice', $data);
 }
 
+function invoiceGrandTotalById($id){
+    global $database;
+    $query = "SELECT SUM(TOTAL) AS grand_total
+FROM iteminv
+WHERE INVOICE_ID = $id;
+";
+
+$row = $database->query($query)->fetch();
+return $row['grand_total'];
+}
+
+function invoiceGrandTotal(){
+    global $database;
+    $query = "SELECT INVOICE_ID, SUM(TOTAL) AS grand_total
+FROM iteminv
+GROUP BY INVOICE_ID;
+";
+
+$row = $database->query($query)->fetchAll();
+if($row){
+return $row;
+} else {
+    return null;
+}
+}
+
+function invoiceStatusById($id){
+    global $database;
+    $query = "SELECT 
+    i.ID AS invoice_id,
+    IFNULL(SUM(ii.TOTAL), 0) AS grand_total,
+    IFNULL(SUM(p.NOMINAL), 0) AS total_payment,
+    CASE 
+        WHEN IFNULL(SUM(p.NOMINAL), 0) >= IFNULL(SUM(ii.TOTAL), 0) THEN 'Lunas'
+        ELSE 'Belum Lunas'
+    END AS status
+FROM invoice i
+LEFT JOIN iteminv ii ON ii.INVOICE_ID = i.ID
+LEFT JOIN payment p ON p.ID_INVOICE = i.ID
+WHERE i.ID = $id
+GROUP BY i.ID;
+
+";
+
+$row = $database->query($query)->fetch();
+if($row){
+return $row;
+} else {
+    return null;
+}
+}
+
+function invoiceTersisa($id){
+    global $database;
+    $query = "SELECT 
+    IFNULL(SUM(ii.TOTAL), 0) AS grand_total,
+    IFNULL(SUM(p.NOMINAL), 0) AS total_payment
+FROM invoice i
+LEFT JOIN iteminv ii ON ii.INVOICE_ID = i.ID
+LEFT JOIN payment p ON p.ID_INVOICE = i.ID
+WHERE i.ID = $id
+GROUP BY i.ID;
+
+";
+
+$row = $database->query($query)->fetch();
+if($row){
+return $row;
+} else {
+    return null;
+}
+
+}
+
 function readInvoices() {
     global $database;
+    $row= [];
     $rows = $database->select('invoice', '*');
     // $invoices = [];
     // foreach ($rows as $row) {
@@ -439,7 +514,7 @@ function readInvoices() {
     //     );
     // }
     // return $invoices;
-
+    // var_dump($rows[101]);die();
     return $rows;
 }
 
