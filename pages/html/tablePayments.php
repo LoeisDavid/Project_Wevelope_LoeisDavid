@@ -24,7 +24,7 @@ if (
         $endDate = $startDate;
       }
 
-        $displayPayments = searchPayments($keyword,$startDate,$endDate, $keyword);
+        $displayPayments = searchPayments($startDate,$endDate, $keyword);
     } else {
         $displayPayments = readPaymentByRangeDate($startDate, $endDate);
     }

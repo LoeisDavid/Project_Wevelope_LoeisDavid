@@ -363,7 +363,7 @@ if ($method === 'POST') {
         }
         
     } else if ($action === 'update') {  
-        $countainer= invoiceTersisa($id);
+        $countainer= invoiceTersisa($invoice);
         $payment= readPaymentById($id);
 
         if($countainer['total_payment']-$payment->getNomial()+$nominal<=$countainer['grand_total']){

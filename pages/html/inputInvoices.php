@@ -87,8 +87,9 @@ $customerId = $_GET['customer'] ?? '';
     <?php include __DIR__ . '/../widget/header.php'; ?>
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
           <main class="app-main">
-        <div class="card card-primary card-outlinr mb-6">
-          <div class="card-header text-center"><h4>Input Invoice</h4></div>
+            <div class="app-content-header">
+        <div class="card card-success card-outline mb-12">
+          <div class="card-header text-center"><h4>Invoice</h4></div>
           <div class="card-body">
             <form method="POST" action="../../Control/Control.php?type=invoice">
             <input type="text" value="<?= $id?>" name="id" hidden>

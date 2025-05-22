@@ -3,7 +3,8 @@ include_once '../../Control/Control.php';
 $id = $_GET['id'] ?? null;
 // $name = $_GET['name'] ?? null;
 // $ref_no = $_GET['ref_no'] ?? null;
-
+$name = null;
+$ref_no = null;
 if($id){
   $name = readCustomerById($id)->getName();
   $ref_no = readCustomerById($id)->getRefNo();

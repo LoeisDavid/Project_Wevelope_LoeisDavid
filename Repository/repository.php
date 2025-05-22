@@ -68,33 +68,46 @@ function deletePayment($id) {
     }
 }
 
-function searchPayments($idInvoice = null, $startDate = null, $endDate = null, $minNominal = null, $maxNominal = null) {
+function searchPayments($startDate = null, $endDate = null, $keyword = '') {
     global $database;
 
-    $conditions = ['AND' => []];
+    // Base SQL
+    $sql = "
+        SELECT payment.*
+        FROM payment
+        LEFT JOIN invoice ON payment.ID_INVOICE = invoice.ID
+        WHERE 1 = 1
+    ";
 
-    if ($idInvoice !== null) {
-        $conditions['AND']['ID_INVOICE'] = $idInvoice;
+    $params = [];
+
+    // Filter tanggal
+    if (!empty($startDate) && !empty($endDate)) {
+        $sql .= " AND payment.DATE BETWEEN :start AND :end";
+        $params[':start'] = $startDate;
+        $params[':end'] = $endDate;
+    } elseif (!empty($startDate)) {
+        $sql .= " AND payment.DATE >= :start";
+        $params[':start'] = $startDate;
+    } elseif (!empty($endDate)) {
+        $sql .= " AND payment.DATE <= :end";
+        $params[':end'] = $endDate;
     }
 
-    if ($startDate !== null && $endDate !== null) {
-        $conditions['AND']['DATE[<>]'] = [$startDate, $endDate];
-    } elseif ($startDate !== null) {
-        $conditions['AND']['DATE[>=]'] = $startDate;
-    } elseif ($endDate !== null) {
-        $conditions['AND']['DATE[<=]'] = $endDate;
+    // Filter keyword (pada NOMINAL atau invoice.KODE)
+    if (!empty($keyword)) {
+        $sql .= " AND (
+            payment.NOMINAL LIKE :kw OR
+            invoice.KODE LIKE :kw
+        )";
+        $params[':kw'] = "%$keyword%";
     }
 
-    if ($minNominal !== null) {
-        $conditions['AND']['NOMINAL[>=]'] = $minNominal;
-    }
-
-    if ($maxNominal !== null) {
-        $conditions['AND']['NOMINAL[<=]'] = $maxNominal;
-    }
-
-    return $database->select('payment', '*', $conditions);
+    // Eksekusi query
+    $stmt = $database->query($sql, $params);
+    return $stmt->fetchAll();
 }
+
 
 
 // --------------------- Omzet ---------------------------

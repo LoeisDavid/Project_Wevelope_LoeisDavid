@@ -109,6 +109,9 @@ $items = $allitemCustomers;
   <a href="printInvoice.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
     <i class="bi bi-printer"></i> Print Invoice
   </a>
+  <a href="inputPayment.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
+    <i class="bi bi-calendar3"></i> Payment
+  </a>
   
 </div>
 

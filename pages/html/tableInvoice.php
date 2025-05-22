@@ -184,7 +184,7 @@ $displayInvoices = $contain;
     <th class="text-start align-middle" style="width: 20%;">TANGGAL</th>
     <th class="text-start align-middle" style="width: 40%;">CUSTOMER</th>
     <th class="text-start align-middle" style="width: 20%;">KODE CUSTOMR</th>
-    <th class="text-start align-middle" style="width: 20%;">GRAND TOTAL</th>
+    <th class="text-end align-middle" style="width: 20%;">GRAND TOTAL</th>
         <th class="text-start align-middle" style="width: 20%;">STATUS</th>
     <th class="text-center align-middle" style="width: 10%;">ACTIONS</th>
   </tr>
@@ -195,6 +195,7 @@ $displayInvoices = $contain;
                         <?php foreach ($displayInvoices as $inv):
                         $status = invoiceStatusById($inv['ID']);
                         $grand = invoiceGrandTotalById($inv['ID']);
+                         $warna = $status['status']=='Lunas' ? 'bg-success' : 'bg-danger';
                         if(!$grand){
                           $total=0;
                         } else {
@@ -207,9 +208,11 @@ $displayInvoices = $contain;
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?></td>
-<td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
-<td class="text-start align-middle"><?= htmlspecialchars($total) ?></td>
-<td class="text-start align-middle"><?= htmlspecialchars($status['status']) ?></td>
+<td class="text-start align-middle"><?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getRefNo()) ?></td>
+<td class="text-end align-middle">Rp<?=number_format($total, 0, ',', '.')  ?></td>
+<td class="text-start align-middle"><span class="badge <?= $warna ?>">
+                            <i class="bi bi-cash-coin me-1"></i> Status: <?= $status['status'] ?>
+                              </span></td>
 <td class="text-center align-middle">
 
                               <div class="btn-group" role="group">

@@ -75,8 +75,9 @@ $price = $iteminv->getPrice();
     <?php include __DIR__ . '/../widget/header.php'; ?>
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
           <main class="app-main">
-        <div class="card card-primary card-outlinr mb-6">
-          <div class="card-header text-center"><h4>Input Invoice</h4></div>
+            <div class="app-content-header">
+        <div class="card card-success card-outline mb-12">
+          <div class="card-header text-center"><h4>Detail Invoice</h4></div>
           <div class="card-body">
           <form method="post" action="../../Control/Control.php?type=iteminv">
                 <div class="border rounded p-3 mb-3">
@@ -116,6 +117,7 @@ $price = $iteminv->getPrice();
                 </div>
                 
             </form>
+        </div>
         </div>
     </main>
     <!--end::App Main-->

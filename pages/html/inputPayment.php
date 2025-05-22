@@ -67,7 +67,8 @@ if (!$invoice) {
     <?php include __DIR__ . '/../widget/header.php'; ?>
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
           <main class="app-main">
-        <div class="card card-primary card-outlinr mb-6">
+            <div class="app-content-header">
+        <div class="card card-success card-outline mb-12">
           <div class="card-header text-center"><h4>Payment</h4></div>
           <div class="card-body">
           <?php if($invoice) : ?>
@@ -117,11 +118,12 @@ if (!$invoice) {
       <?php endforeach; ?>
     </select>
                   </div>
-                  <button type="submit" class="btn btn-primary float-end">Tambah Item ke Invoice</button>
+                  <button type="submit" class="btn btn-primary float-end">Next</button>
             <a href="tablePayments.php" class="btn btn-secondary">Cancel</a>
           </div>        
           </form>
             <?php endif; ?>
+        </div>
         </div>
     </main>
     <!--end::App Main-->
