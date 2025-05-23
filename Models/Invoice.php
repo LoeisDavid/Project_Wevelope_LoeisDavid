@@ -5,18 +5,26 @@ class Invoice {
     private $kode;  // Mengganti refNo dengan kode
     private $date;
     private $customerId;
+    private $notes;
+    private $deadline;
 
     // Constructor
-    public function __construct($id, $kode, $date, $customerId) {
+    public function __construct($id, $kode, $date, $customerId, $deadline,$notes='') {
         $this->id = $id;
         $this->kode = $kode;  // Menginisialisasi kode
         $this->date = $date;
         $this->customerId = $customerId;
+        $this->notes = $notes;
+        $this->deadline = $deadline;
     }
 
     // Getter and Setter for ID
     public function getId() {
         return $this->id;
+    }
+
+    public function getNotes(){
+        return $this->notes;
     }
 
     public function setId($id) {
@@ -48,6 +56,14 @@ class Invoice {
 
     public function setCustomerId($customerId) {
         $this->customerId = $customerId;
+    }
+
+    public function setNotes($notes){
+        $this->notes = $notes;
+    }
+
+    public function getDeadline(){
+        return $this->deadline;
     }
 }
 

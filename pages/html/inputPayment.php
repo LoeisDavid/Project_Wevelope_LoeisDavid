@@ -6,12 +6,14 @@ $id = $_GET['id'] ?? null;
 $date = $_GET['date'] ?? null;
 $nominal = $_GET['nominal'] ?? null;
 $invoice_id = $_GET['invoice'] ?? null;
+$notes = $_GET['notes'] ?? null;
 
 if ($id) {
 	$payment = readPaymentById($id);
     $date = $payment->getDate();
     $nominal = $payment->getNomial();
     $invoice_id = $payment->getInvoice();
+    $notes = $payment->getNotes();
 }
 
 $invoice = readInvoiceById($invoice_id);
@@ -71,7 +73,9 @@ if (!$invoice) {
         <div class="card card-success card-outline mb-12">
           <div class="card-header text-center"><h4>Payment</h4></div>
           <div class="card-body">
-          <?php if($invoice) : ?>
+          <?php if($invoice) : ;
+            $hasil= invoiceTersisa($invoice->getId());
+            ?>
           <form method="post" action="../../Control/Control.php?type=payment">
                 <div class="border rounded p-3 mb-3">
                 <div class="mb-3">
@@ -79,6 +83,16 @@ if (!$invoice) {
                 <input type="text" value="<?= $invoice->getId()?>" name="invoice_id" hidden>
                     <label class="form-label">KODE INVOICE</label>
                     <input type="text" name="kode" class="form-control" value="<?= $invoice->getKode() ?>" disabled>
+                  </div>
+                  <div>
+                    <label class="form-label">
+                      Total yang perlu dibayarkan : Rp<?=number_format($hasil['grand_total'], 0, ',', '.')  ?>
+                    </label>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">
+                      Sisa yang perlu dibayarkan : Rp<?= number_format($hasil['grand_total']-$hasil['total_payment'], 0, ',', '.')?>
+                    </label>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Nominal Pembayaran</label>
@@ -92,7 +106,22 @@ if (!$invoice) {
         required
       />
     </div>
+    <div class="mb-3">
+                <label for="tanggal" class="form-label">Tanggal</label>
+                <input type="date" name="date" id="tanggal" class="form-control" value="<?= $date ?>">
+              <div class="form-text">dapat dikosongi - apabila kosong maka akan mengikuti tanggal saat ini</div>
+              </div>
                   </div>
+                  <div class="mb-3">
+      <label for="notes" class="form-label">Notes</label>
+      <textarea rows="5"
+        type="text"
+        class="form-control"
+        id="notes"
+        name="notes"
+        value="<?=$notes?>"
+      ></textarea>
+    </div>
                   <button type="submit" class="btn btn-primary float-end">Bayar</button>
 <a href="?" class="btn btn-secondary">Back
 

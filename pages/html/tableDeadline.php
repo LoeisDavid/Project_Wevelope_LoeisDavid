@@ -19,7 +19,7 @@ if (
 }
 
 // Fetch all data
-$allInvoices = readInvoices();
+$allInvoices = invoiceGetIdCustomerDeadline();
 $customers   = readCustomers();
 
 // Get filters from query string
@@ -111,60 +111,7 @@ $displayInvoices = $contain;
             <div class="col-lg-12">
               <!-- Alert Delete -->
               <!-- Search Form -->
-              <div class="card mb-4">
-  <div class="card-body">
-    <form method="GET" class="row g-3 align-items-end">
-      <input type="hidden" name="type" value="invoice">
-
-      <!-- Keyword -->
-      <div class="col-md-3">
-        <label for="keyword" class="form-label">Keyword</label>
-        <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Search invoice..." value="<?= htmlspecialchars($keyword) ?>">
-      </div>
-
-      <!-- Customer -->
-      <div class="col-md-3">
-        <label for="customer" class="form-label">Customer</label>
-        <select name="customer" id="customer" class="form-select">
-          <option value="">-- Pilih Customer --</option>
-          <?php foreach ($customers as $cust): 
-            
-            $cust = new Customer($cust['ID'],$cust['NAME'], $cust['REF_NO']);
-            ?>
-            <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : '' ?>>
-              <?= htmlspecialchars($cust->getName()) ?>
-            </option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-
-      <!-- Start Date -->
-      <div class="col-md-2">
-        <label for="start_date" class="form-label">Start Date</label>
-        <input type="date" id="start_date" name="start_date" class="form-control" value="<?= htmlspecialchars($startDate) ?>">
-      </div>
-
-      <!-- End Date -->
-      <div class="col-md-2">
-        <label for="end_date" class="form-label">End Date</label>
-        <input type="date" id="end_date" name="end_date" class="form-control" value="<?= htmlspecialchars($endDate) ?>">
-      </div>
-
-      <!-- Buttons -->
-      <div class="col-md-2 d-flex gap-2">
-        <button type="submit" class="btn btn-primary w-100" title="Cari Data">
-          <i class="bi bi-search me-1"></i> Cari
-        </button>
-
-        <?php if (!empty($keyword) || !empty($customerId) || !empty($startDate) || !empty($endDate)): ?>
-          <a href="?type=invoice" class="btn btn-outline-secondary w-100" title="Reset Filter">
-            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
-          </a>
-        <?php endif; ?>
-      </div>
-    </form>
-  </div>
-</div>
+              
 
               
 
@@ -180,48 +127,35 @@ $displayInvoices = $contain;
                   <table class="table table-bordered">
                   <thead>
   <tr>
-    <th class="text-start align-middle" style="width: 10%;">KODE</th>
-    <th class="text-start align-middle" style="width: 20%;">TANGGAL</th>
-    <th class="text-start align-middle" style="width: 40%;">CUSTOMER</th>
-    <th class="text-start align-middle" style="width: 20%;">KODE CUSTOMR</th>
-    <th class="text-end align-middle" style="width: 20%;">GRAND TOTAL</th>
-        <th class="text-start align-middle" style="width: 20%;">STATUS</th>
+    <th class="text-start align-middle" style="width: 30%;">NAMA CUSTOMER</th>
+    <th class="text-start align-middle" style="width: 20%;">TOTAL INVOICE</th>
+    <th class="text-start align-middle" style="width: 20%;">TOTAL TERBAYAR</th>
+    <th class="text-start align-middle" style="width: 20%;">SISA TAGIHAN</th>
     <th class="text-center align-middle" style="width: 10%;">ACTIONS</th>
   </tr>
 </thead>
 <tbody>
 
-                      <?php if (count($displayInvoices) > 0): $index=0;?>
+                      <?php if (count($displayInvoices) > 0):?>
                         <?php foreach ($displayInvoices as $inv):
-                        $status = invoiceStatusById($inv['ID']);
-                        $grand = invoiceGrandTotalById($inv['ID']);
-                         $warna = $status['status']=='Lunas' ? 'bg-success' : 'bg-danger';
-                        if(!$grand){
-                          $total=0;
-                        } else {
-                          $total=$grand;
-                        }
-                          
-                          $inv= new Invoice($inv['ID'],$inv['KODE'], $inv['DATE'], $inv['CUSTOMER_ID'], $inv['DEADLINE']);
+                        
+                          $customer_id= $inv['CUSTOMER_ID'];
+
+                          $inv = invoiceTersisaByCustomer($customer_id);
+                        
                           ?>
                           <tr>
-                          <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>
-<td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
-<td class="text-start align-middle"><?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?></td>
-<td class="text-start align-middle"><?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getRefNo()) ?></td>
-<td class="text-end align-middle">Rp<?=number_format($total, 0, ',', '.')  ?></td>
-<td class="text-start align-middle"><span class="badge <?= $warna ?>">
-                            <i class="bi bi-cash-coin me-1"></i> Status: <?= $status['status'] ?>
-                              </span></td>
+                          <td class="text-start align-middle"><?= htmlspecialchars(readCustomerById($customer_id)->getName()) ?></td>
+<td class="text-end align-middle">Rp<?= number_format($inv['grand_total'], 0, ',', '.') ?></td>
+<td class="text-end align-middle">Rp<?= number_format($inv['total_payment'], 0, ',', '.') ?></td>
+<td class="text-end align-middle">Rp<?=number_format($inv['grand_total']-$inv['total_payment'], 0, ',', '.')  ?></td>
 <td class="text-center align-middle">
 
                               <div class="btn-group" role="group">
-                                <a href="tableItemInv.php?invoice=<?= $inv->getId() ?>" class="btn btn-sm btn-info" title="Lihat Detail">
+                                <a href="tableDetailCustomer.php?customer=<?= $customer_id ?>" class="btn btn-sm btn-info" title="Lihat Detail">
                                   <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="?type=invoice&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
-                                  <i class="bi bi-trash"></i>
-                                </a>
+                                
                               </div>
                             </td>
                           </tr>

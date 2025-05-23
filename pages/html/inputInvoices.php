@@ -8,10 +8,13 @@ $customerId = $_GET['customer'] ?? '';
     $tanggal = $_GET['tanggal'] ?? '';
     $kode = $_GET['kode'] ?? '';
      $id = $_GET['id'] ?? '';
+    $deadline = $_GET['deadline'] ?? null;
 
+$invoice = readInvoiceById($id);
 
-     if($id){
-      $tanggal = readInvoiceById($id)->getDate();
+     if($invoice){
+      $tanggal = $invoice->getDate();
+      $deadline = $invoice->getDeadline();
      }
 
 // if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -113,6 +116,20 @@ $customerId = $_GET['customer'] ?? '';
                 <label for="tanggal" class="form-label">Tanggal</label>
                 <input type="date" name="tanggal" id="tanggal" class="form-control" required value="<?= $tanggal ?>">
               </div>
+              <div class="mb-3">
+                <label for="tanggal" class="form-label">Deadline</label>
+                <input type="date" name="deadline" id="tanggal" class="form-control" required value="<?= $deadline ?>">
+              </div>
+                  <div class="mb-3">
+      <label for="notes" class="form-label">Notes</label>
+      <textarea rows="5"
+        type="text"
+        class="form-control"
+        id="notes"
+        name="notes"
+        value="<?=$notes?>"
+      ></textarea>
+    </div>
               <button type="submit" class="btn btn-primary float-end">Simpan Invoice</button>
               <a href="tableInvoice.php" class="btn btn-secondary">Cancel</a>
             </form>

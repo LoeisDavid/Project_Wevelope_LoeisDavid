@@ -146,6 +146,7 @@ $displayPayments = $contain;
     <th class="text-start align-middle" style="width: 20%;">TANGGAL</th>
     <th class="text-start align-middle" style="width: 40%;">KODE INVOICE</th>
     <th class="text-end align-middle" style="width: 40%;">NOMINAL</th>
+    <th class="text-end align-middle" style="width: 60%;">NOTES</th>
     <th class="text-center align-middle" style="width: 10%;">ACTIONS</th>
   </tr>
 </thead>
@@ -154,7 +155,7 @@ $displayPayments = $contain;
                       <?php if (count($displayPayments) > 0): $i=0; ?>
                         <?php foreach ($displayPayments as $inv): 
                           $i++;
-                          $inv= new Payment($inv['ID'],$inv['DATE'], $inv['NOMINAL'], $inv['ID_INVOICE']);
+                          $inv= new Payment($inv['ID'],$inv['DATE'], $inv['NOMINAL'], $inv['ID_INVOICE'], $inv['NOTES']);
                           $invoice = readInvoiceById($inv->getInvoice());
                           $customer = readCustomerById($invoice->getCustomerId());
                           ?>
@@ -163,6 +164,7 @@ $displayPayments = $contain;
 <td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars($invoice->getKode()) ?> - <?= htmlspecialchars($customer->getName())?></td>
 <td class="text-end align-middle"><?= htmlspecialchars($inv->getNomial()) ?></td>
+<td class="text-end align-middle"><?= htmlspecialchars($inv->getNotes()) ?></td>
 <td class="text-center align-middle">
   
 
@@ -179,7 +181,7 @@ $displayPayments = $contain;
                         <?php endforeach; ?>
                       <?php else: ?>
                         <tr>
-                        <td colspan="4" class="text-center align-middle text-muted"><?= $isSearch ? 'No matching records.' : 'No invoices found.' ?></td>
+                        <td colspan="6" class="text-center align-middle text-muted"><?= $isSearch ? 'No matching records.' : 'No invoices found.' ?></td>
                         </tr>
                       <?php endif; ?>
                     </tbody>

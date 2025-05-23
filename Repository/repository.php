@@ -6,13 +6,14 @@ require_once __DIR__ . '/connection.php'; // atau path sesuai struktur folder ka
 
 // ---------------------- Payment ----------------------
 
-function createPayment($nominal, $idInvoice, $tanggal = null) {
+function createPayment($nominal, $idInvoice, $tanggal = null, $notes = null) {
     global $database;
 
     $data = [
         'NOMINAL'     => $nominal,
         'ID_INVOICE'  => $idInvoice,
-        'DATE'        => $tanggal ?? date('Y-m-d')  // pakai tanggal sekarang jika null
+        'DATE'        => $tanggal ?? date('Y-m-d'),  // pakai tanggal sekarang jika null
+        'NOTES'       => $notes
     ];
     
     return (bool) $database->insert('payment', $data);
@@ -31,7 +32,8 @@ function readPaymentById($id) {
             $row['ID'],
             $row['DATE'],
             $row['NOMINAL'],
-            $row['ID_INVOICE']
+            $row['ID_INVOICE'],
+            $row['NOTES']
         );
     }
     return null;
@@ -49,12 +51,13 @@ function readPaymentByRangeDate($startDate, $endDate) {
     ]);
 }
 
-function updatePayment($id, $nominal, $idInvoice, $tanggal = null) {
+function updatePayment($id, $nominal, $idInvoice, $tanggal = null, $notes = null) {
     global $database;
     $data = [
         'NOMINAL'     => $nominal,
         'ID_INVOICE'  => $idInvoice,
-        'DATE'        => $tanggal ?? date('Y-m-d')
+        'DATE'        => $tanggal ?? date('Y-m-d'),
+        'NOTES'       => $notes
     ];
     return (bool) $database->update('payment', $data, ['ID' => $id])->rowCount();
 }
@@ -447,12 +450,14 @@ function searchItemInvsInInvoice($invoiceId, $query) {
 
 
 // ---------------------- Invoice ----------------------
-function createInvoice($customerId, $tanggal, $kode) {
+function createInvoice($customerId, $tanggal, $kode, $deadline,$notes= '') {
     global $database;
     $data = [
         'CUSTOMER_ID' => $customerId,
         'DATE'        => $tanggal,
-        'KODE'        => $kode
+        'KODE'        => $kode,
+        'NOTES'       => $notes,
+        'DEADLINE'       => $deadline
     ];
     return (bool) $database->insert('invoice', $data);
 }
@@ -528,6 +533,29 @@ return $row;
 } else {
     return null;
 }
+}
+
+function invoiceTersisaByCustomer($customer){
+    global $database;
+    $query = "SELECT
+  IFNULL((
+    SELECT SUM(ii.TOTAL)
+    FROM invoice i2
+    JOIN iteminv ii ON ii.INVOICE_ID = i2.ID
+    WHERE i2.CUSTOMER_ID = $customer AND i2.DEADLINE < CURDATE()
+  ), 0) AS grand_total,
+
+  IFNULL((
+    SELECT SUM(p.NOMINAL)
+    FROM invoice i3
+    JOIN payment p ON p.ID_INVOICE = i3.ID
+    WHERE i3.CUSTOMER_ID = $customer AND i3.DEADLINE < CURDATE()
+  ), 0) AS total_payment;
+
+";
+
+$row = $database->query($query)->fetch();
+return $row;
 
 }
 
@@ -557,7 +585,10 @@ function readInvoiceById($id) {
             $row['ID'],
             $row['KODE'],
             $row['DATE'],
-            $row['CUSTOMER_ID']
+            $row['CUSTOMER_ID'],
+            $row['DEADLINE'],
+            $row['NOTES'],
+            
         );
     }
     return null;
@@ -571,7 +602,9 @@ function readInvoiceByKode($kode) {
             $row['ID'],
             $row['KODE'],
             $row['DATE'],
-            $row['CUSTOMER_ID']
+            $row['CUSTOMER_ID'],
+            $row['DEADLINE'],
+            $row['NOTES'],
         );
     }
     return null;
@@ -613,12 +646,51 @@ function readInvoiceByRangeDate($startDate, $endDate) {
     return $rows;
 }
 
-function updateInvoice($id, $customerId, $tanggal, $kode) {
+function invoiceGetIdCustomerDeadline() {    
+    global $database;
+    $query = "SELECT DISTINCT i.CUSTOMER_ID
+FROM invoice i
+LEFT JOIN iteminv ii ON ii.INVOICE_ID = i.ID
+LEFT JOIN payment p ON p.ID_INVOICE = i.ID
+WHERE i.DEADLINE < CURRENT_DATE()
+GROUP BY i.ID
+HAVING (IFNULL(SUM(ii.TOTAL), 0) - IFNULL(SUM(p.NOMINAL), 0)) > 0;
+
+";
+
+$row = $database->query($query)->fetchAll();
+return $row;
+}
+
+function invoiceDeadlineByCustomer($customer) {    
+    global $database;
+    $query = "SELECT *
+FROM invoice
+WHERE DEADLINE < CURDATE()
+AND CUSTOMER_ID = $customer;
+";
+
+$row = $database->query($query)->fetchAll();
+return $row;
+}
+function invoiceDeadline() {    
+    global $database;
+    $query = "SELECT * FROM invoice
+WHERE DEADLINE < CURDATE();
+";
+
+$row = $database->query($query)->fetchAll();
+return $row;
+}
+
+function updateInvoice($id, $customerId, $tanggal, $kode,$deadline, $notes='') {
     global $database;
     $data = [
         'CUSTOMER_ID' => $customerId,
         'DATE'        => $tanggal,
-        'KODE'        => $kode
+        'KODE'        => $kode,
+        'NOTES'       => $notes,
+        'DEADLINE'       => $deadline
     ];
     return (bool) $database->update('invoice', $data, ['ID' => $id])->rowCount();
 }

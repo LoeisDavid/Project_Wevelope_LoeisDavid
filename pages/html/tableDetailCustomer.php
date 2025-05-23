@@ -3,40 +3,32 @@ include '../../Control/Control.php';
 
 
 // Inisialisasi data item
-$invoice = $_GET['invoice'];
-$inv = readInvoiceById($invoice);
-$items = readItemInvByInvoice($invoice);
-
-if(!$inv->getNotes() || $inv->getNotes() === ''){
-  $inv->setNotes('tidak ada note');
-}
+$customer_id = $_GET['customer'];
+$items = invoiceDeadlineByCustomer($customer_id);
+$customer = readCustomerById($customer_id);
 
 // Hapus item dari iteminv
 if (
     isset($_GET['type'], $_GET['action'], $_GET['id']) &&
-    $_GET['type'] === 'iteminv' &&
+    $_GET['type'] === 'invoice' &&
     $_GET['action'] === 'delete'
 ) {
     $id = (int) $_GET['id'];
     deleteItemInv($id);    
     $_SESSION['alert_delete'] = [
         'type' => 'success',
-        'message' => 'Item dalam invoice berhasil dihapus.',
+        'message' => 'invoice berhasil dihapus.',
     ];
     // Refresh data setelah penghapusan
-    $items = readItemInvByInvoice($invoice);
+    $items = invoiceDeadlineByCustomer($customer_id);
 }
 
 // Menangani pencarian item dalam invoice
-$type = $_GET['type'] ?? 'iteminv';
+$type = $_GET['type'] ?? 'invoice';
 $action = $_GET['action'] ?? 'read';
 
 
 // Ambil data masing-masing Item berdasarkan hasil pencarian
-$it = [];
-foreach ($items as $i => $item) {
-    $it[$i] = readItemById($item['ITEM_ID']);
-}
 
 $count = 0;
 $subTotal = 0;
@@ -45,10 +37,8 @@ $subTotal = 0;
 $countPage = 5;
 
 // Fetch all data
-$allitemCustomers = readItemInvByInvoice($invoice);
 
 // Get filters from query string
-$items = $allitemCustomers;
 ?>
 
 <!-- Mulai dari sini lanjutkan bagian HTML sama seperti sebelumnya -->
@@ -89,109 +79,88 @@ $items = $allitemCustomers;
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-body text-center"><h2>Invoice <?= htmlspecialchars($inv->getKode()) ?></h2></div>
+                <div class="card-body text-center"><h2>Customer <?= htmlspecialchars($customer->getName()) ?></h2></div>
                 <div class="card-body text-center">
                   <h3 class="card-title">
                     <button class="btn btn-primary" disabled>
                       <i class="bi bi-calendar-event"></i>
-                    </button> Tanggal: <?= htmlspecialchars($inv->getDate()) ?>
+                    </button> REFERAL NUMBER: <?= htmlspecialchars($customer->getRefNo()) ?>
                   </h3>
                 </div>
 
-                <div class="card-body">
-                  <h3 class="card-title">
-                    <button class="btn btn-primary" disabled>
-                      <i class="bi bi-person-circle"></i>
-                    </button> Customer: <?= htmlspecialchars(readCustomerById($inv->getCustomerId())->getName()) ?>
-                  </h3>
-                </div>
+                
 
-                <div class="card-body">
-                  <h3 class="card-title ">
-                    <button class="btn btn-primary" disabled>
-                      <i class="bi bi-info-circle"></i>
-                    </button>
-                   <label>Catatan: <?= htmlspecialchars($inv->getNotes())?></label>
-                </h3>
-                </div>
+                
 
 
   <div class="card-header d-flex justify-content-start gap-2 flex-wrap">
-  <a href="inputInvoices.php?method=get&id=<?= $inv->getId() ?>&kode=<?= $inv->getKode()?>&customer=<?= $inv->getCustomerId()?>&kondisi=<?=true?>" class="btn btn-warning">
-    <i class="bi bi-pencil-square"></i> Edit Invoice
+  <a href="inputCustomer.php?method=get&id=<?= $customer->getId() ?>" class="btn btn-warning">
+    <i class="bi bi-pencil-square"></i> Edit Customer
   </a>
-  <a href="printInvoice.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
-    <i class="bi bi-printer"></i> Print Invoice
-  </a>
-  <a href="inputPayment.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
-    <i class="bi bi-calendar3"></i> Payment
-  </a>
+ 
   
 </div>
 
                 <div class="d-flex justify-content-between align-items-center m-3 flex-wrap">
   <div class="mb-3">
-  <a href="inputItemInv.php?invoice=<?= $invoice ?>" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Add Item
+  <a href="inputInvoices.php?customer=<?= $customer_id ?>" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add Invoice
                   </a>
   </div>
-  <table class="table table-bordered mx-auto">
+  <table class="table table-bordered">
                   <thead>
-                    <tr>
-                      <th>NO</th>
-                      <th>REF NO</th>
-                      <th>Barang</th>
-                      <th>Qty</th>
-                      <th class="text-end">Price</th>
-                      <th class="text-end">Total</th>
-                      <th class="text-center" style="width: 10%;">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php if (count($items) > 0): ?>
-                      <?php 
-                        $number=0;
-                        foreach ($items as $i => $item): $number++;
-                        
-                        $item = new ItemInv($item['ID'],$item['INVOICE_ID'],$item['ITEM_ID'],$item['QTY'],$item['PRICE'],$item['TOTAL']);
+  <tr>
+    <th class="text-start align-middle" style="width: 10%;">KODE</th>
+    <th class="text-start align-middle" style="width: 20%;">TANGGAL</th>
+        <th class="text-start align-middle" style="width: 20%;">DEADLINE</th>
+    <th class="text-end align-middle" style="width: 20%;">GRAND TOTAL</th>
+        <th class="text-start align-middle" style="width: 20%;">STATUS</th>
+    <th class="text-center align-middle" style="width: 10%;">ACTIONS</th>
+  </tr>
+</thead>
+<tbody>
 
-                        ?>
+                      <?php if (count($items) > 0): $index=0;?>
+                        <?php foreach ($items as $inv):
+                        $status = invoiceStatusById($inv['ID']);
+                        $grand = invoiceGrandTotalById($inv['ID']);
+                         $warna = $status['status']=='Lunas' ? 'bg-success' : 'bg-danger';
+                        if(!$grand){
+                          $total=0;
+                        } else {
+                          $total=$grand;
+                        }
+                          
+                          $inv= new Invoice($inv['ID'],$inv['KODE'], $inv['DATE'], $inv['CUSTOMER_ID'], $inv['DEADLINE']);
+                          ?>
+                          <tr>
+                          <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>
+<td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
+<td class="text-start align-middle"><?= htmlspecialchars($inv->getDeadline()) ?></td>
+<td class="text-end align-middle">Rp<?=number_format($total, 0, ',', '.')  ?></td>
+<td class="text-start align-middle"><span class="badge <?= $warna ?>">
+                            <i class="bi bi-cash-coin me-1"></i> Status: <?= $status['status'] ?>
+                              </span></td>
+<td class="text-center align-middle">
+
+                              <div class="btn-group" role="group">
+                                <a href="tableItemInv.php?invoice=<?= $inv->getId() ?>" class="btn btn-sm btn-info" title="Lihat Detail">
+                                  <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="?type=invoice&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
+                                  <i class="bi bi-trash"></i>
+                                </a>
+                              </div>
+                            </td>
+                          </tr>
+                        <?php endforeach; ?>
+                      <?php else: ?>
                         <tr>
-                          <td><?= htmlspecialchars($number)?></td>
-                          <td><?= htmlspecialchars(readItemById($item->getItemId())->getRefNo()) ?></td>
-                          <td><?= htmlspecialchars(readItemById($item->getItemId())->getName()) ?></td>
-                          <td><?= htmlspecialchars($item->getQty()) ?></td>
-                          <td class="text-end">Rp<?= number_format($item->getPrice(), 0, ',', '.') ?></td>
-                          <td class="text-end">Rp<?= number_format($item->getQty() * $item->getPrice(), 0, ',', '.') ?></td>
-                          <td class="text-center">
-                            <div class="d-flex justify-content-center gap-1">
-                              <a href="InputItemInv.php?method=get&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-warning" title="Edit ItemInv">
-                                <i class="bi bi-pencil-square"></i>
-                              </a>
-                              <a href="../../Control/Control.php?type=iteminv&action=delete&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus item ini?');" title="Delete Item">
-                                <i class="bi bi-trash"></i>
-                              </a>
-                            </div>
-                          </td>
+                        <td colspan="7" class="text-center align-middle text-muted">No invoices found.</td>
                         </tr>
-                      <?php endforeach; ?>
-                      <tr>
-                        <td colspan="5" class="text-end">Grand Total</td>
-                        <td colspan="1" class="text-end">Rp<?php 
-        $subTotal = 0;
-        foreach ($items as $i => $item) {
-          $item = readItemInvById($item['ID']);
-          $subTotal += $item->getQty() * $item->getPrice();
-        }
-        echo number_format($subTotal, 0, ',', '.' );
-      ?> </td>
-      <td></td>
-                      </tr>
-                    <?php else: ?>
-                      <tr><td colspan="6" class="text-center">Tidak ada item.</td></tr>
-                    <?php endif; ?>
-                  </tbody>
-                </table>
+                      <?php endif; ?>
+                    </tbody>
+                  </table>
   </div>
 </div>
 

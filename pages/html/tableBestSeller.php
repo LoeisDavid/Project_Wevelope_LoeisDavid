@@ -72,7 +72,7 @@ $displayitem = [];
                         <?php endforeach; ?>
                       <?php else: ?>
                         <tr>
-                        <td colspan="4" class="text-center align-middle text-muted"><?= $isSearch ? 'No matching records.' : 'No invoices found.' ?></td>
+                        <td colspan="4" class="text-center align-middle text-muted">No Item found</td>
                         </tr>
                       <?php endif; ?>
                     </tbody>

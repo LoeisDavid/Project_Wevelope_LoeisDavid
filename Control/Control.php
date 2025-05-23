@@ -257,13 +257,15 @@ if ($method === 'POST') {
     $date = $_POST['tanggal'] ?? NULL;
     $customer_id = $_POST['customer_id'] ?? NULL;
     $kode = $_POST['kode'] ?? 0;
+    $notes = $_POST['notes'] ?? '';
+    $deadline = $_POST['deadline'] ?? NULL;
 
     $kondisi = $_GET['kondisi'] ?? NULL;
     $id = $_POST['id'];
 
     if ($action === 'create') {
         if(!readInvoiceByKode($kode)) {
-            createInvoice($customer_id, $date, $kode);setAlert('success', 'invoice berhasil ditambahkan!');
+            createInvoice($customer_id, $date, $kode, $deadline,$notes);setAlert('success', 'invoice berhasil ditambahkan!');
             header("Location: ../pages/html/tableInvoice.php?invoice=$id");
         exit();
             
@@ -278,7 +280,7 @@ if ($method === 'POST') {
         $id= $_POST['id'];
         // var_dump(readInvoiceByKode($kode), $id);die();
         if(!readInvoiceByKode($kode) || readInvoiceByKode($kode)->getId() == $id) {
-            updateInvoice($id, $customer_id, $date, $kode);
+            updateInvoice($id, $customer_id, $date, $kode, $deadline,$notes);
             setAlert('success', 'Invoice berhasil diperbarui!');
 
             if($kondisi){
@@ -346,19 +348,31 @@ if ($method === 'POST') {
     $id = $_POST['id'] ?? null;
     $nominal = $_POST['nominal'] ?? null;
     $invoice = $_POST['invoice_id'] ?? null;
+    $tanggal = $_POST['date'] ?? null;
+    $notes = $_POST['notes'] ?? '';
+
+    if($nominal <= 0){
+        setAlert('danger', 'Nominal tidak boleh 0 atau minus');
+                header("Location: ../pages/html/inputPayment.php?invoice=$invoice");
+                exit();
+    }
+
+    if($tanggal===""){
+        $tanggal=null;
+    }
 
     // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
 
     if ($action === 'create') {
         $countainer= invoiceTersisa($invoice); 
         if($nominal+$countainer['total_payment']<=$countainer['grand_total']){
-            createPayment($nominal, $invoice , null);
+            createPayment($nominal, $invoice , $tanggal, $notes);
         setAlert('success', 'Berhasil melakukan pembayaran!');
         header("Location: ../pages/html/tablePayments.php");
         exit();
         } else {
             setAlert('danger', 'Gagal melakukan payment!');
-                header("Location: ../pages/html/inputPayment.php?invoice=$id");
+                header("Location: ../pages/html/inputPayment.php?invoice=$invoice");
                 exit();
         }
         
@@ -372,7 +386,7 @@ if ($method === 'POST') {
             header("Location: ../pages/html/tablePayments.php");
             exit();
         } else {
-            if (updatePayment($id,$nominal, $invoice, null)) {
+            if (updatePayment($id,$nominal, $invoice, $date, $notes)) {
             setAlert('success', 'Payment berhasil diperbarui!');
         header("Location: ../pages/html/tablePayments.php");
         exit();
