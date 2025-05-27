@@ -49,6 +49,7 @@ $allitemCustomers = readItemInvByInvoice($invoice);
 
 // Get filters from query string
 $items = $allitemCustomers;
+$_SESSION['INVOICE'] = ['ID' => $invoice];
 ?>
 
 <!-- Mulai dari sini lanjutkan bagian HTML sama seperti sebelumnya -->
@@ -120,7 +121,7 @@ $items = $allitemCustomers;
   <a href="inputInvoices.php?method=get&id=<?= $inv->getId() ?>&kode=<?= $inv->getKode()?>&customer=<?= $inv->getCustomerId()?>&kondisi=<?=true?>" class="btn btn-warning">
     <i class="bi bi-pencil-square"></i> Edit Invoice
   </a>
-  <a href="printInvoice.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
+  <a href="printInvoice.php" class="btn btn-success" target="_blank">
     <i class="bi bi-printer"></i> Print Invoice
   </a>
   <a href="inputPayment.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
@@ -259,9 +260,5 @@ $items = $allitemCustomers;
       }
     });
   </script>
-  <script 
-  src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta3/dist/js/adminlte.min.js"
-  crossorigin="anonymous"
-></script>
 </body>
 </html>

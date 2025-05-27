@@ -5,9 +5,17 @@ $id = $_GET['id'] ?? null;
 // $ref_no = $_GET['ref_no'] ?? null;
 $name = null;
 $ref_no = null;
+$email = null;
+$telepon = null;
+$alamat = null;
+
 if($id){
-  $name = readCustomerById($id)->getName();
-  $ref_no = readCustomerById($id)->getRefNo();
+  $customer = readCustomerById($id);
+  $name = $customer->getName();
+  $ref_no = $customer->getRefNo();
+  $email = $customer->getEmail();
+  $alamat = $customer->getAlamat();
+  $telepon = $customer->getTelepon();
 }
 ?>
 
@@ -78,7 +86,6 @@ if($id){
         id="ref_no"
         name="ref_no"
         value="<?=$ref_no?>"
-        required
       />
     </div>
 
@@ -90,6 +97,42 @@ if($id){
         placeholder="NAME"
         name="name"
         value="<?=$name ?>"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+    <label for="ref_no" class="form-label">Telepon</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="0888xxxxx"
+        name="telepon"
+        value="<?=$telepon ?>"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+    <label for="ref_no" class="form-label">Email</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="test@example.com"
+        name="email"
+        value="<?=$email ?>"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+    <label for="ref_no" class="form-label">Alamat</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="alamat"
+        name="alamat"
+        value="<?=$alamat ?>"
         required
       />
     </div>
@@ -161,16 +204,6 @@ if($id){
   <!--end::App Wrapper-->
   <!--begin::Script-->
   <!--begin::Third Party Plugin(OverlayScrollbars)-->
-  <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
-  integrity="sha256-dghWARbRe2eLlIJ56wNB+b760ywulqK3DzZYEpsg2fQ=" crossorigin="anonymous"></script>
-<!--end::Third Party Plugin(OverlayScrollbars)--><!--begin::Required Plugin(popperjs for Bootstrap 5)-->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-  integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-  crossorigin="anonymous"></script>
-<!--end::Required Plugin(popperjs for Bootstrap 5)--><!--begin::Required Plugin(Bootstrap 5)-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
-  integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
-  crossorigin="anonymous"></script>
 <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
 <script src="../js/adminlte.js"></script>
 <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->

@@ -7,7 +7,9 @@ $alamat= $_POST['alamat'] ?? '';
 $kota= $_POST['kota'] ?? '';
 $provinsi= $_POST['provinsi'] ?? '';
 $kodePos= $_POST['kodePos'] ?? '';
-$negara= $_POST['negara'] ?? '';
+$negara= $_POST['negara'] ?? ''; 
+$telepon= $_POST['telepon'] ?? ''; 
+$email= $_POST['email'] ?? ''; 
 
 $data = $_SESSION['COMPANY'] ?? null;
 // var_dump($data['ID']);die();
@@ -19,6 +21,8 @@ if($data['ID']){
   $provinsi= $company->getProvinsi();
   $kodePos= $company->getKodePos();
   $negara= $company->getNegara();
+  $telepon= $company->getTelepon();
+  $email= $company->getEmail();
 }
 
 $id = $company->getId() ?? $_POST['id'] ?? null;
@@ -154,9 +158,31 @@ $id = $company->getId() ?? $_POST['id'] ?? null;
       />
     </div>
 
+    <div class="mb-3">
+    <label for="name" class="form-label">TELEPON</label>
+      <input
+        type="text"
+        class="form-control"
+        name="telepon"
+        value="<?= $telepon?>"
+        required
+      />
+    </div>
+
+    <div class="mb-3">
+    <label for="name" class="form-label">EMAIL</label>
+      <input
+        type="text"
+        class="form-control"
+        name="email"
+        value="<?= $email?>"
+        required
+      />
+    </div>
+
     <div class="card-footer">
                       <button type="submit" class="btn btn-success  float-end" >Sumbit</button>
-                      <a href="tableItems.php" class="btn btn-secondary" >Cancel</a>
+                      <a href="settingCompany.php" class="btn btn-secondary" >Cancel</a>
                     </div>
     <div class="card-footer">
     </div>
@@ -206,7 +232,6 @@ $id = $company->getId() ?? $_POST['id'] ?? null;
   </script>
   <?php unset($_SESSION['alert_delete']); ?>
 <?php endif; 
-session_unset();
 ?>
 
   <script>

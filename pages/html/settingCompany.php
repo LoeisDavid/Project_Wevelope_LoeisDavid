@@ -1,16 +1,19 @@
 <?php
 include_once '../../Control/Control.php';
 $company = readCompanies();
+$pic = getDataStatusTruePic();
 
 // var_dump($company);die();
 $id = $company['ID'] ?? null;
 $nama = $company['NAMA_PERUSAHAAN'] ?? "";
-$pic = "david" ?? "";
+$pic = $pic[0]->getNama() ?? "";
 $alamat = $company['ALAMAT'] ?? "";
 $kota = $company['KOTA'] ?? '';
 $provinsi = $company['PROVINSI'] ?? '';
 $kodePos = $company['KODE_POS'] ?? '';
 $negara = $company['NEGARA'] ?? '';
+$telepon = $company['TELEPON'] ?? '';
+$email = $company['EMAIL'] ?? '';
 
 if($id){
 $_SESSION['COMPANY'] = [
@@ -77,6 +80,13 @@ $_SESSION['COMPANY'] = [
 
               <dt class="col-sm-3">Negara</dt>
               <dd class="col-sm-9"><?= $negara?></dd>
+
+              <dt class="col-sm-3">Telepon</dt>
+              <dd class="col-sm-9"><?= $telepon?></dd>
+
+              <dt class="col-sm-3">Email</dt>
+              <dd class="col-sm-9"><?= $email?></dd>
+
             </dl>
           </div>
         </div>
@@ -119,7 +129,6 @@ $_SESSION['COMPANY'] = [
   </script>
   <?php unset($_SESSION['alert_delete']); ?>
 <?php endif; 
-session_unset();
 ?>
 
   <!-- Scripts -->

@@ -60,6 +60,33 @@ function deletePic($id) {
     }
 }
 
+function ubahStatus($id, $statusBaru) {
+    global $database;
+    $database->update("PIC", [
+        "STATUS" => $statusBaru
+    ], [
+        "ID" => $id
+    ]);
+}
+
+function getDataStatusTruePic() {
+    global $database;
+    $rows = $database->select("PIC", "*", [
+        "STATUS" => 1
+    ]);
+
+    $result = [];
+    if ($rows) {
+        foreach ($rows as $row) {
+            $result[] = new Pic($row['ID'], $row['NAMA'], $row['JABATAN'], $row['NOMOR'], $row['EMAIL'], $row['STATUS']);
+        }
+    }
+
+    return $result;
+}
+
+
+
 
 // ---------------------- COMPANY ----------------------
 
@@ -81,7 +108,9 @@ function readCompanyById($id) {
         $row['KODE_POS'],
         $row['KOTA'],
         $row['PROVINSI'],
-        $row['NEGARA']);
+        $row['NEGARA'],
+        $row['TELEPON'],
+        $row['EMAIL']);
     } else {
         return null;
     }
@@ -99,7 +128,7 @@ function searchCompanies($query) {
     ]);
 }
 
-function updateCompany($id, $nama_perusahaan, $alamat, $kota, $provinsi, $kode_pos, $negara) {
+function updateCompany($id, $nama_perusahaan, $alamat, $kota, $provinsi, $kode_pos, $negara, $telepon, $email) {
     global $database;
     return (bool) $database->update('COMPANY', [
         'NAMA_PERUSAHAAN' => $nama_perusahaan,
@@ -107,7 +136,9 @@ function updateCompany($id, $nama_perusahaan, $alamat, $kota, $provinsi, $kode_p
         'KOTA'            => $kota,
         'PROVINSI'        => $provinsi,
         'KODE_POS'        => $kode_pos,
-        'NEGARA'          => $negara
+        'NEGARA'          => $negara,
+        'TELEPON'         => $telepon,
+        'EMAIL'         => $email
     ], ['ID' => $id])->rowCount();
 }
 
@@ -899,11 +930,14 @@ function searchInvoices(
 }
 
 // ---------------------- Customers ----------------------
-function createCustomer($ref_no, $name) {
+function createCustomer($ref_no, $name, $alamat, $email, $telepon) {
     global $database;
     return (bool) $database->insert('customers', [
         'REF_NO' => $ref_no,
-        'NAME'   => $name
+        'NAME'   => $name,
+        'EMAIL' => $email,
+        'TELEPON'   => $telepon,
+        'ALAMAT'   => $alamat
     ]);
 }
 
@@ -948,17 +982,23 @@ function readCustomerById($id) {
         return new Customer(
             $row['ID'],
             $row['NAME'],
-            $row['REF_NO']
+            $row['REF_NO'],
+            $row['EMAIL'],
+            $row['ALAMAT'],
+            $row['TELEPON']
         );
     }
     return null;
 }
 
-function updateCustomer($id, $ref_no, $name) {
+function updateCustomer($id, $ref_no, $name, $alamat, $email, $telepon) {
     global $database;
     return (bool) $database->update('customers', [
         'REF_NO' => $ref_no,
-        'NAME'   => $name
+        'NAME'   => $name,
+        'EMAIL' => $email,
+        'TELEPON'   => $telepon,
+        'ALAMAT'   => $alamat
     ], ['ID' => $id])->rowCount();
 }
 
@@ -966,7 +1006,9 @@ function readCustomerByRefNo($refNo) {
     global $database;
     $row = $database->get('customers', '*', ['REF_NO' => $refNo]);
     if ($row) {
-        return new Customer($row['ID'], $row['NAME'], $row['REF_NO']);
+        return new Customer($row['ID'], $row['NAME'], $row['REF_NO'],$row['EMAIL'],
+            $row['ALAMAT'],
+            $row['TELEPON']);
     }
     return null;
 }

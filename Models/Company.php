@@ -10,8 +10,10 @@ class Company {
     private $provinsi;
     private $kodePos;
     private $negara;
+    private $telepon;
+    private $email;
     
-    function __construct($id, $nama, $pic, $alamat, $kodePos, $kota, $provinsi, $negara){
+    function __construct($id, $nama, $pic, $alamat, $kodePos, $kota, $provinsi, $negara, $telepon, $email){
         $this->id = $id;
         $this->nama = $nama;
         $this->pic = $pic;
@@ -20,8 +22,15 @@ class Company {
         $this->kota = $kota;
         $this->provinsi = $provinsi;
         $this->negara = $negara;
+        $this->telepon = $telepon;
+        $this->email = $email;
 }
-
+function getEmail(){
+    return $this->email;
+}
+function getTelepon(){
+    return $this->telepon;
+}
 function getId(){
     return $this->id;
 }

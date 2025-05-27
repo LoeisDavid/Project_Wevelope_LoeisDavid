@@ -1,14 +1,21 @@
 <?php
-include_once '../../Control/Control.php';
+include '../../Control/Control.php';
 
 // Handle delete action
 
 $id = $_GET['id'] ?? null;
-if($id){
+$action = $_GET['action'] ?? null;
+if($action == 'status'){
+  $pic = getDataStatusTruePic();
+        ubahStatus($pic[0]->getId(), !$pic[0]->getStatus());
+        ubahStatus($id, 1);
+        $action = null;
+} else if($id){
   $_SESSION['PIC'] = ['ID' => $id];
   header("Location: inputSettingPic.php");
   exit();
 };
+
 $displayitem = readPics();
 
 ?>
@@ -95,6 +102,9 @@ $displayitem = readPics();
                                 <a href="?id=<?= $inv->getId()?>" class="btn btn-sm btn-warning" title="Edit Item">
                                   <i class="bi bi-pencil-square"></i>
                                 </a>
+                                <a href="?action=status&id=<?= $inv->getId()?>" class="btn btn-sm btn-success" title="Edit Item">
+                                  <i class="bi bi-toggle-on"></i>
+                                </a>
                                 <a href="?type=pic&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Item ini?');" title="Delete Item">
                                   <i class="bi bi-trash"></i>
                                 </a>
@@ -170,10 +180,6 @@ session_unset();
   <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-  <script 
-  src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta3/dist/js/adminlte.min.js"
-  crossorigin="anonymous"
-></script>
   <script src="../../js/adminlte.js"></script>
 </body>
 </html>

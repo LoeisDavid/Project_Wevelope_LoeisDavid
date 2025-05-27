@@ -53,7 +53,7 @@ if (!defined('BASE_URL')) {
     define("BASE_URL", "/".$base_url);
 }
 
-$method = $_SERVER['REQUEST_METHOD'];
+$method = $_SERVER['REQUEST_METHOD'] ?? $_GET['method'];
 $type   = $_GET['type'] ?? null;
 $action = $_GET['action'] ?? null;
 $id     = $_GET['id'] ?? null;
@@ -102,17 +102,24 @@ if (!function_exists('createRefNo')) {
     }
 }
 
+
 // === POST METHOD ===
 if ($method === 'POST') {
 
     $name = $_POST['name'] ?? NULL;
     $price = $_POST['price'] ?? NULL;
     $id = $_POST['id'] ?? NULL;
-    if($id){
+    if($action == 'status'){
+
+    } else {
+        if($id){
         $action = 'update';
     } else {
         $action = 'create';
     }
+    }
+    
+    
 
     if ($type === 'itemcustomer') {
         if (!$_POST['ref_no']) {
@@ -141,6 +148,10 @@ if ($method === 'POST') {
     }
     // CUSTOMER
     else if ($type === 'customer') {
+        $name = $_POST['name'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $telepon = $_POST['telepon'] ?? '';
+        $alamat = $_POST['alamat'] ?? '';
         if (!$_POST['ref_no']) {
             $ref_no = createRefNo($_POST['name'], $type);
         } else {
@@ -152,14 +163,14 @@ if ($method === 'POST') {
                 header("Location: ../pages/html/inputCustomers.php?name=$name&ref_no=$ref_no");
                 exit();
             } else {
-                createCustomer($ref_no, $_POST['name']);
+                createCustomer($ref_no, $_POST['name'], $alamat, $email, $telepon);
                 setAlert('success', 'Customer berhasil ditambahkan!');
                 header("Location: ../pages/html/tableCustomers.php");
                 exit();
             }
         } else if ($action === 'update') {
             if(readCustomerById(intval($_POST['id']))->getRefNo() == $ref_no) {
-                updateCustomer($_POST['id'], $ref_no, $_POST['name']);
+                updateCustomer($_POST['id'], $ref_no, $_POST['name'], $alamat, $email, $telepon);
                 setAlert('success', 'Customer berhasil diperbarui!');
                 header("Location: ../pages/html/tableCustomers.php");
                 exit();
@@ -169,7 +180,7 @@ if ($method === 'POST') {
                 header("Location: ../pages/html/InputCustomers.php?id=$id");
                 exit();
                 } else {
-                    updateCustomer($_POST['id'], $ref_no, $_POST['name']);
+                    updateCustomer($_POST['id'], $ref_no, $_POST['name'], $alamat, $email, $telepon);
                 setAlert('success', 'Customer berhasil diperbarui!');
                 header("Location: ../pages/html/tableCustomers.php");
                 exit();
@@ -417,10 +428,12 @@ if ($method === 'POST') {
     $provinsi= $_POST['provinsi'] ?? '';
     $kodePos= $_POST['kodePos'] ?? '';
     $negara= $_POST['negara'] ?? '';
+    $telepon= $_POST['telepon'] ?? '';
+    $email= $_POST['email'] ?? '';
 
     // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
 
-    if (updateCompany($id, $namaPerusahaan, $alamat, $kota, $provinsi, $kodePos, $negara)) {
+    if (updateCompany($id, $namaPerusahaan, $alamat, $kota, $provinsi, $kodePos, $negara, $telepon, $email)) {
         setAlert('success', 'Company berhasil diperbarui!');
         header("Location: ../pages/html/settingCompany.php");
         exit();      
@@ -435,9 +448,10 @@ if ($method === 'POST') {
 $jabatan= $_POST['jabatan'] ?? '';
 $nomor= $_POST['nomor'] ?? '';
 $email= $_POST['email'] ?? '';
-$id= $_POST['id'] ?? null;
+$id= $_POST['id'] ?? $_GET['id'] ?? null;
 
     // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
+    
 
     if ($action === 'create') {
 
@@ -467,6 +481,13 @@ $id= $_POST['id'] ?? null;
                 exit();
             }
         
+    } else if ($action === 'status'){
+        $pic = getDataStatusTruePic();
+        ubahStatus($pic['ID'], !$pic['STATUS']);
+        ubahStatus($id, 1);
+        setAlert('success', 'Berhasil');
+            header("Location: ../pages/html/settingPic.php");
+            exit();
     }
         
     }

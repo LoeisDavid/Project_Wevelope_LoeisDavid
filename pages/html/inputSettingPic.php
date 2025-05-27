@@ -20,7 +20,6 @@ if($data){
   $id = $pic->getId() ?? $_POST['id'] ?? null;
 }
 }
-
 // var_dump($action);die;
 ?>
 
@@ -82,7 +81,7 @@ if($data){
                   <!--begin::Body-->
                   <div class="card-body">
         <!--end::Header-->
-        <form method="post" action="../../Control/Control.php?type=pic">
+        <form method="post" action="../../Control/Control.php?type=pic&status=status">
 
         <div class="mb-3">
           <input type="text" value="<?= $id?>" name="id" hidden>
@@ -183,8 +182,6 @@ if($data){
   </script>
   <?php unset($_SESSION['alert_delete']); ?>
 <?php endif; 
-
-session_unset();
 
 ?>
 
