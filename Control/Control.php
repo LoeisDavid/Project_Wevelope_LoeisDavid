@@ -13,6 +13,8 @@ require_once __DIR__ . '/../Models/ItemCustomer.php';
 require_once __DIR__ . '/../Models/Invoice.php';
 require_once __DIR__ . '/../Models/ItemInv.php';
 require_once __DIR__ . '/../Models/Payment.php';
+require_once __DIR__ . '/../Models/Company.php';
+require_once __DIR__ . '/../Models/Pic.php';
 require_once __DIR__ . '/../env.php';
 
 // if (!isset($_SESSION['executed'])) {
@@ -223,12 +225,11 @@ if ($method === 'POST') {
         if ($action === 'create') {
             if (readItemByRefNo($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan item. Ref No sudah digunakan.');
-                header("Location: ../pages/html/inputItems.php?name=$name&ref_no=$ref_no&price=$price");
-                exit();
+                
             } else {
                 createItem($ref_no, $_POST['name'], $_POST['price']);
                 setAlert('success', 'Item berhasil ditambahkan!');
-                header("Location: ../pages/html/tableItems.php");
+                header("Location: ../html/tableItems.php");
                 exit();
             }
         } else if ($action === 'update') {
@@ -236,17 +237,17 @@ if ($method === 'POST') {
             if(readItemById(intval($_POST['id']))->getRefNo() == $ref_no) {
                 updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price']);
                 setAlert('success', 'Item berhasil diperbarui!');
-                header("Location: ../pages/html/tableItems.php");
+                header("Location: ../html/tableItems.php");
                 exit();
             } else {
                 if (!readItemByRefNo($ref_no)) {
                     updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price']);
                     setAlert('success', 'Item berhasil diperbarui!');
-                header("Location: ../pages/html/tableItems.php");
+                header("Location: ../html/tableItems.php");
                 exit();
                 } else {
                     setAlert('danger', 'Gagal memperbarui item. Ref No sudah digunakan.');
-                header("Location: ../pages/html/inputItems.php?id=$id");
+                header("Location: ../html/inputItems.php?id=$id");
                 exit();
                 }
                 
@@ -407,7 +408,68 @@ if ($method === 'POST') {
     else {
         echo "Invalid action.";
     }
-}
+} else if ($type === 'company') {
+    $id= $_POST['id'] ?? '';
+    $namaPerusahaan= $_POST['nama'] ?? '';
+    $pic = '';
+    $alamat= $_POST['alamat'] ?? '';
+    $kota= $_POST['kota'] ?? '';
+    $provinsi= $_POST['provinsi'] ?? '';
+    $kodePos= $_POST['kodePos'] ?? '';
+    $negara= $_POST['negara'] ?? '';
+
+    // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
+
+    if (updateCompany($id, $namaPerusahaan, $alamat, $kota, $provinsi, $kodePos, $negara)) {
+        setAlert('success', 'Company berhasil diperbarui!');
+        header("Location: ../pages/html/settingCompany.php");
+        exit();      
+    } else {
+       setAlert('danger', 'Gagal memperbarui Company.');
+        header("Location: ../pages/html/inputSettingCompany.php");
+        exit();        
+    }
+        
+    } else if ($type === 'pic') {
+    $nama= $_POST['nama'] ?? '';
+$jabatan= $_POST['jabatan'] ?? '';
+$nomor= $_POST['nomor'] ?? '';
+$email= $_POST['email'] ?? '';
+$id= $_POST['id'] ?? null;
+
+    // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
+
+    if ($action === 'create') {
+
+        if(createPic($nama, $jabatan, $nomor, $email)){
+            setAlert('success', 'Berhasil menambahkan PIC!');
+            header("Location: ../pages/html/settingPic.php");
+            exit();
+        } else {
+                setAlert('danger', 'Gagal menambahkan PIC!');
+                header("Location: ../pages/html/inputSettingPic.php");
+                exit();
+        }
+        
+    } else if ($action === 'update') {  
+        $pic = readPicById($id);
+        if($pic->getEmail()==$email && $pic->getJabatan() == $jabatan && $pic->getNama() == $nama && $pic->getNomor() == $nomor){
+            setAlert('danger', 'Tidak ada data yang berubah pada PIC!');
+                header("Location: ../pages/html/inputSettingPic.php");
+                exit();
+        }
+        if(updatePic($id, $nama, $jabatan, $nomor, $email)){
+            setAlert('success', 'PIC berhasil diperbarui!');
+            header("Location: ../pages/html/settingPic.php");
+        } else {
+                setAlert('danger', 'Gagal memperbarui PIC!');
+                header("Location: ../pages/html/inputSettingPic.php");
+                exit();
+            }
+        
+    }
+        
+    }
 
 } else if ($method === 'GET') {
 
@@ -439,6 +501,10 @@ if ($method === 'POST') {
         } else if ($type === 'payment') {
             $success = deletePayment(id: $id);
             $redirectUrl = '../html/tablePayments.php';
+        
+        } else if ($type === 'pic') {
+            $success = deletePic(id: $id);
+            $redirectUrl = '../html/settingPic.php';
         
         }
         if ($success) {

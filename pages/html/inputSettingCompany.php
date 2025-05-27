@@ -1,26 +1,29 @@
 <?php
+include_once '../../Control/Control.php';
 
-include '../../Control/Control.php';
+$namaPerusahaan= $_POST['nama'] ?? '';
+$pic = '';
+$alamat= $_POST['alamat'] ?? '';
+$kota= $_POST['kota'] ?? '';
+$provinsi= $_POST['provinsi'] ?? '';
+$kodePos= $_POST['kodePos'] ?? '';
+$negara= $_POST['negara'] ?? '';
 
-$id = $_GET['id'] ?? null;
-$name = $_GET['name'] ?? null;
-$ref_no = $_GET['ref_no']?? null;
-$price = $_GET['price'] ?? null;
-$customer_id = null;
-$it = null;
-
-if($id){
-  $customer_id = readItemCustomerById($id)->getCustomer();
-$it = readItemCustomerById($id)->getItem();
-$price = readItemCustomerById($id)->getHarga();
+$data = $_SESSION['COMPANY'] ?? null;
+// var_dump($data['ID']);die();
+if($data['ID']){
+  $company = readCompanyById($data['ID']);
+  $namaPerusahaan= $company->getNama();
+  $alamat= $company->getAlamat();
+  $kota= $company->getKota();
+  $provinsi= $company->getProvinsi();
+  $kodePos= $company->getKodePos();
+  $negara= $company->getNegara();
 }
 
-$customers = [];
+$id = $company->getId() ?? $_POST['id'] ?? null;
 
-$items = readItems();
-$customers = readCustomers();
-
-
+// var_dump($action);die;
 ?>
 
 <!doctype html>
@@ -69,79 +72,109 @@ $customers = readCustomers();
                         <!-- Alert Session Message -->
     <main class="app-main">
       <!--begin::App Content Header-->
+      <div class="card card-success card-outline mb-8">
       <div class="app-content-header">
-      <div class="card card-primary card-outlinr mb-6">
         <div class="card-header">
-          <div class="card-title">Items-Customers</div>
+          <div class="card-title">Company Data</div>
         </div>
+
+        
+                  <!--begin::Header-->
+                  <!--end::Header-->
+                  <!--begin::Body-->
+                  <div class="card-body">
         <!--end::Header-->
-        <!--begin::Form-->
-        <form class="needs-validation" novalidate method="post" action="../../Control/Control.php?type=itemcustomer">
-  <div class="card-body">
-  <input type="text" value="<?= $id?>" name="id" hidden>
-    <div class="row g-3">
-      <!-- Nama Item -->
-      <div class="col-md-6">
-        <label for="item_id" class="form-label">Item</label>
-        <select class="form-select" id="item_id" name="item_id" required>
-          <option value="">-- Select Item --</option>
-          <?php foreach ($items as $item): 
-            $item = new Item($item['ID'], $item['NAME'], $item['REF_NO'], $item['PRICE']);
-            ?>
-           <option value="<?= $item->getId() ?>" <?= $item->getId() == $it ? 'selected' : '' ?> data-price="<?= $item->getPrice() ?>">
-        <?= htmlspecialchars($item->getName()) ?>
-      </option>
-          <?php endforeach; ?>
-        </select>
-        <div class="valid-feedback">Looks good!</div>
-      </div>
+        <form method="post" action="../../Control/Control.php?type=company">
 
-      <!-- Nama Customer -->
-      <div class="col-md-6">
-        <label for="customer_id" class="form-label">Customer</label>
-        <select class="form-select" id="customer_id" name="customer_id" required>
-          <option value="">-- Select Customer --</option>
-          <?php foreach ($customers as $customer): 
-            $customer = new Customer($customer['ID'], $customer['NAME'],$customer['REF_NO']);
-            ?>
-            <option value="<?= $customer->getId() ?>" <?= $customer->getId() == $customer_id ? 'selected' : '' ?>>
-        <?= htmlspecialchars($customer->getName()) ?>
-      </option>
-          <?php endforeach; ?>
-        </select>
-        <div class="valid-feedback">Looks good!</div>
-      </div>
-
-      <!-- Harga -->
-      <div class="col-md-6">
-        <label for="price" class="form-label">Price</label>
-        <div class="input-group mb-3">
-          <span class="input-group-text">Rp</span>
-          <input type="text" class="form-control" id="price" value="<?= $price?>" required name="price" />
-          <span class="input-group-text">.00</span>
-        </div>
-        <div class="valid-feedback">Looks good!</div>
-      </div>
+        <div class="mb-3">
+          <input type="text" value="<?= $id?>" name="id" hidden>
+      <label for="ref_no" class="form-label">Nama Perusahaan</label>
+      <input
+        type="text"
+        class="form-control"
+        id="ref_no"
+        name="nama"
+        value="<?=$namaPerusahaan?>"
+        required
+      />
     </div>
-  </div>
 
-  <!-- Submit -->
-  <div class="card-footer">
-  <button type="submit" action="create" class="btn btn-info  float-end">Sumbit</button>
-    <a href="tableItems.php" class="btn btn-secondary">Cancel</a>
-  </div>
-</form>
+    <div class="mb-3">
+    <label for="name" class="form-label">Alamat</label>
+      <input
+        type="text"
+        class="form-control"
+        name="alamat"
+        value="<?= $alamat?>"
+        required
+      />
+    </div>
 
-</div>
-</div>
-</main>
+    <label for="price" class="form-label">Kode Pos</label>
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="kodePos"
+        value="<?=$kodePos ?>"
+        required
+      />
+    </div>
+
+    <label for="price" class="form-label">Kota</label>
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="kota"
+        value="<?=$kota ?>"
+        required
+      />
+    </div>
+
+    <label for="price" class="form-label">Provinsi</label>
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="provinsi"
+        value="<?=$provinsi ?>"
+        required
+      />
+    </div>
+
+    <label for="price" class="form-label">Negara</label>
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="negara"
+        value="<?=$negara ?>"
+        required
+      />
+    </div>
+
+    <div class="card-footer">
+                      <button type="submit" class="btn btn-success  float-end" >Sumbit</button>
+                      <a href="tableItems.php" class="btn btn-secondary" >Cancel</a>
+                    </div>
+    <div class="card-footer">
+    </div>
+  </form>
+  </div>
+  </div>
+  </div>
+  </main>
+        <!--begin::Form-->
+        <!--begin::JavaScript-->
+    
+        <!--end::JavaScript-->
 
     <!--end::App Main-->
     <!--begin::Footer-->
     <?php include __DIR__ . '/../widget/footer.php'; ?>
     <!--end::Footer-->
   </div>
-
   <?php if (isset($_SESSION['alert'])): ?>
   <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
     <?= $_SESSION['alert']['message'] ?>
@@ -172,8 +205,9 @@ $customers = readCustomers();
     }, 3000);
   </script>
   <?php unset($_SESSION['alert_delete']); ?>
-<?php endif; ?>
-
+<?php endif; 
+session_unset();
+?>
 
   <script>
           // Example starter JavaScript for disabling form submissions if there are invalid fields
@@ -200,6 +234,7 @@ $customers = readCustomers();
             });
           })();
         </script>
+        
   <!--end::App Wrapper-->
   <!--begin::Script-->
   <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js"
@@ -247,24 +282,7 @@ $customers = readCustomers();
 <!--end::Script-->
   <!--end::OverlayScrollbars Configure-->
   <!--end::Script-->
-  <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const itemSelect = document.getElementById('item_id');
-    const priceInput = document.getElementById('price');
-
-    itemSelect.addEventListener('change', function () {
-      const selectedOption = itemSelect.options[itemSelect.selectedIndex];
-      const price = selectedOption.getAttribute('data-price');
-
-      if (price) {
-        priceInput.value = price;
-      } else {
-        priceInput.value = '';
-      }
-    });
-  });
-</script>
-<script 
+  <script 
   src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta3/dist/js/adminlte.min.js"
   crossorigin="anonymous"
 ></script>

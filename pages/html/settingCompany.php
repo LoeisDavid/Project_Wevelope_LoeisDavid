@@ -1,9 +1,24 @@
 <?php
 include_once '../../Control/Control.php';
+$company = readCompanies();
 
-// Handle delete action
-$items = itemBestSeller();
-$displayitem = [];
+// var_dump($company);die();
+$id = $company['ID'] ?? null;
+$nama = $company['NAMA_PERUSAHAAN'] ?? "";
+$pic = "david" ?? "";
+$alamat = $company['ALAMAT'] ?? "";
+$kota = $company['KOTA'] ?? '';
+$provinsi = $company['PROVINSI'] ?? '';
+$kodePos = $company['KODE_POS'] ?? '';
+$negara = $company['NEGARA'] ?? '';
+
+if($id){
+$_SESSION['COMPANY'] = [
+  'ID' => $id
+] ;
+}
+
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -22,71 +37,51 @@ $displayitem = [];
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
 
     <main class="app-main">
-      <div class="app-content-header">
-        <div class="container-fluid">
-          <!-- Page Header -->
-          <div class="row mb-3">
-            <div class="col-sm-6">
-              <h3 class="mb-0">Best Seller</h3>
-            </div>
-            <div class="col-sm-6">
-              <ol class="breadcrumb float-sm-end">
-                <li class="breadcrumb-item"><a href="../../index.php">Dashboard</a></li>
-                <li class="breadcrumb-item active">Best Seller</li>
-              </ol>
+<div class="content-wrapper">
+    <section class="content-header">
+      <div class="container-fluid">
+        <h1>Informasi Perusahaan</h1>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="container-fluid">
+        <div class="card card-info">
+          <div class="card-header">
+            <h3 class="card-title">Detail Pengaturan</h3>
+            <div class="card-tools">
+              <a href="inputSettingCompany.php" class="btn btn-sm btn-primary">
+                <i class="fas fa-edit"></i> Ubah
+              </a>
             </div>
           </div>
-          <!-- Centered Content -->
-          <div class="row justify-content-center">
-            <div class="col-lg-12">
-              
-              <!-- Search Form -->
-              
+          <div class="card-body">
+            <dl class="row">
+              <dt class="col-sm-3">Nama Perusahaan</dt>
+              <dd class="col-sm-9"><?= $nama?></dd>
 
-              <!-- Unified Table -->
-              <div class="card">
-                
-                <div class="card-body">
-                  <table class="table table-bordered">
-                  <thead>
-  <tr>
-    <th class="text-start align-middle" style="width: 10%;">NO</th>
-    <th class="text-start align-middle" style="width: 10%;">REF NO</th>
-    <th class="text-start align-middle" style="width: 60%;">NAME</th>
-    <th class="text-end align-middle" style="width: 15%;">TOTAL QTY</th>
-  </tr>
-</thead>
-<tbody>
+              <dt class="col-sm-3">PIC</dt>
+              <dd class="col-sm-9"><?= $pic?></dd>
 
-                      <?php if (count($items) > 0): $no=0?>
-                        <?php foreach ($items as $it): 
-                        $no++;
-                        $inv = readItemById($it['item_id']);
-                          ?>
-                          <tr>
-                            <td class="text-start align-middle"><?= htmlspecialchars($no) ?></td>
-                          <td class="text-start align-middle"><?= htmlspecialchars($inv->getRefNo()) ?></td>
-<td class="text-start align-middle"><?= htmlspecialchars($inv->getName()) ?></td>
-<td class="text-end align-middle"><?= htmlspecialchars($it['total_qty'])  ?></td>
-                          </tr>
-                        <?php endforeach; ?>
-                      <?php else: ?>
-                        <tr>
-                        <td colspan="4" class="text-center align-middle text-muted">No Item found</td>
-                        </tr>
-                      <?php endif; ?>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="card-footer text-start clearfix">
+              <dt class="col-sm-3">Alamat</dt>
+              <dd class="col-sm-9"><?= $alamat?></dd>
 
-                </div>
-              </div>
+              <dt class="col-sm-3">Kota</dt>
+              <dd class="col-sm-9"><?= $kota?></dd>
 
-            </div>
+              <dt class="col-sm-3">Provinsi</dt>
+              <dd class="col-sm-9"><?= $provinsi?></dd>
+
+              <dt class="col-sm-3">Kode Pos</dt>
+              <dd class="col-sm-9"><?= $kodePos?></dd>
+
+              <dt class="col-sm-3">Negara</dt>
+              <dd class="col-sm-9"><?= $negara?></dd>
+            </dl>
           </div>
         </div>
       </div>
+    </section>
     </main>
 
     <?php include __DIR__ . '/../widget/footer.php'; ?>
@@ -123,7 +118,9 @@ $displayitem = [];
     }, 3000);
   </script>
   <?php unset($_SESSION['alert_delete']); ?>
-<?php endif; ?>
+<?php endif; 
+session_unset();
+?>
 
   <!-- Scripts -->
    <script 

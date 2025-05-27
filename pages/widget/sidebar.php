@@ -86,7 +86,32 @@ include_once __DIR__ . '/../../Control/Control.php';
             <p>Deadline</p>
           </a>
         </li>
+
+        <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-ui-checks-grid"></i>
+                  <p>
+                    Pengaturan
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview" style="box-sizing: border-box; display: none;">
+                  <li class="nav-item">
+                    <a href="<?= $base_url ?>pages/html/settingCompany.php" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Company</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="<?= $base_url ?>pages/html/settingPic.php" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>PIC</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
       </ul>
     </nav>
   </div>
 </aside>
+

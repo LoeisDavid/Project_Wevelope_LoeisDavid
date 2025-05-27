@@ -194,6 +194,10 @@ $price = $iteminv->getPrice();
     }
   });
 </script>
+<script 
+  src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta3/dist/js/adminlte.min.js"
+  crossorigin="anonymous"
+></script>
 <!--end::OverlayScrollbars Configure-->
 <!--end::Script-->
 <script const SELECTOR_SIDEBAR_WRAPPER='.sidebar-wrapper' ; const Default={ scrollbarTheme: 'os-theme-light' ,

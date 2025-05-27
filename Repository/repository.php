@@ -4,6 +4,123 @@
 
 require_once __DIR__ . '/connection.php'; // atau path sesuai struktur folder kamu
 
+// ---------------------- PIC ----------------------
+function createPic($nama, $jabatan, $nomor, $email) {
+    global $database;
+    return (bool) $database->insert('PIC', [
+        'NAMA'    => $nama,
+        'JABATAN' => $jabatan,
+        'NOMOR'   => $nomor,
+        'EMAIL'   => $email
+    ]);
+}
+
+function readPics() {
+    global $database;
+    return $database->select('PIC', '*');
+}
+
+function readPicById($id) {
+    global $database;
+    $row = $database->get('PIC', '*', ['ID' => $id]);
+    if($row){
+        return new Pic($row['ID'], $row['NAMA'], $row['JABATAN'], $row['NOMOR'], $row['EMAIL'], $row['STATUS']);
+    } else {
+        return null;
+    }
+}
+
+function searchPics($query) {
+    global $database;
+    return $database->select('PIC', '*', [
+        'OR' => [
+            'NAMA[~]'    => $query,
+            'JABATAN[~]' => $query,
+            'EMAIL[~]'   => $query
+        ]
+    ]);
+}
+
+function updatePic($id, $nama, $jabatan, $nomor, $email) {
+    global $database;
+    return (bool) $database->update('PIC', [
+        'NAMA'    => $nama,
+        'JABATAN' => $jabatan,
+        'NOMOR'   => $nomor,
+        'EMAIL'   => $email
+    ], ['ID' => $id])->rowCount();
+}
+
+function deletePic($id) {
+    global $database;
+    try {
+        return (bool) $database->delete('PIC', ['ID' => $id]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+
+// ---------------------- COMPANY ----------------------
+
+function readCompanies() {
+    global $database;
+    return $database->get('COMPANY', '*');
+}
+
+function readCompanyById($id) {
+    global $database;
+    $row = $database->get('COMPANY', '*', ['ID' => $id]);
+
+    if($row){
+        return new Company(
+        $row['ID'], 
+        $row['NAMA_PERUSAHAAN'],
+        null, 
+        $row['ALAMAT'],
+        $row['KODE_POS'],
+        $row['KOTA'],
+        $row['PROVINSI'],
+        $row['NEGARA']);
+    } else {
+        return null;
+    }
+}
+
+function searchCompanies($query) {
+    global $database;
+    return $database->select('COMPANY', '*', [
+        'OR' => [
+            'NAMA_PERUSAHAAN[~]' => $query,
+            'KOTA[~]'            => $query,
+            'PROVINSI[~]'        => $query,
+            'NEGARA[~]'          => $query
+        ]
+    ]);
+}
+
+function updateCompany($id, $nama_perusahaan, $alamat, $kota, $provinsi, $kode_pos, $negara) {
+    global $database;
+    return (bool) $database->update('COMPANY', [
+        'NAMA_PERUSAHAAN' => $nama_perusahaan,
+        'ALAMAT'          => $alamat,
+        'KOTA'            => $kota,
+        'PROVINSI'        => $provinsi,
+        'KODE_POS'        => $kode_pos,
+        'NEGARA'          => $negara
+    ], ['ID' => $id])->rowCount();
+}
+
+function deleteCompany($id) {
+    global $database;
+    try {
+        return (bool) $database->delete('COMPANY', ['ID' => $id]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+
 // ---------------------- Payment ----------------------
 
 function createPayment($nominal, $idInvoice, $tanggal = null, $notes = null) {

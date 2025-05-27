@@ -259,5 +259,9 @@ $items = $allitemCustomers;
       }
     });
   </script>
+  <script 
+  src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta3/dist/js/adminlte.min.js"
+  crossorigin="anonymous"
+></script>
 </body>
 </html>
