@@ -2,7 +2,7 @@
 include_once '../../Control/Control.php';
 
 // Handle delete action
-
+$id = $_GET['id'] ?? null;
 // Fetch all data
 
 // Get filters from query string
@@ -52,6 +52,12 @@ for ($i = 0; $i < $countPage; $i++) {
 
 
 $displayPayments = $contain;
+
+if($id){
+$_SESSION['PAYMENT'] = ['ID' => $id];
+header("Location: printKwitansi.php");
+exit();
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -143,6 +149,7 @@ $displayPayments = $contain;
                   <thead>
   <tr>
     <th class="text-start align-middle" style="width: 10%;">NO</th>
+    <th class="text-start align-middle" style="width: 20%;">KODE</th>
     <th class="text-start align-middle" style="width: 20%;">TANGGAL</th>
     <th class="text-start align-middle" style="width: 40%;">KODE INVOICE</th>
     <th class="text-end align-middle" style="width: 40%;">NOMINAL</th>
@@ -155,12 +162,13 @@ $displayPayments = $contain;
                       <?php if (count($displayPayments) > 0): $i=0; ?>
                         <?php foreach ($displayPayments as $inv): 
                           $i++;
-                          $inv= new Payment($inv['ID'],$inv['DATE'], $inv['NOMINAL'], $inv['ID_INVOICE'], $inv['NOTES']);
+                          $inv= new Payment($inv['ID'],$inv['DATE'], $inv['NOMINAL'], $inv['ID_INVOICE'], $inv['NOTES'], $inv['KODE']);
                           $invoice = readInvoiceById($inv->getInvoice());
                           $customer = readCustomerById($invoice->getCustomerId());
                           ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($i)?></td>
+                          <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode())?></td>
 <td class="text-start align-middle"><?= htmlspecialchars($inv->getDate()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars($invoice->getKode()) ?> - <?= htmlspecialchars($customer->getName())?></td>
 <td class="text-end align-middle"><?= htmlspecialchars($inv->getNomial()) ?></td>
@@ -175,6 +183,9 @@ $displayPayments = $contain;
                                 <a href="?type=payment&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
                                   <i class="bi bi-trash"></i>
                                 </a>
+                                <a href="?id=<?= $inv->getId()?>" class="btn btn-success" target="_blank">
+    <i class="bi bi-printer"></i> Print Kwitansi
+  </a>
                               </div>
                             </td>
                           </tr>

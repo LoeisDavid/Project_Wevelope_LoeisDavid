@@ -154,10 +154,11 @@ function deleteCompany($id) {
 
 // ---------------------- Payment ----------------------
 
-function createPayment($nominal, $idInvoice, $tanggal = null, $notes = null) {
+function createPayment($kode, $nominal, $idInvoice, $tanggal = null, $notes = null) {
     global $database;
 
     $data = [
+        'KODE'        => $kode,
         'NOMINAL'     => $nominal,
         'ID_INVOICE'  => $idInvoice,
         'DATE'        => $tanggal ?? date('Y-m-d'),  // pakai tanggal sekarang jika null
@@ -165,6 +166,25 @@ function createPayment($nominal, $idInvoice, $tanggal = null, $notes = null) {
     ];
     
     return (bool) $database->insert('payment', $data);
+}
+
+function readLastPayment() {
+    global $database;
+    $query = "SELECT * FROM payment ORDER BY ID DESC LIMIT 1";
+    $row = $database->query($query)->fetch();
+    
+    if($row){
+        return new Payment(
+            $row['ID'],
+            $row['DATE'],
+            $row['NOMINAL'],
+            $row['ID_INVOICE'],
+            $row['NOTES'],
+            $row['KODE']
+        );
+    } else {
+        return null;
+    }
 }
 
 function readPayments() {
@@ -181,7 +201,8 @@ function readPaymentById($id) {
             $row['DATE'],
             $row['NOMINAL'],
             $row['ID_INVOICE'],
-            $row['NOTES']
+            $row['NOTES'],
+            $row['KODE']
         );
     }
     return null;
@@ -199,9 +220,10 @@ function readPaymentByRangeDate($startDate, $endDate) {
     ]);
 }
 
-function updatePayment($id, $nominal, $idInvoice, $tanggal = null, $notes = null) {
+function updatePayment($id,$kode, $nominal, $idInvoice, $tanggal = null, $notes = null) {
     global $database;
     $data = [
+        'KODE'        => $kode,
         'NOMINAL'     => $nominal,
         'ID_INVOICE'  => $idInvoice,
         'DATE'        => $tanggal ?? date('Y-m-d'),
