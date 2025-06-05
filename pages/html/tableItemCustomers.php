@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 // Handle delete action
 if (
@@ -112,7 +112,7 @@ $displayitemCustomer = $contain;
               <div class="card">
                 <div class="card-header text-start clearfix">
                   <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All itemCustomers' ?></h3>
-                  <a href="inputItemCustomers.php" class="btn btn-primary">
+                  <a href="<?=getUrlInputItemCustomers()?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
                 </div>
@@ -141,7 +141,7 @@ $displayitemCustomer = $contain;
 
                             
 <a
-  href="InputItemCustomers.php?method=get&id=<?= $inv->getId() ?>"
+  href="<?=getUrlInputItemCustomers('method=get&id='.$inv->getId())?>"
   class="btn btn-sm btn-warning me-1"
   title="Edit Item-Customer"
 >

@@ -1,5 +1,6 @@
 <?php
-session_start();
+
+include '../../Control/urlController.php';
 $id = $_GET['id'] ?? null;
 $name = $_GET['name'] ?? null;
 $ref_no = $_GET['ref_no']?? null;
@@ -7,6 +8,12 @@ $price = $_GET['price'] ?? null;
 
 $kondisi = $_GET['kondisi'] ?? 'create';
 
+if($id){
+  $it = readItemById($id);
+  $name = $it->getName();
+  $ref_no = $it->getRefNo();
+  $price = $it->getPrice();
+}
 
 if($kondisi === 'create'){
   $action = 'create';
@@ -75,7 +82,7 @@ if($kondisi === 'create'){
                   <!--begin::Body-->
                   <div class="card-body">
         <!--end::Header-->
-        <form method="post" action="../../Control/Control.php?type=item">
+        <form method="post" action="<?=getUrlControl('type=item')?>">
 
         <div class="mb-3">
           <input type="text" value="<?= $action?>" name="kondisi" hidden>
@@ -118,7 +125,7 @@ if($kondisi === 'create'){
 
     <div class="card-footer">
                       <button type="submit" class="btn btn-success  float-end" >Sumbit</button>
-                      <a href="tableItems.php" class="btn btn-secondary" >Cancel</a>
+                      <a href="<?= getUrlTableItems()?>" class="btn btn-secondary" >Cancel</a>
                     </div>
     <div class="card-footer">
     </div>

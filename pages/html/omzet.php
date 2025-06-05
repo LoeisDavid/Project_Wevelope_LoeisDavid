@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 $periode = $_GET['periode'] ?? 'harian';
 

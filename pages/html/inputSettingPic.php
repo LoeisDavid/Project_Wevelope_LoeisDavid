@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 
 $nama= $_POST['nama'] ?? '';
@@ -81,7 +81,7 @@ if($data){
                   <!--begin::Body-->
                   <div class="card-body">
         <!--end::Header-->
-        <form method="post" action="../../Control/Control.php?type=pic&status=status">
+        <form method="post" action="<?=getUrlControl('type=pic&status=status')?>">
 
         <div class="mb-3">
           <input type="text" value="<?= $id?>" name="id" hidden>
@@ -132,7 +132,7 @@ if($data){
 
     <div class="card-footer">
                       <button type="submit" class="btn btn-success  float-end" >Sumbit</button>
-                      <a href="settingPic.php" class="btn btn-secondary" >Cancel</a>
+                      <a href="<?=getUrlSettingPic()?>" class="btn btn-secondary" >Cancel</a>
                     </div>
     <div class="card-footer">
     </div>

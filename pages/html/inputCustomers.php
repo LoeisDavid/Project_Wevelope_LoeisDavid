@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 $id = $_GET['id'] ?? null;
 // $name = $_GET['name'] ?? null;
 // $ref_no = $_GET['ref_no'] ?? null;
@@ -75,7 +75,7 @@ if($id){
                   <!--end::Header-->
                   <!--begin::Body-->
                   <div class="card-body">
-  <form method="post" action="../../Control/Control.php?type=customer&action=create">
+  <form method="post" action="<?= getUrlControl('type=customer&action=create')?>">
 
   <input type="text" value="<?= $id?>" name="id" hidden>
     <div class="mb-3">
@@ -138,7 +138,7 @@ if($id){
     </div>
 
     <button type="submit" class="btn btn-success  float-end">Sumbit</button>
-<a href="tableCustomers.php" class="btn btn-secondary">Cancel</a>
+<a href="<?= getUrlTableCustomers()?>" class="btn btn-secondary">Cancel</a>
 <input type="hidden" name="invoice_id" value="<?= $itemInvs->getInvoiceId() ?>">
 
     </div>

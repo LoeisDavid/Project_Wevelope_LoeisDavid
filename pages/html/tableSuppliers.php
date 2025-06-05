@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 // Handle delete action
 if (
@@ -142,7 +142,7 @@ $displaySupplier = $contain;
 <td class="text-center align-middle">
 
                             
-                                <a href="inputSuppliers.php?method=get&amp;id=<?= $inv->getId() ?>&amp;ref_no=<?= urlencode($inv->getRefNo()) ?>&amp;name=<?= $inv->getName() ?>" class="btn btn-sm btn-warning" title="Edit Supplier">
+                                <a href="<?=getUrlInputSuppliers('id='. $inv->getId())?>" class="btn btn-sm btn-warning" title="Edit Item">
                                   <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <a href="?type=supplier&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Supplier ini?');" title="Delete Supplier">

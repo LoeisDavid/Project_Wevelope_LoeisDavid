@@ -1,6 +1,6 @@
 <?php
 
-include '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 $customers = readCustomers(); // ambil semua customer
 
@@ -94,7 +94,7 @@ $invoice = readInvoiceById($id);
         <div class="card card-success card-outline mb-12">
           <div class="card-header text-center"><h4>Invoice</h4></div>
           <div class="card-body">
-            <form method="POST" action="../../Control/Control.php?type=invoice">
+            <form method="POST" action="<?= getUrlControl('type=invoice')?>">
             <input type="text" value="<?= $id?>" name="id" hidden>
               <div class="mb-3">
                 <label for="kode" class="form-label">Kode Invoice</label>
@@ -131,7 +131,7 @@ $invoice = readInvoiceById($id);
       ></textarea>
     </div>
               <button type="submit" class="btn btn-primary float-end">Simpan Invoice</button>
-              <a href="tableInvoice.php" class="btn btn-secondary">Cancel</a>
+              <a href="<?= getUrlTableInvoice()?>" class="btn btn-secondary">Cancel</a>
             </form>
         </div>
       </div>

@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 // Handle delete action
 if (
@@ -79,7 +79,7 @@ $displayInvoices = $contain;
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Invoices Table</title>
+  <title>Deadline Table</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
@@ -97,12 +97,12 @@ $displayInvoices = $contain;
           <!-- Page Header -->
           <div class="row mb-3">
             <div class="col-sm-6">
-              <h3 class="mb-0">Invoices Table</h3>
+              <h3 class="mb-0">Deadline Table</h3>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item"><a href="../../index.php">Dashboard</a></li>
-                <li class="breadcrumb-item active">Invoices</li>
+                <li class="breadcrumb-item active">Deadline</li>
               </ol>
             </div>
           </div>
@@ -118,9 +118,9 @@ $displayInvoices = $contain;
               <!-- Unified Table -->
               <div class="card">
                 <div class="card-header text-start clearfix">
-                  <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Invoices' ?></h3>
-                  <a href="inputInvoices.php" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create New
+                  <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Deadline' ?></h3>
+                  <a href="inputPayment.php" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Bayar Invoice
                   </a>
                 </div>
                 <div class="card-body">
@@ -162,7 +162,7 @@ $displayInvoices = $contain;
                         <?php endforeach; ?>
                       <?php else: ?>
                         <tr>
-                        <td colspan="7" class="text-center align-middle text-muted"><?= $isSearch ? 'No matching records.' : 'No invoices found.' ?></td>
+                        <td colspan="7" class="text-center align-middle text-muted"><?= $isSearch ? 'No matching records.' : 'No Deadline found.' ?></td>
                         </tr>
                       <?php endif; ?>
                     </tbody>

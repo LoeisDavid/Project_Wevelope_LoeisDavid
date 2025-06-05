@@ -1,5 +1,5 @@
 <?php
-include '../../Control/Control.php';
+include '../../Control/urlController.php';
 
 
 // Inisialisasi data item
@@ -118,13 +118,13 @@ $_SESSION['INVOICE'] = ['ID' => $invoice];
 
 
   <div class="card-header d-flex justify-content-start gap-2 flex-wrap">
-  <a href="inputInvoices.php?method=get&id=<?= $inv->getId() ?>&kode=<?= $inv->getKode()?>&customer=<?= $inv->getCustomerId()?>&kondisi=<?=true?>" class="btn btn-warning">
+  <a href="<?= getUrlInputInvoices('method=get&id='. $inv->getId(). '&kode='. $inv->getKode(). '&customer='. $inv->getCustomerId(). '&kondisi=')?>" class="btn btn-warning">
     <i class="bi bi-pencil-square"></i> Edit Invoice
   </a>
   <a href="printInvoice.php" class="btn btn-success" target="_blank">
     <i class="bi bi-printer"></i> Print Invoice
   </a>
-  <a href="inputPayment.php?invoice=<?= $invoice ?>" class="btn btn-success" target="_blank">
+  <a href="<?=getUrlInputPayment('invoice='.  $invoice)?>" class="btn btn-success">
     <i class="bi bi-calendar3"></i> Payment
   </a>
   
@@ -132,7 +132,7 @@ $_SESSION['INVOICE'] = ['ID' => $invoice];
 
                 <div class="d-flex justify-content-between align-items-center m-3 flex-wrap">
   <div class="mb-3">
-  <a href="inputItemInv.php?invoice=<?= $invoice ?>" class="btn btn-primary">
+  <a href="<?=getUrlInputItemInv('invoice='. $invoice)?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Add Item
                   </a>
   </div>
@@ -169,7 +169,7 @@ $_SESSION['INVOICE'] = ['ID' => $invoice];
                               <a href="InputItemInv.php?method=get&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-warning" title="Edit ItemInv">
                                 <i class="bi bi-pencil-square"></i>
                               </a>
-                              <a href="../../Control/Control.php?type=iteminv&action=delete&id=<?= $item->getId() ?>&invoice=<?= $invoice ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus item ini?');" title="Delete Item">
+                              <a href="<?=getUrlControl('type=iteminv&action=delete&id='. $item->getId(). '&invoice='. $invoice)?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus item ini?');" title="Delete Item">
                                 <i class="bi bi-trash"></i>
                               </a>
                             </div>

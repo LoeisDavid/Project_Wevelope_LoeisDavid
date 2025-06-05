@@ -1,6 +1,6 @@
 <?php
 
-include '../../Control/Control.php';
+include '../../Control/urlController.php';
 
 $id = $_GET['id'] ?? NULL;
 $items = readItems();
@@ -79,7 +79,7 @@ $price = $iteminv->getPrice();
         <div class="card card-success card-outline mb-12">
           <div class="card-header text-center"><h4>Detail Invoice</h4></div>
           <div class="card-body">
-          <form method="post" action="../../Control/Control.php?type=iteminv">
+          <form method="post" action="<?= getUrlControl('type=iteminv')?>">
                 <div class="border rounded p-3 mb-3">
                 <div class="mb-3">
                 <input type="text" value="<?= $id?>" name="id" hidden>
@@ -112,7 +112,7 @@ $price = $iteminv->getPrice();
                     <div class="form-text">dapat dikosongi - apabila kosong maka akan mengikuti harga dasar dari item yang dipilih</div>
                   </div>
                   <button type="submit" class="btn btn-primary float-end">Tambah Item ke Invoice</button>
-<a href="tableItemInv.php?invoice=<?= $invoice ?>" class="btn btn-secondary">Cancel</a>
+<a href="<?= getUrlTableItemInv('invoice='. $invoice)?>" class="btn btn-secondary">Cancel</a>
 
                 </div>
                 

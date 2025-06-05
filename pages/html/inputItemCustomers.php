@@ -1,6 +1,6 @@
 <?php
 
-include '../../Control/Control.php';
+include '../../Control/urlController.php';
 
 $id = $_GET['id'] ?? null;
 $name = $_GET['name'] ?? null;
@@ -76,7 +76,7 @@ $customers = readCustomers();
         </div>
         <!--end::Header-->
         <!--begin::Form-->
-        <form class="needs-validation" novalidate method="post" action="../../Control/Control.php?type=itemcustomer">
+        <form class="needs-validation" novalidate method="post" action="<?= getUrlControl('type=itemcustomer')?>">
   <div class="card-body">
   <input type="text" value="<?= $id?>" name="id" hidden>
     <div class="row g-3">
@@ -128,7 +128,7 @@ $customers = readCustomers();
   <!-- Submit -->
   <div class="card-footer">
   <button type="submit" action="create" class="btn btn-info  float-end">Sumbit</button>
-    <a href="tableItems.php" class="btn btn-secondary">Cancel</a>
+    <a href="<?= getUrlTableItemCustomers()?>" class="btn btn-secondary">Cancel</a>
   </div>
 </form>
 

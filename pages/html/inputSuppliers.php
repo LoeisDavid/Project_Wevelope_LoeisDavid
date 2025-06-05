@@ -1,8 +1,15 @@
 <?php
-session_start();
+include_once '../../Control/urlController.php';
 $id = $_GET['id'] ?? null;
 $name = $_GET['name'] ?? null;
 $ref_no = $_GET['ref_no'] ?? null;
+
+if($id){
+  $it = readItemById($id);
+  $name = $it->getName();
+  $ref_no = $it->getRefNo();
+  $price = $it->getPrice();
+}
 
 ?>
 
@@ -64,7 +71,7 @@ $ref_no = $_GET['ref_no'] ?? null;
                   <!--end::Header-->
                   <!--begin::Body-->
                   <div class="card-body">
-  <form method="post" action="../../Control/Control.php?type=supplier&action=create">
+  <form method="post" action="<?=getUrlControl('type=supplier&action=create')?>">
   <input type="hidden" value="<?= $id?>" name="id" hidden>
 
     <div class="mb-3">
@@ -93,7 +100,7 @@ $ref_no = $_GET['ref_no'] ?? null;
 
     <div class="card-footer">
     <button type="submit" action="create" class="btn btn-success  float-end">Sumbit</button>
-<a href="tableSuppliers.php" class="btn btn-secondary">Cancel</a>
+<a href="<?=getUrlTableSuppliers()?>" class="btn btn-secondary">Cancel</a>
 
 
   </form>

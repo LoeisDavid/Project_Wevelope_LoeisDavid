@@ -1,6 +1,6 @@
 <?php
 
-include '../../Control/Control.php';
+include '../../Control/urlController.php';
 
 $id = $_GET['id'] ?? null;
 $date = $_GET['date'] ?? null;
@@ -76,7 +76,7 @@ if (!$invoice) {
           <?php if($invoice) : ;
             $hasil= invoiceTersisa($invoice->getId());
             ?>
-          <form method="post" action="../../Control/Control.php?type=payment">
+          <form method="post" action="<?=getUrlControl('type=payment')?>">
                 <div class="border rounded p-3 mb-3">
                 <div class="mb-3">
                 <input type="text" value="<?= $id?>" name="id" hidden>

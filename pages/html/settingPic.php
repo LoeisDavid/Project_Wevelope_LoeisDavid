@@ -1,5 +1,5 @@
 <?php
-include '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 // Handle delete action
 
@@ -23,7 +23,7 @@ $displayitem = readPics();
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>item Table</title>
+  <title>Data PIC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
@@ -41,12 +41,12 @@ $displayitem = readPics();
           <!-- Page Header -->
           <div class="row mb-3">
             <div class="col-sm-6">
-              <h3 class="mb-0">item Table</h3>
+              <h3 class="mb-0">Data PIC</h3>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item"><a href="../../index.php">Dashboard</a></li>
-                <li class="breadcrumb-item active">item</li>
+                <li class="breadcrumb-item active">Data PIC</li>
               </ol>
             </div>
           </div>
@@ -66,7 +66,7 @@ $displayitem = readPics();
               <div class="card">
                 <div class="card-header text-start clearfix">
                   <h3 class="card-title mt-2 mx-3">PIC</h3>
-                  <a href="inputSettingPic.php" class="btn btn-primary">
+                  <a href="<?=getUrlInputSettingPic()?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
                 </div>
@@ -74,11 +74,11 @@ $displayitem = readPics();
                   <table class="table table-bordered">
                   <thead>
   <tr>
-    <th class="text-start align-middle" style="width: 60%;">NAME</th>
-    <th class="text-start align-middle" style="width: 60%;">JABATAN</th>
-    <th class="text-start align-middle" style="width: 60%;">NOMOR</th>
-    <th class="text-start align-middle" style="width: 60%;">EMAIL</th>
-    <th class="text-start align-middle" style="width: 30%;">STATUS</th>
+    <th class="text-start align-middle" style="width: 20%;">NAME</th>
+    <th class="text-start align-middle" style="width: 20%;">JABATAN</th>
+    <th class="text-start align-middle" style="width: 10%;">NOMOR</th>
+    <th class="text-start align-middle" style="width: 10%;">EMAIL</th>
+    <th class="text-start align-middle" style="width: 5%;">STATUS</th>
     <th class="text-center align-middle" style="width: 10%;">ACTIONS</th>
   </tr>
 </thead>
@@ -91,20 +91,26 @@ $displayitem = readPics();
                           
                           ?>
                           <tr>
-    <th class="text-start align-middle" style="width: 60%;"><?= $inv->getNama()?></th>
-    <th class="text-start align-middle" style="width: 60%;"><?= $inv->getJabatan()?></th>
-    <th class="text-start align-middle" style="width: 60%;"><?= $inv->getNomor()?></th>
-    <th class="text-start align-middle" style="width: 60%;"><?= $inv->getEmail()?></th>
-    <th class="text-start align-middle" style="width: 30%;"><?= $inv->getStatus() ? 'Use' : 'No Use' ?></th>
+    <td class="text-start align-middle"><?= $inv->getNama()?></td>
+    <td class="text-start align-middle"><?= $inv->getJabatan()?></td>
+    <td class="text-start align-middle"><?= $inv->getNomor()?></td>
+    <td class="text-start align-middle"><?= $inv->getEmail()?></td>
+    <td class="text-start align-middle"><?= $inv->getStatus() ? 'Use' : 'No Use' ?></td>
 <td class="text-center align-middle">
 
                             
                                 <a href="?id=<?= $inv->getId()?>" class="btn btn-sm btn-warning" title="Edit Item">
                                   <i class="bi bi-pencil-square"></i>
                                 </a>
+                                <?php if($inv->getStatus()) : ?>
                                 <a href="?action=status&id=<?= $inv->getId()?>" class="btn btn-sm btn-success" title="Edit Item">
                                   <i class="bi bi-toggle-on"></i>
                                 </a>
+                                <?php else :?>
+                                  <a href="?action=status&id=<?= $inv->getId()?>" class="btn btn-sm btn-success" title="Edit Item">
+                                  <i class="bi bi-toggle-off"></i>
+                                </a>
+                                  <?php endif?>
                                 <a href="?type=pic&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Item ini?');" title="Delete Item">
                                   <i class="bi bi-trash"></i>
                                 </a>

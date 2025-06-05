@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 // Handle delete action
 $id = $_GET['id'] ?? null;
@@ -63,7 +63,7 @@ exit();
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Invoices Table</title>
+  <title>Payments Table</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css" crossorigin="anonymous" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
@@ -81,7 +81,7 @@ exit();
           <!-- Page Header -->
           <div class="row mb-3">
             <div class="col-sm-6">
-              <h3 class="mb-0">Invoices Table</h3>
+              <h3 class="mb-0">Payments Table</h3>
             </div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
@@ -103,7 +103,7 @@ exit();
       <!-- Keyword -->
       <div class="col-md-3">
         <label for="keyword" class="form-label">Keyword</label>
-        <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Search invoice..." value="<?= htmlspecialchars($keyword) ?>">
+        <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Search Payments..." value="<?= htmlspecialchars($keyword) ?>">
       </div>
 
       <!-- Start Date -->
@@ -177,14 +177,14 @@ exit();
   
 
                               <div class="btn-group" role="group">
-                                <a href="inputPayment.php?id=<?= $inv->getId() ?>" class="btn btn-sm btn-warning" title="Lihat Detail">
+                                <a href="<?=getUrlInputPayment('id='. $inv->getId())?>" class="btn btn-sm btn-warning" title="Lihat Detail">
                                   <i class="bi bi-pencil"></i>
                                 </a>
                                 <a href="?type=payment&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
                                   <i class="bi bi-trash"></i>
                                 </a>
                                 <a href="?id=<?= $inv->getId()?>" class="btn btn-success" target="_blank">
-    <i class="bi bi-printer"></i> Print Kwitansi
+    <i class="bi bi-printer"></i>
   </a>
                               </div>
                             </td>
@@ -192,7 +192,7 @@ exit();
                         <?php endforeach; ?>
                       <?php else: ?>
                         <tr>
-                        <td colspan="6" class="text-center align-middle text-muted"><?= $isSearch ? 'No matching records.' : 'No invoices found.' ?></td>
+                        <td colspan="6" class="text-center align-middle text-muted"><?= $isSearch ? 'No matching records.' : 'No Payments found.' ?></td>
                         </tr>
                       <?php endif; ?>
                     </tbody>

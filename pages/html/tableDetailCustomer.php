@@ -1,5 +1,5 @@
 <?php
-include '../../Control/Control.php';
+include '../../Control/urlController.php';
 
 
 // Inisialisasi data item
@@ -79,22 +79,48 @@ $countPage = 5;
           <div class="row">
             <div class="col-md-12">
               <div class="card">
-                <div class="card-body text-center"><h2>Customer <?= htmlspecialchars($customer->getName()) ?></h2></div>
+                <div class="card-body text-center"><h2>Customer</h2></div>
                 <div class="card-body text-center">
                   <h3 class="card-title">
                     <button class="btn btn-primary" disabled>
-                      <i class="bi bi-calendar-event"></i>
+                      <i class="bi bi-person"></i>
+                    </button> NAME: <?= htmlspecialchars($customer->getName()) ?>
+                  </h3>
+                </div>
+                <div class="card-body text-center">
+                  <h3 class="card-title">
+                    <button class="btn btn-primary" disabled>
+                      <i class="bi bi-info"></i>
                     </button> REFERAL NUMBER: <?= htmlspecialchars($customer->getRefNo()) ?>
+                  </h3>
+                </div>
+                <div class="card-body text-center">
+                  <h3 class="card-title">
+                    <button class="btn btn-primary" disabled>
+                      <i class="bi bi-info"></i>
+                    </button> ALAMAT: <?= htmlspecialchars($customer->getAlamat()) ?>
+                  </h3>
+                </div>
+                <div class="card-body text-center">
+                  <h3 class="card-title">
+                    <button class="btn btn-primary" disabled>
+                      <i class="bi bi-info"></i>
+                    </button> TELEPON: <?= htmlspecialchars($customer->getTelepon()) ?>
+                  </h3>
+                </div>
+                <div class="card-body text-center">
+                  <h3 class="card-title">
+                    <button class="btn btn-primary" disabled>
+                      <i class="bi bi-info"></i>
+                    </button> EMAIL: <?= htmlspecialchars($customer->getEmail()) ?>
                   </h3>
                 </div>
 
                 
 
-                
-
 
   <div class="card-header d-flex justify-content-start gap-2 flex-wrap">
-  <a href="inputCustomer.php?method=get&id=<?= $customer->getId() ?>" class="btn btn-warning">
+  <a href="<?=getUrlInputCustomer('method=get&id='. $customer->getId())?>" class="btn btn-warning">
     <i class="bi bi-pencil-square"></i> Edit Customer
   </a>
  
@@ -103,7 +129,7 @@ $countPage = 5;
 
                 <div class="d-flex justify-content-between align-items-center m-3 flex-wrap">
   <div class="mb-3">
-  <a href="inputInvoices.php?customer=<?= $customer_id ?>" class="btn btn-primary">
+  <a href="<?=getUrlInputInvoices('customer='.$customer_id)?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Add Invoice
                   </a>
   </div>

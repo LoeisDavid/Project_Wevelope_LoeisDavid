@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 $company = readCompanies();
 $pic = getDataStatusTruePic();
 
@@ -53,7 +53,7 @@ $_SESSION['COMPANY'] = [
           <div class="card-header">
             <h3 class="card-title">Detail Pengaturan</h3>
             <div class="card-tools">
-              <a href="inputSettingCompany.php" class="btn btn-sm btn-primary">
+              <a href="<?=getUrlInputSettingCompany()?>" class="btn btn-sm btn-primary">
                 <i class="fas fa-edit"></i> Ubah
               </a>
             </div>

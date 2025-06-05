@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 $namaPerusahaan= $_POST['nama'] ?? '';
 $pic = '';
@@ -88,7 +88,7 @@ $id = $company->getId() ?? $_POST['id'] ?? null;
                   <!--begin::Body-->
                   <div class="card-body">
         <!--end::Header-->
-        <form method="post" action="../../Control/Control.php?type=company">
+        <form method="post" action="<?=getUrlControl('type=company')?>">
 
         <div class="mb-3">
           <input type="text" value="<?= $id?>" name="id" hidden>
@@ -182,7 +182,7 @@ $id = $company->getId() ?? $_POST['id'] ?? null;
 
     <div class="card-footer">
                       <button type="submit" class="btn btn-success  float-end" >Sumbit</button>
-                      <a href="settingCompany.php" class="btn btn-secondary" >Cancel</a>
+                      <a href="<?=getUrlSettingCompany()?>" class="btn btn-secondary" >Cancel</a>
                     </div>
     <div class="card-footer">
     </div>

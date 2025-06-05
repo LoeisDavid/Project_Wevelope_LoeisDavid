@@ -1,5 +1,5 @@
 <?php
-include_once '../../Control/Control.php';
+include_once '../../Control/urlController.php';
 
 // Handle delete action
 if (
@@ -172,7 +172,7 @@ $displayInvoices = $contain;
               <div class="card">
                 <div class="card-header text-start clearfix">
                   <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Invoices' ?></h3>
-                  <a href="inputInvoices.php" class="btn btn-primary">
+                  <a href="<?= getUrlInputInvoices()?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
                 </div>
@@ -216,7 +216,7 @@ $displayInvoices = $contain;
 <td class="text-center align-middle">
 
                               <div class="btn-group" role="group">
-                                <a href="tableItemInv.php?invoice=<?= $inv->getId() ?>" class="btn btn-sm btn-info" title="Lihat Detail">
+                                <a href="<?=getUrlTableItemInv('invoice='.$inv->getId())?>" class="btn btn-sm btn-info" title="Lihat Detail">
                                   <i class="bi bi-eye"></i>
                                 </a>
                                 <a href="?type=invoice&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
