@@ -3,9 +3,6 @@
 // Include segera di dalam <body>, sebelum <div class="app-wrapper">,
 // dan pastikan CSS Bootstrap sudah ter-load.
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
 if (empty($_SESSION['alert']) && empty($_SESSION['alert_delete'])) {
     return;

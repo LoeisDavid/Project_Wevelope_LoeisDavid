@@ -20,6 +20,12 @@ function readPics() {
     return $database->select('PIC', '*');
 }
 
+function readNewPic() {
+    global $database;
+    return $$database->get('pic', '*', [
+    "ORDER" => ["id" => "DESC"]
+]);
+}
 function readPicById($id) {
     global $database;
     $row = $database->get('PIC', '*', ['ID' => $id]);
@@ -93,6 +99,13 @@ function getDataStatusTruePic() {
 function readCompanies() {
     global $database;
     return $database->get('COMPANY', '*');
+}
+
+function readNewCompany() {
+    global $database;
+    return $database->get('company', '*', [
+    "ORDER" => ["id" => "DESC"]
+]);
 }
 
 function readCompanyById($id) {
@@ -190,6 +203,13 @@ function readLastPayment() {
 function readPayments() {
     global $database;
     return $database->select('payment', '*');
+}
+
+function readNewPayment() {
+    global $database;
+    return $database->get('payment', '*', [
+    "ORDER" => ["id" => "DESC"]
+]);
 }
 
 function readPaymentById($id) {
@@ -446,6 +466,15 @@ function readItemInvs() {
     //     );
     // }
     // return $entries;
+
+    return $rows;
+}
+
+function readNewItemInv() {
+    global $database;
+    $rows = $database->get('iteminv', '*', [
+    "ORDER" => ["id" => "DESC"]
+]);
 
     return $rows;
 }
@@ -747,6 +776,25 @@ function readInvoices() {
     return $rows;
 }
 
+function readNewInvoice() {
+    global $database;
+    $rows = $database->get('invoice', '*', [
+    "ORDER" => ["id" => "DESC"]
+]);
+    // $invoices = [];
+    // foreach ($rows as $row) {
+    //     $invoices[] = new Invoice(
+    //         $row['ID'],
+    //         $row['KODE'],
+    //         $row['DATE'],
+    //         $row['CUSTOMER_ID']
+    //     );
+    // }
+    // return $invoices;
+    // var_dump($rows[101]);die();
+    return $rows;
+}
+
 function readInvoiceById($id) {
     global $database;
     $row = $database->get('invoice', '*', ['ID' => $id]);
@@ -979,6 +1027,25 @@ function readCustomers() {
     return $rows;
 }
 
+function readNewCustomer() {
+    global $database;
+    $rows = $database->get('customers', '*', [
+    "ORDER" => ["id" => "DESC"]
+]);
+    // $customers = [];
+    // foreach ($rows as $row) {
+    //     $customers[] = new Customer(
+    //         $row['ID'],
+    //         $row['NAME'],
+    //         $row['REF_NO']
+    //     );
+    // }
+    // return $customers;
+
+    return $rows;
+}
+
+
 function searchCustomersByName($query) {
     global $database;
     $queryStr = "%$query%";
@@ -1090,6 +1157,15 @@ function readSuppliers() {
     return $rows;
 }
 
+function readNewSupplier() {
+    global $database;
+    $rows = $database->get('suppliers', '*', [
+    "ORDER" => ["id" => "DESC"]
+]);
+
+    return $rows;
+}
+
 function searchSuppliersByName($query) {
     global $database;
     $queryStr = "%$query%";
@@ -1185,6 +1261,13 @@ function readItems() {
     // }
     // return $items;
 
+    return $rows;
+}
+function readNewItem() {
+    global $database;
+    $rows = $database->get('items', '*', [
+    "ORDER" => ["id" => "DESC"]
+]);
     return $rows;
 }
 
@@ -1287,6 +1370,13 @@ function readItemCustomers() {
     return $rows;
 }
 
+function readNewItemCustomer() {
+    global $database;
+    $rows = $database->get('items_customers', '*', [
+    "ORDER" => ["id" => "DESC"]
+]);
+    return $rows;
+}
 function readItemCustomerById($id) {
     global $database;
     $row = $database->get('items_customers', '*', ['ID' => $id]);

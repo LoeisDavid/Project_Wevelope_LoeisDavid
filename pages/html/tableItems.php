@@ -70,6 +70,7 @@ $displayitem = $contain;
 </head>
 <body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary sidebar-open app-loaded">
   <div class="app-wrapper">
+        <?php include __DIR__ . '/../widget/alert.php'; ?>
     <?php include __DIR__ . '/../widget/header.php'; ?>
     <?php include __DIR__ . '/../widget/sidebar.php'; ?>
 
@@ -201,37 +202,6 @@ $displayitem = $contain;
   </div>
 
 <!-- Alert Delete -->
-<?php if (isset($_SESSION['alert'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
-    <?= $_SESSION['alert']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <script>
-    setTimeout(() => {
-      const alert = document.querySelector('.alert');
-      if (alert) {
-        bootstrap.Alert.getOrCreateInstance(alert).close();
-      }
-    }, 3000);
-  </script>
-  <?php unset($_SESSION['alert']); ?>
-<?php endif; ?>
-
-<?php if (isset($_SESSION['alert_delete'])): ?>
-  <div class="alert alert-<?= $_SESSION['alert_delete']['type'] ?> alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; width: fit-content; max-width: 90%;">
-    <?= $_SESSION['alert_delete']['message'] ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <script>
-    setTimeout(() => {
-      const alert = document.querySelectorAll('.alert')[1];
-      if (alert) {
-        bootstrap.Alert.getOrCreateInstance(alert).close();
-      }
-    }, 3000);
-  </script>
-  <?php unset($_SESSION['alert_delete']); ?>
-<?php endif; ?>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.10.1/browser/overlayscrollbars.browser.es6.min.js" crossorigin="anonymous"></script>

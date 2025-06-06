@@ -2,9 +2,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+require_once 'sessionController.php';
+
 require_once __DIR__ . '/../Repository/repository.php';
 require_once __DIR__ . '/../Models/Customer.php';
 require_once __DIR__ . '/../Models/Item.php';
@@ -58,14 +57,7 @@ $type   = $_GET['type'] ?? null;
 $action = $_GET['action'] ?? null;
 $id     = $_GET['id'] ?? null;
 
-if (!function_exists('setAlert')) {
-    function setAlert($type, $message, $isDelete = false) {
-        $_SESSION[$isDelete ? 'alert_delete' : 'alert'] = [
-            'type' => $type,
-            'message' => $message
-        ];
-    }
-}
+
 
 if (!function_exists('createRefNo')) {
     function createRefNo($name, $type): string {
@@ -131,6 +123,8 @@ if ($method === 'POST') {
             
                 createItemCustomer($_POST['item_id'], $_POST['customer_id'], $_POST['price']);
                 setAlert('success', 'Item Customer berhasil ditambahkan!');
+                $itemCustomers[] = sessionGetObjectItemCustomers();
+                
                 header("Location: ../pages/html/tableItemCustomers.php");
                 exit();
             
@@ -552,9 +546,9 @@ $id= $_POST['id'] ?? $_GET['id'] ?? null;
         
         }
         if ($success) {
-            setAlert('success', ucfirst($type) . ' berhasil dihapus!', true);
+            setAlert('success', ucfirst($type) . ' berhasil dihapus!');
         } else {
-            setAlert('danger', 'Gagal menghapus ' . $type . '.', true);
+            setAlert('danger', 'Gagal menghapus ' . $type . '.');
         }
 
         header("Location: $redirectUrl");
