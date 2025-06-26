@@ -1,4 +1,4 @@
--- SCHEMA: schema.sql
+-- FIXED SCHEMA: schema.sql with foreign keys and without problematic DEFAULT
 
 DROP TABLE IF EXISTS items_customers, iteminv, invoice, payment, suppliers, items, customers, company, pic;
 
@@ -42,8 +42,9 @@ CREATE TABLE invoice (
     KODE VARCHAR(100) UNIQUE,
     DATE DATE,
     CUSTOMER_ID INT,
-    NOTE TEXT,
-    DEADLINE DATE
+    NOTES TEXT,
+    DEADLINE DATE,
+    FOREIGN KEY (CUSTOMER_ID) REFERENCES customers(ID)
 );
 
 CREATE TABLE iteminv (
@@ -52,23 +53,28 @@ CREATE TABLE iteminv (
     ITEM_ID INT,
     QTY INT,
     PRICE DOUBLE,
-    TOTAL DOUBLE
+    TOTAL DOUBLE,
+    FOREIGN KEY (INVOICE_ID) REFERENCES invoice(ID),
+    FOREIGN KEY (ITEM_ID) REFERENCES items(ID)
 );
 
 CREATE TABLE items_customers (
     ID INT AUTO_INCREMENT PRIMARY KEY,
     Item INT,
     Customer INT,
-    Harga INT
+    Harga INT,
+    FOREIGN KEY (Item) REFERENCES items(ID),
+    FOREIGN KEY (Customer) REFERENCES customers(ID)
 );
 
 CREATE TABLE payment (
     ID INT AUTO_INCREMENT PRIMARY KEY,
     KODE VARCHAR(50) UNIQUE,
-    DATE DATE DEFAULT CURDATE(),
+    DATE DATE,
     NOMINAL DOUBLE,
     ID_INVOICE INT,
-    NOTES TEXT
+    NOTES TEXT,
+    FOREIGN KEY (ID_INVOICE) REFERENCES invoice(ID)
 );
 
 CREATE TABLE pic (
