@@ -2,8 +2,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-require_once 'sessionController.php';
-
 require_once __DIR__ . '/../Repository/repository.php';
 require_once __DIR__ . '/../Models/Customer.php';
 require_once __DIR__ . '/../Models/Item.php';
@@ -15,6 +13,8 @@ require_once __DIR__ . '/../Models/Payment.php';
 require_once __DIR__ . '/../Models/Company.php';
 require_once __DIR__ . '/../Models/Pic.php';
 require_once __DIR__ . '/../env.php';
+require_once 'sessionController.php';
+require_once 'dompdf.php';
 
 // if (!isset($_SESSION['executed'])) {
 //     $_SESSION['executed'] = true; // Tandai bahwa kode sudah dijalankan
@@ -44,6 +44,8 @@ require_once __DIR__ . '/../env.php';
 
 //         $base_url = '/../'.$base_url;
 // }
+$suppliers = sessionGetObjectSuppliers();
+// var_dump($suppliers[count($suppliers)-1]);die;
 
 if (!defined('BASE_URL')) {
     // $script_name = $_SERVER['SCRIPT_NAME'];
@@ -52,12 +54,28 @@ if (!defined('BASE_URL')) {
     define("BASE_URL", "/".$base_url);
 }
 
-$method = $_SERVER['REQUEST_METHOD'] ?? $_GET['method'];
+$method = $_SERVER['REQUEST_METHOD'] ?? $_GET['method'] ?? sessionGetPass('METHOD');
 $type   = $_GET['type'] ?? null;
 $action = $_GET['action'] ?? null;
 $id     = $_GET['id'] ?? null;
 
+//------------------- CSV ----------------
 
+ 
+    $csv = $_GET['csv'] ?? null;
+
+    if(isset($csv)){
+        $aksi = $_GET['action'] ?? null;
+        if($csv == 'customer'){
+
+            if($aksi == 'export'){
+                exportSessionCustomersToCsv();
+                header('Location: ?');
+                exit();
+            }
+
+        }
+    }
 
 if (!function_exists('createRefNo')) {
     function createRefNo($name, $type): string {
@@ -94,13 +112,34 @@ if (!function_exists('createRefNo')) {
     }
 }
 
-
 // === POST METHOD ===
 if ($method === 'POST') {
+
+    
+    //------------------- CSV ----------------
+
+ 
+    $csv = $_POST['csv'] ?? null;
+    $redirect = $_GET['redirect'] ?? false;
+    $keyword = $_GET['keyword'] ?? null;
+    $success = false;
+    $url = null;
+    $url2 = null;
+    if(isset($redirect)){
+        $url = sessionGetRedirectUrl();
+        $url2 = '?';
+    } else {
+        $url = sessionGetRedirectUrl();
+        $url2 = sessionGetRedirectUrl2();
+    }
 
     $name = $_POST['name'] ?? NULL;
     $price = $_POST['price'] ?? NULL;
     $id = $_POST['id'] ?? NULL;
+    $index = sessionGetPass('INDEX') ?? null;
+    if(sessionGetPass('FROM')){
+        $from = sessionGetPass('FROM') ?? null;
+    }
     if($action == 'status'){
 
     } else {
@@ -111,32 +150,63 @@ if ($method === 'POST') {
     }
     }
     
-    
+    if(isset($csv)){
+        $aksi = $_POST['action'] ?? null;
+        if($csv == 'customer'){
 
-    if ($type === 'itemcustomer') {
-        if (!$_POST['ref_no']) {
-            $ref_no = createRefNo($_POST['name'], $type);
-        } else {
-            $ref_no = $_POST['ref_no'];
+            if($aksi == 'import'){
+                $file = $_FILES['file']['tmp_name'];
+
+                $kondisi = importCsvToCustomers($file);
+                
+                if($kondisi){
+                    setAlert('success', 'CSV Customer berhasil ditambahkan!'); 
+                    $success = true;
+                    sessionSetObjectCustomers(readCustomers());
+                } else {
+                    setAlert('danger', 'Gagal menambahkan CSV Customer customer.');
+                    $success = false;
+                }
+            }
+
         }
+    } else if ($type === 'itemcustomer') {
+        
         if ($action === 'create') {
             
                 createItemCustomer($_POST['item_id'], $_POST['customer_id'], $_POST['price']);
-                setAlert('success', 'Item Customer berhasil ditambahkan!');
-                $itemCustomers[] = sessionGetObjectItemCustomers();
+                setAlert('success', 'Item Customer berhasil ditambahkan!'); 
+                $itemCustomers = sessionGetObjectItemCustomers();
+                $container = 1;
+                if(count($itemCustomers)==0){   
+                    $container=0;
+                }
+                if(is_object($itemCustomers[count($itemCustomers)-$container])){
+                    $itemCustomer = $itemCustomers[count($itemCustomers)-$container]->getId()+1;
+                } else {
+                    $itemCustomer = $itemCustomers[count($itemCustomers)-$container]['ID']+1;
+                }
                 
-                header("Location: ../pages/html/tableItemCustomers.php");
-                exit();
+                $itemCustomers[] = new ItemCustomer($itemCustomer, $_POST['item_id'],$_POST['customer_id'], $_POST['price']);
+                sessionSetObjectItemCustomers($itemCustomers);
+                $success = true;
             
         } else if ($action === 'update') {
             if (updateItemCustomer($_POST['id'], $_POST['item_id'], $_POST['customer_id'], $_POST['price'])) {
                 setAlert('success', 'Item Customer berhasil diperbarui!');
-                header("Location: ../pages/html/tableItemCustomers.php");
-                exit();
+
+                if(isset($keyword)){
+                    sessionSetObjectItemCustomers(readItemCustomers());
+                } else {
+                    $data = sessionGetObjectItemCustomers();
+                $data[$index-1] = new ItemCustomer($_POST['id'], $_POST['item_id'], $_POST['customer_id'], $_POST['price']);
+                sessionSetObjectItemCustomers($data);
+                }
+                
+               $success = true;
             } else {
                 setAlert('danger', 'Gagal memperbarui item customer.');
-                header("Location: ../pages/html/InputItemCustomers.php?id=$id");
-                exit();
+                $success = false;
             }
         }
     }
@@ -155,31 +225,76 @@ if ($method === 'POST') {
             if (readCustomerByRefNo($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan customer. Ref No sudah digunakan.');
                 header("Location: ../pages/html/inputCustomers.php?name=$name&ref_no=$ref_no");
+                
                 exit();
             } else {
                 createCustomer($ref_no, $_POST['name'], $alamat, $email, $telepon);
                 setAlert('success', 'Customer berhasil ditambahkan!');
-                header("Location: ../pages/html/tableCustomers.php");
-                exit();
+                $customer = sessionGetObjectCustomers();
+                $container = 1;
+                if(count($customer)==0){
+                    $container=0;
+                }
+
+                if(is_object($customer[count($customer)-$container]->getId())){
+                    $cust = $customer[count($customer)-$container]->getId()+1;
+                } else {
+                    $cust = $customer[count($customer)-$container]['ID']+1;
+                }
+                $customer[] = new Customer($cust, $name, $ref_no, $email, $alamat, $telepon);
+                sessionSetObjectCustomers($customer);
+                $success = true;
             }
         } else if ($action === 'update') {
-            if(readCustomerById(intval($_POST['id']))->getRefNo() == $ref_no) {
+
+            if(isset($from)){
+                if(readCustomerById(intval($_POST['id']))->getRefNo() == $ref_no) {
                 updateCustomer($_POST['id'], $ref_no, $_POST['name'], $alamat, $email, $telepon);
                 setAlert('success', 'Customer berhasil diperbarui!');
-                header("Location: ../pages/html/tableCustomers.php");
-                exit();
+                sessionSetObjectCustomers(readCustomers());
+                $success = true;
             } else {
                 if (readCustomerByRefNo($ref_no)) {
                     setAlert('danger', 'Gagal memperbarui customer. Ref No sudah digunakan');
-                header("Location: ../pages/html/InputCustomers.php?id=$id");
-                exit();
+                $success = false;
                 } else {
                     updateCustomer($_POST['id'], $ref_no, $_POST['name'], $alamat, $email, $telepon);
                 setAlert('success', 'Customer berhasil diperbarui!');
-                header("Location: ../pages/html/tableCustomers.php");
-                exit();
+                sessionSetObjectCustomers(readCustomers());
+                $success = true;
                 }
                 
+            }
+            } else {
+            if(readCustomerById(intval($_POST['id']))->getRefNo() == $ref_no) {
+                updateCustomer($_POST['id'], $ref_no, $_POST['name'], $alamat, $email, $telepon);
+                setAlert('success', 'Customer berhasil diperbarui!');
+                if(isset($keyword)){
+                    sessionSetObjectCustomers(readCustomers());
+                } else {
+                    $data = sessionGetObjectCustomers();
+                    $data[$index-1] = new Customer($_POST['id'], $_POST['name'],$ref_no, $email, $alamat,  $telepon);
+                    sessionSetObjectCustomers($data);
+                }
+                $success = true;
+            } else {
+                if (readCustomerByRefNo($ref_no)) {
+                    setAlert('danger', 'Gagal memperbarui customer. Ref No sudah digunakan');
+                $success = false;
+                } else {
+                    updateCustomer($_POST['id'], $ref_no, $_POST['name'], $alamat, $email, $telepon);
+                setAlert('success', 'Customer berhasil diperbarui!');
+                if(isset($keyword)){
+                    sessionSetObjectCustomers(readCustomers());
+                } else {
+                    $data = sessionGetObjectCustomers();
+                    $data[$index-1] = new Customer($_POST['id'], $_POST['name'],$ref_no, $email, $alamat,  $telepon);
+                    sessionSetObjectCustomers($data);
+                }
+                $success = true;
+                }
+                
+            }
             }
         }
     // SUPPLIER
@@ -197,25 +312,50 @@ if ($method === 'POST') {
             } else {
                 createSupplier($ref_no, $_POST['name']);
                 setAlert('success', 'Supplier berhasil ditambahkan!');
-                header("Location: ../pages/html/tableSuppliers.php");
-                exit();
+                $suppliers = sessionGetObjectSuppliers();
+                $container = 1;
+                if(count($suppliers)==0){
+                    $container=0;
+                }
+                $supp = $suppliers[count($suppliers)-$container];
+                if(is_object($supp)){
+                    $supp = $supp->getId();
+                } else 
+            {
+                $supp = $supp['ID'];
+            }
+                
+                $suppliers[] = new Supplier($supp+1, $_POST['name'], $ref_no);
+                sessionSetObjectSuppliers($suppliers);
+                $success = true;
             }
         } else if ($action === 'update') {
             if(readSupplierById(intval($_POST['id']))->getRefNo() == $ref_no) {
                 updateSupplier($_POST['id'], $ref_no, $_POST['name']);
                 setAlert('success', 'Supplier berhasil diperbarui!');
-                header("Location: ../pages/html/tableSuppliers.php");
-                exit();
+                if(isset($keyword)){
+                    sessionSetObjectSuppliers(readSuppliers());
+                } else {
+                    $data = sessionGetObjectSuppliers();
+                $data[$index-1] = new Supplier($_POST['id'], $_POST['name'],$ref_no );
+                sessionSetObjectSuppliers($data);
+                }
+                
+                $success = true;
             } else {
                 if (!readSupplierByRefNo($ref_no)) {
                     updateSupplier($_POST['id'], $ref_no, $_POST['name']);
                     setAlert('success', 'Supplier berhasil diperbarui!');
-                    header("Location: ../pages/html/tableSuppliers.php");
-                    exit();
+                    if(isset($keyword)){
+                    sessionSetObjectSuppliers(readSuppliers());
+                } else {
+                    $data = sessionGetObjectSuppliers();
+                $data[$index-1] = new Supplier($_POST['id'], $_POST['name'],$ref_no );
+                sessionSetObjectSuppliers($data);
+                }
                 } else {
                     setAlert('danger', 'Gagal memperbarui supplier. Ref No sudah digunakan.');
-                header("Location: ../pages/html/InputSuppliers.php?id=$id");
-                exit();
+                $success = false;
                 }
                 
             }
@@ -230,30 +370,55 @@ if ($method === 'POST') {
         if ($action === 'create') {
             if (readItemByRefNo($ref_no)) {
                 setAlert('danger', 'Gagal menambahkan item. Ref No sudah digunakan.');
-                
+                header("Location: $url2");
+                exit();
             } else {
                 createItem($ref_no, $_POST['name'], $_POST['price']);
                 setAlert('success', 'Item berhasil ditambahkan!');
-                header("Location: ../html/tableItems.php");
-                exit();
+                $item = sessionGetObjectItems();
+                $container = 1;
+                if(count($item)==0){
+                    $container=0;
+                }
+
+                if(is_object($item[count($item)-$container])){
+                    $it = $item[count($item)-$container]->getId()+1;
+                } else {
+                    $it = $item[count($item)-$container]['ID']+1;
+                }
+                
+                $item[] = new Item($it,$_POST['name'], $ref_no, $_POST['price']);
+                sessionSetObjectItems($item);
+                $success = true;
             }
         } else if ($action === 'update') {
 
             if(readItemById(intval($_POST['id']))->getRefNo() == $ref_no) {
                 updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price']);
-                setAlert('success', 'Item berhasil diperbarui!');
-                header("Location: ../html/tableItems.php");
-                exit();
+                    setAlert('success', 'Item berhasil diperbarui!');
+                    if(isset($keyword)){
+                        sessionSetObjectItems(readItems());
+                    } else {
+                        $data = sessionGetObjectItems();
+                $data[$index-1] = new Item($_POST['id'],  $_POST['name'],$ref_no, $_POST['price']);
+                sessionSetObjectItems($data);
+                    }
+                    
+                $success = true;
             } else {
                 if (!readItemByRefNo($ref_no)) {
                     updateItem($_POST['id'], $ref_no, $_POST['name'], $_POST['price']);
                     setAlert('success', 'Item berhasil diperbarui!');
-                header("Location: ../html/tableItems.php");
-                exit();
+                    if(isset($keyword)){
+                        sessionSetObjectItems(readItems());
+                    } else {
+                        $data = sessionGetObjectItems();
+                $data[$index-1] = new Item($_POST['id'],  $_POST['name'],$ref_no, $_POST['price']);
+                sessionSetObjectItems($data);
+                    }
                 } else {
                     setAlert('danger', 'Gagal memperbarui item. Ref No sudah digunakan.');
-                header("Location: ../html/inputItems.php?id=$id");
-                exit();
+                $success = false;
                 }
                 
             }
@@ -272,37 +437,61 @@ if ($method === 'POST') {
     if ($action === 'create') {
         if(!readInvoiceByKode($kode)) {
             createInvoice($customer_id, $date, $kode, $deadline,$notes);setAlert('success', 'invoice berhasil ditambahkan!');
-            header("Location: ../pages/html/tableInvoice.php?invoice=$id");
-        exit();
+            $invoices = sessionGetObjectInvoices();
+            $container = 1;
+                if(count($invoices)==0){
+                    $container=0;
+                }
+
+                if($invoices[count($invoices)-$container]){
+                    $inv = $invoices[count($invoices)-$container]->getId()+1;
+                } else {
+                    $inv = $invoices[count($invoices)-$container]['ID']+1;
+                }
+            
+            $invoices[] = new Invoice($inv, $kode, $date,$customer_id , $deadline,$notes);
+            sessionSetObjectInvoices($invoices);
+            $success = true;
             
         } else {
             setAlert('danger', 'Gagal menambahkan invoice.');
-            header("Location: ../pages/html/inputInvoices.php?id=$id");
-            exit();
+            $success = false;
         }
 
         
     } else if ($action === 'update') {
         $id= $_POST['id'];
-        // var_dump(readInvoiceByKode($kode), $id);die();
-        if(!readInvoiceByKode($kode) || readInvoiceByKode($kode)->getId() == $id) {
+        if(isset($from)){
+            if(!readInvoiceByKode($kode) || readInvoiceByKode($kode)->getId() == $id) {
+            updateInvoice($id, $customer_id, $date, $kode, $deadline,$notes);
+            setAlert('success', 'Invoice berhasil diperbarui!');
+            sessionSetObjectInvoices(readInvoices());
+            $success = true;  
+        } else {
+            setAlert('danger', 'Gagal memperbarui invoice.');
+            $success = false;
+        }
+        } else {
+            if(!readInvoiceByKode($kode) || readInvoiceByKode($kode)->getId() == $id) {
             updateInvoice($id, $customer_id, $date, $kode, $deadline,$notes);
             setAlert('success', 'Invoice berhasil diperbarui!');
 
-            if($kondisi){
-                header("Location: ../pages/html/tableItemInv.php?invoice=$id");
-            exit();
+            if(isset($keyword)){
+                sessionSetObjectInvoices(readInvoices());
             } else {
-                header("Location: ../pages/html/tableItemInv.php?invoice=$id");
-            exit();
+                $data = sessionGetObjectInvoices();
+                $data[$index-1] = new Invoice($id, $kode, $date, $customer_id, $deadline, $notes);
+                sessionSetObjectInvoices(array_values($data));
             }
 
-            
+            $success = true;  
         } else {
             setAlert('danger', 'Gagal memperbarui invoice.');
-            header("Location: ../pages/html/InputInvoices.php?id=$id");
-            exit();
+            $success = false;
         }
+        }
+        // var_dump(readInvoiceByKode($kode), $id);die();
+        
     }
     } 
     
@@ -312,6 +501,7 @@ if ($method === 'POST') {
  else if ($type === 'iteminv') {
     $item_id = $_POST['item_id'] ?? NULL;
     $invoice_id = $_POST['invoice_id'] ?? NULL;
+    $invoice = sessionGetPass('invoice');
     $qty = $_POST['qty'] ?? 0;
     $price = $_POST['price'] ?? 0;
 
@@ -327,22 +517,29 @@ if ($method === 'POST') {
         }
         createItemInv($invoice_id, $item_id , $qty, $price);
         setAlert('success', 'Item dalam Invoice berhasil ditambahkan!');
-        header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
-        exit();
+        $itemInv = sessionGetObjectItemInv();
+        $iv = readNewItemInv()['ID']+1;
+        $itemInv[] = new ItemInv($iv, $invoice_id, $item_id , (int)$qty, $price, $qty*$price);
+        // var_dump($itemInv);die;
+        sessionSetObjectItemInv($itemInv);
+        $invoice+=1;
+        $success = true;
     } else if ($action === 'update') {  
         if(!($id && $invoice_id && $item_id && $price && $qty)){
             setAlert('danger', 'tidak ada yang diperbarui!');
-            header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
-            exit();
+           $success = false;
         } else {
             if (updateItemInv($id,$invoice_id, $item_id, $qty, $price)) {
             setAlert('success', 'Item dalam Invoice berhasil diperbarui!');
-        header("Location: ../pages/html/tableItemInv.php?invoice=$invoice_id");
-        exit();
+            $itemInv = sessionGetObjectItemInv();
+        $itemInv[$index-1] = new ItemInv($iv, $invoice_id, $item_id , (int)$qty, $price, $qty*$price);
+        // var_dump($itemInv);die;
+        sessionSetObjectItemInv($itemInv);
+        $invoice+=1;
+        $success = true;
             } else {
                 setAlert('danger', 'Gagal memperbarui item invoice.');
-                header("Location: ../pages/html/inputItemInv.php?id=$id");
-                exit();
+                $success = false;
             }
         }
     }
@@ -382,8 +579,7 @@ if ($method === 'POST') {
 
     if($nominal <= 0){
         setAlert('danger', 'Nominal tidak boleh 0 atau minus');
-                header("Location: ../pages/html/inputPayment.php?invoice=$invoice");
-                exit();
+                $success = false;
     }
 
     if($tanggal===""){
@@ -397,12 +593,20 @@ if ($method === 'POST') {
         if($nominal+$countainer['total_payment']<=$countainer['grand_total']){
             createPayment($kode, $nominal, $invoice , $tanggal, $notes);
         setAlert('success', 'Berhasil melakukan pembayaran!');
-        header("Location: ../pages/html/tablePayments.php");
-        exit();
+        $payments = sessionGetObjectPayments();
+        $container = 1;
+                if(count($payments)==0){
+                    $container=0;
+                } else {
+                    
+                }
+        $pay = $payments[count($payments)-$container]->getId()+1;
+        $payments[] = new Payment($pay, $tanggal, $nominal, $invoice , $notes,$kode);
+        sessionSetObjectPayments($payments);
+        $success = true;
         } else {
             setAlert('danger', 'Gagal melakukan payment!');
-                header("Location: ../pages/html/inputPayment.php?invoice=$invoice");
-                exit();
+                $success = false;
         }
         
     } else if ($action === 'update') {  
@@ -412,23 +616,27 @@ if ($method === 'POST') {
         if($countainer['total_payment']-$payment->getNomial()+$nominal<=$countainer['grand_total']){
             if(!($id && $nominal && $invoice)){
             setAlert('danger', 'Payment tidak ditemukan!');
-            header("Location: ../pages/html/tablePayments.php");
-            exit();
+            $success = false;
         } else {
             if (updatePayment($id,$kode,$nominal, $invoice, $date, $notes)) {
             setAlert('success', 'Payment berhasil diperbarui!');
-        header("Location: ../pages/html/tablePayments.php");
-        exit();
+            if(isset($keyword)){
+                sessionSetObjectPayments(readPayments());
+            } else {
+                 $data = sessionGetObjectPayments();
+                $data[$index-1] = new Payment($id,$date,$nominal, $invoice,  $notes, $kode);
+                sessionSetObjectPayments($data);
+            }
+            
+        $success = true;
             } else {
                 setAlert('danger', 'Gagal memperbarui payment!');
-                header("Location: ../pages/html/inputPayment.php?id=$id");
-                exit();
+                $success = false;
             }
         }
         } else {
             setAlert('danger', 'Gagal memperbarui payment!');
-                header("Location: ../pages/html/inputPayment.php?id=$id");
-                exit();
+                $success = false;
         }
         
     }
@@ -447,17 +655,23 @@ if ($method === 'POST') {
     $negara= $_POST['negara'] ?? '';
     $telepon= $_POST['telepon'] ?? '';
     $email= $_POST['email'] ?? '';
-
+    $target_dir = "../pages/html/img/";
+    $filename = basename($_FILES['gambar']['name']) ?? null;
+    $target_file = null;
+    if(isset($filename)){
+        $target_file = $target_dir . $filename;
+    } else {
+        $target_file = readCompanyById($id)->getUrlLogo();
+    }
     // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
 
-    if (updateCompany($id, $namaPerusahaan, $alamat, $kota, $provinsi, $kodePos, $negara, $telepon, $email)) {
+    if (updateCompany($id, $namaPerusahaan, $alamat, $kota, $provinsi, $kodePos, $negara, $telepon, $email, $target_file)) {
+        move_uploaded_file($_FILES["gambar"]["tmp_name"], $target_file);
         setAlert('success', 'Company berhasil diperbarui!');
-        header("Location: ../pages/html/settingCompany.php");
-        exit();      
+        $success = true;     
     } else {
        setAlert('danger', 'Gagal memperbarui Company.');
-        header("Location: ../pages/html/inputSettingCompany.php");
-        exit();        
+        $success = false;     
     }
         
     } else if ($type === 'pic') {
@@ -466,6 +680,8 @@ $jabatan= $_POST['jabatan'] ?? '';
 $nomor= $_POST['nomor'] ?? '';
 $email= $_POST['email'] ?? '';
 $id= $_POST['id'] ?? $_GET['id'] ?? null;
+$use =  $_GET['use'] ?? null;
+
 
     // var_dump($_GET['id'],$invoice_id, $item_id, $qty, $price);die();
     
@@ -474,44 +690,82 @@ $id= $_POST['id'] ?? $_GET['id'] ?? null;
 
         if(createPic($nama, $jabatan, $nomor, $email)){
             setAlert('success', 'Berhasil menambahkan PIC!');
-            header("Location: ../pages/html/settingPic.php");
-            exit();
+            $pics = sessionGetObjectPices();
+            $container = 1;
+                if(count($pics)==0){
+                    $container=0;
+                }
+
+                if(is_object($pics[count($pics)-$container])){
+                    $pic = $pics[count($pics)-$container]->getId()+1;
+                } else {
+                    $pic = $pics[count($pics)-$container]['ID']+1;
+                }
+            
+            $pics[] = new Pic($pic, $nama, $jabatan, $nomor, $email, false);
+            sessionSetObjectPices($pics);
+            $success = true;
         } else {
                 setAlert('danger', 'Gagal menambahkan PIC!');
-                header("Location: ../pages/html/inputSettingPic.php");
-                exit();
+                $success = false;
         }
         
     } else if ($action === 'update') {  
-        $pic = readPicById($id);
+
+        
+        $pic = sessionGetObjectPices()[$index-1];
         if($pic->getEmail()==$email && $pic->getJabatan() == $jabatan && $pic->getNama() == $nama && $pic->getNomor() == $nomor){
             setAlert('danger', 'Tidak ada data yang berubah pada PIC!');
-                header("Location: ../pages/html/inputSettingPic.php");
-                exit();
+                $success = false;
         }
         if(updatePic($id, $nama, $jabatan, $nomor, $email)){
+            
             setAlert('success', 'PIC berhasil diperbarui!');
-            header("Location: ../pages/html/settingPic.php");
+
+            if(isset($keyword)){
+                sessionSetObjectPices(readPics());
+            } else {
+                $data = sessionGetObjectPices();
+            $status = $data[$index-1]->getStatus();
+                $data[$index-1] = new Pic($id, $nama, $jabatan, $nomor, $email, $status);
+                sessionSetObjectPices($data);
+            }
+            
+            $success = true;
         } else {
                 setAlert('danger', 'Gagal memperbarui PIC!');
-                header("Location: ../pages/html/inputSettingPic.php");
-                exit();
+                $success = false;
             }
         
-    } else if ($action === 'status'){
-        $pic = getDataStatusTruePic();
-        ubahStatus($pic['ID'], !$pic['STATUS']);
-        ubahStatus($id, 1);
-        setAlert('success', 'Berhasil');
-            header("Location: ../pages/html/settingPic.php");
-            exit();
-    }
-        
+    }    
     }
 
+    if(isset($_POST['aksi'])){
+
+    } else 
+
+    if($success){
+        sessionSetPass(null, 'ID');
+        sessionSetPass(null, 'INDEX');
+        header("Location: $url");
+        exit();
+    } else{
+        header("Location: $url2");
+        exit();
+    }
 } else if ($method === 'GET') {
 
+    $index = $_GET['index'] ?? null;
     // DELETE & READ ACTIONS
+    if ($action === 'status'){
+        $pic = sessionGetObjectTruePices();
+        ubahStatus($pic->getId(), !$pic->getStatus());
+        ubahStatus($id, 1);
+        $pic = sessionGetObjectPices()[$index-1];
+        $pic = new Pic($pic->getId(), $pic->getNama(),$pic->getJabatan(),$pic->getNomor(), $pic->getEmail(), !$pic->getStatus());
+        sessionSetObjectTruePices($pic);
+        setAlert('success', 'Berhasil');
+    }
     if ($action === 'delete') {
         $success = false;
         $redirectUrl = '';
@@ -519,30 +773,85 @@ $id= $_POST['id'] ?? $_GET['id'] ?? null;
         if ($type === 'customer') {
             $success = deleteCustomer($id);
             $redirectUrl = '../html/tableCustomers.php';
+            if ($success) {
+            $data = sessionGetObjectCustomers();
+            unset($data[$index-1]);
+            $data = array_values($data);
+            sessionSetObjectCustomers($data);
+            }
+            
         } else if ($type === 'supplier') {
             $success = deleteSupplier($id);
             $redirectUrl = '../html/tableSuppliers.php';
+            if ($success) {
+           $data = sessionGetObjectSuppliers();
+            unset($data[$index-1]);
+            $data = array_values($data);
+            // var_dump($index);
+            sessionSetObjectSuppliers($data);
+            }
+            
         } else if ($type === 'item') {
             $success = deleteItem($id);
             $redirectUrl = '../html/tableItems.php';
+            if ($success) {
+            $data = sessionGetObjectItems();
+            unset($data[$index-1]);
+            $data = array_values($data);
+            sessionSetObjectItems($data);
+            }
+            
         } else if ($type === 'itemcustomer') {
             $success = deleteItemCustomer($id);
             $redirectUrl = '../html/tableItemCustomers.php';
+            if ($success) {
+$data = sessionGetObjectItemCustomers();
+            unset($data[$index-1]);
+            $data = array_values($data);
+            sessionSetObjectItemCustomers($data);
+            }
+            
         } else if ($type === 'invoice') {
             $success = deleteInvoice($id);
             $redirectUrl = '../html/tableInvoice.php';
+            if ($success) {
+            $data = sessionGetObjectInvoices();
+            unset($data[$index-1]);
+            $data = array_values($data);
+            sessionSetObjectInvoices($data);
+            }
+            
         } else if ($type === 'iteminv') {
             $type = 'item dalam invoice';
             $success = deleteItemInv($id);
             $redirectUrl = '../pages/html/tableItemInv.php?invoice='. $_GET['invoice'];   
-        
+            if ($success) {
+            $data = sessionGetObjectItemInv();
+            unset($data[$index-1]);
+            $data = array_values($data);
+            sessionSetObjectItemInv($data);
+            }
+            
         } else if ($type === 'payment') {
             $success = deletePayment(id: $id);
             $redirectUrl = '../html/tablePayments.php';
+            if ($success) {
+            $data = sessionGetObjectPayments();
+            unset($data[$index-1]);
+            $data = array_values($data);
+            sessionSetObjectPayments($data);
+            }
         
         } else if ($type === 'pic') {
             $success = deletePic(id: $id);
             $redirectUrl = '../html/settingPic.php';
+            if ($success) {
+            $data = sessionGetObjectPices();
+            unset($data[$index-1]);
+            $data = array_values($data);
+            sessionSetObjectPices($data);
+            }
+            
         
         }
         if ($success) {
@@ -551,6 +860,7 @@ $id= $_POST['id'] ?? $_GET['id'] ?? null;
             setAlert('danger', 'Gagal menghapus ' . $type . '.');
         }
 
+        // readAllObject();
         header("Location: $redirectUrl");
         exit();
     }
@@ -610,4 +920,9 @@ else {
     }
 
 
- 
+
+    
+
+
+
+    

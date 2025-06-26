@@ -1,6 +1,13 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle call
+$call = sessionGetCall('customer');
+
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 // Handle delete action
 if (
     isset($_GET['type'], $_GET['action'], $_GET['id'])
@@ -21,7 +28,6 @@ if (
 $countPage = 5;
 
 // Fetch all data
-$allCustomers = readCustomers();
 
 // Get filters from query string
 $keyword     = $_GET['keyword']    ?? '';
@@ -31,12 +37,19 @@ if (
     $keyword !== ''
 ) {
     
-        $displayCustomer = searchCustomers($keyword);
+        sessionSetObjectCustomers(searchCustomers($keyword));
+        sessionSetCall('customer', true);
         $isSearch = true;
 } else {
-    $displayCustomer = $allCustomers;
+
+  if($call){
+    sessionSetObjectCustomers(readCustomers());
+    sessionSetCall('customer',false);
+  }
     $isSearch = false;
 }
+
+$displayCustomer = sessionGetObjectCustomers();
 
 $page=count($displayCustomer)/$countPage;
 $selectPage= $_GET['page'] ?? 0;
@@ -112,11 +125,23 @@ $displayCustomer = $contain;
               </div>
               <!-- Unified Table -->
               <div class="card">
-                <div class="card-header text-start clearfix">
-                  <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Customers' ?></h3>
-                  <a href="<?=getUrlInputCustomer()?>" class="btn btn-primary">
+               <div class="card-header text-start d-flex justify-content-between align-items-center flex-wrap gap-2">
+  <h3 class="card-title m-0"><?= $isSearch ? 'Search Results' : 'All Invoices' ?></h3>
+  <div class="d-flex gap-2">
+    <!-- Import CSV Button -->
+    <a href="inputCSV.php" class="btn btn-outline-success btn-sm">
+  <i class="bi bi-upload"></i> Import CSV
+</a>
+
+
+    <!-- Export CSV Button -->
+    <a href="?csv=customer&action=export" class="btn btn-outline-primary btn-sm">
+      <i class="bi bi-download"></i> Export CSV
+    </a>
+                  <a href="<?=getUrlInputCustomer('null=null')?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
+                </div>
                 </div>
                 <div class="card-body">
                   <table class="table table-bordered">
@@ -129,10 +154,23 @@ $displayCustomer = $contain;
 </thead>
 <tbody>
 
-                      <?php if (count($displayCustomer) > 0): ?>
-                        <?php foreach ($displayCustomer as $inv): 
-                          
-                          $inv= new Customer($inv['ID'],$inv['NAME'], $inv['REF_NO']);
+                      <?php if (count($displayCustomer) > 0): $index=$countPage*$selectPage?>
+                        <?php foreach ($displayCustomer as $row): 
+                          $index++;
+
+                          if(is_object($row)){
+                          $inv = $row;
+                        } else {
+                          $inv = new Customer(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO'],
+            $row['EMAIL'],
+            $row['ALAMAT'],
+            $row['TELEPON']
+        );
+                        }
+                         
                           ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getRefNo()) ?></td>
@@ -140,10 +178,10 @@ $displayCustomer = $contain;
 <td class="text-center align-middle">
 
                             
-                                <a href="inputCustomers.php?id=<?= $inv->getId() ?>" class="btn btn-sm btn-warning" title="Edit Customer">
+                                <a href="inputCustomers.php?id=<?= $inv->getId() ?>&amp;index=<?=$index?>" class="btn btn-sm btn-warning" title="Edit Customer">
                                   <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a href="?type=customer&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Customer ini?');" title="Delete Customer">
+                                <a href="?type=customer&amp;action=delete&amp;id=<?= $inv->getId() ?>&amp;index=<?=$index?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Customer ini?');" title="Delete Customer">
                                   <i class="bi bi-trash"></i>
                                 </a>
                               </div>

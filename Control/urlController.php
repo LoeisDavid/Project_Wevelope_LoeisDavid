@@ -37,7 +37,7 @@ include_once 'Control.php';
 
     function getUrlInputSettingCompany($var = ''){
         global $base_url;
-        return $base_url . 'pages/html/inputSettingPayment.php?' . $var;
+        return $base_url . 'pages/html/inputSettingCompany.php?' . $var;
     }
 
     function getUrlInputSettingPic($var = ''){

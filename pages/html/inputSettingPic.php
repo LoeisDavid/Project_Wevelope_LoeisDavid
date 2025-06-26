@@ -1,25 +1,48 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle url
+$redirect = $_GET['redirect'] ?? null;
+$url = null;
+
+if(isset($redirect)){
+  $url = sessionGetRedirectUrl2();
+} else {
+  $url = sessionGetRedirectUrl();
+$uri = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl2($uri);
+}
 
 $nama= $_POST['nama'] ?? '';
 $jabatan= $_POST['jabatan'] ?? '';
 $nomor= $_POST['nomor'] ?? '';
 $email= $_POST['email'] ?? '';
 $id= $_POST['id'] ?? null;
-$data = $_SESSION['PIC'] ?? null;
 // var_dump($data['ID']);die();
-if($data){
+$index = $_GET['index'] ?? null;
+$null = $_GET['null'] ?? null;
 
-  if($data['ID']){
-  $pic = readPicById($data['ID']);
+if($null){
+  sessionSetPass(null, 'INDEX');
+} else
+if($index){
+  sessionSetPass($index,'INDEX');
+  header('Location: ?');
+}
+
+  if(sessionGetPass('INDEX')){
+    $index= sessionGetPass('INDEX')-1;
+  $pic = sessionGetObjectPices()[$index];
+   if(!is_object($pic)){
+    $pic = new Pic($pic['ID'],$pic['NAMA'], $pic['JABATAN'], $pic['NOMOR'],$pic['EMAIL'],$pic['STATUS']);
+  }
   $nama= $pic->getNama();
   $jabatan= $pic->getJabatan();
   $nomor= $pic->getNomor();
   $email= $pic->getEmail();
   $id = $pic->getId() ?? $_POST['id'] ?? null;
 }
-}
+
 // var_dump($action);die;
 ?>
 
@@ -90,7 +113,6 @@ if($data){
       <input
         type="text"
         class="form-control"
-        id="ref_no"
         name="nama"
         value="<?=$nama?>"
         required
@@ -133,7 +155,7 @@ if($data){
 
     <div class="card-footer">
                       <button type="submit" class="btn btn-success  float-end" >Sumbit</button>
-                      <a href="<?=getUrlSettingPic()?>" class="btn btn-secondary" >Cancel</a>
+                      <a href="<?=$url?>" class="btn btn-secondary" >Cancel</a>
                     </div>
     <div class="card-footer">
     </div>

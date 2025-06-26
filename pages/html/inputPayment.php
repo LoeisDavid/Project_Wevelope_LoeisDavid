@@ -2,21 +2,58 @@
 
 include '../../Control/urlController.php';
 
+// handle url
+$redirect = $_GET['redirect'] ?? null;
+$url = null;
+
+if(isset($redirect)){
+  $url = sessionGetRedirectUrl2();
+} else {
+  $url = sessionGetRedirectUrl();
+$uri = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl2($uri);
+}
+
 $id = $_GET['id'] ?? null;
 $date = $_GET['date'] ?? null;
 $nominal = $_GET['nominal'] ?? null;
 $invoice_id = $_GET['invoice'] ?? null;
 $notes = $_GET['notes'] ?? null;
+$index = $_GET['index'] ?? null;
+$null = $_GET['null'] ?? null;
 
-if ($id) {
-	$payment = readPaymentById($id);
+if($null){
+  sessionSetPass(null, 'INDEX');
+} else
+if($index){
+  sessionSetPass($id, 'ID');
+  sessionSetPass($index, 'INDEX');
+  header('Location: ?');
+  exit();
+}
+if (sessionGetPass('INDEX')) {
+  $index= sessionGetPass('INDEX')-1;
+	$payment = sessionGetObjectPayments()[$index];
+  if(!is_object($payment)){
+    $payment = new Payment(
+            $payment['ID'],
+            $payment['DATE'],
+            $payment['NOMINAL'],
+            $payment['ID_INVOICE'],
+            $payment['NOTES'],
+            $payment['KODE']
+        );
+      }
+  $id = $payment->getId();
     $date = $payment->getDate();
     $nominal = $payment->getNomial();
     $invoice_id = $payment->getInvoice();
     $notes = $payment->getNotes();
 }
 
+
 $invoice = readInvoiceById($invoice_id);
+
 
 $allinvoice= null;
 
@@ -142,8 +179,8 @@ if (!$invoice) {
       <?php foreach ($items as $item): 
         
         ?>
-       <option value="<?= $item['ID'] ?>">
-                          <?= htmlspecialchars($item['KODE']) ?>
+       <option value="<?= $item->getId() ?>">
+                          <?= htmlspecialchars($item->getKode()) ?>
         </option>
       <?php endforeach; ?>
     </select>

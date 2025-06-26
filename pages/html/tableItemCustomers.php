@@ -1,6 +1,13 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle call
+$call = sessionGetCall('itemcustomer');
+
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 // Handle delete action
 if (
     isset($_GET['type'], $_GET['action'], $_GET['id'])
@@ -30,8 +37,15 @@ if (
     
         $displayitemCustomer = searchitemCustomers($keyword);
         $isSearch = true;
+        sessionSetCall('itemcustomer',true);
 } else {
-    $displayitemCustomer = readitemCustomers();
+
+  if($call){
+    sessionSetObjectItemCustomers(readItemCustomers());
+    sessionSetCall('itemcustomer',false);
+  }
+
+    $displayitemCustomer = sessionGetObjectItemCustomers();
     $isSearch = false;
 }
 
@@ -52,6 +66,7 @@ for ($i = 0; $i < $countPage; $i++) {
 
 $displayitemCustomer = $contain;
 
+$displayitemCustomer = array_values($displayitemCustomer);
 
 ?>
 <!doctype html>
@@ -113,7 +128,7 @@ $displayitemCustomer = $contain;
               <div class="card">
                 <div class="card-header text-start clearfix">
                   <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All itemCustomers' ?></h3>
-                  <a href="<?=getUrlInputItemCustomers()?>" class="btn btn-primary">
+                  <a href="<?=getUrlInputItemCustomers('null=null')?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
                 </div>
@@ -129,10 +144,21 @@ $displayitemCustomer = $contain;
 </thead>
 <tbody>
 
-                      <?php if (count($displayitemCustomer) > 0): ?>
-                        <?php foreach ($displayitemCustomer as $inv): 
+                      <?php if (count($displayitemCustomer) > 0): $index=$countPage*$selectPage?>
+                        <?php foreach ($displayitemCustomer as $row): 
+                          $index++;
+
+                          if(is_object($row)){
+                          $inv = $row;
+                        } else {
+                          $inv = new ItemCustomer(
+            $row['ID'],
+            $row['Item'],
+            $row['Customer'],
+            $row['Harga']
+        );
+                        }
                           
-                          $inv= new ItemCustomer($inv['ID'],$inv['Item'],$inv['Customer'],$inv['Harga']);
                           ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars(readItemById($inv->getItem())->getName()) ?></td>
@@ -142,14 +168,14 @@ $displayitemCustomer = $contain;
 
                             
 <a
-  href="<?=getUrlInputItemCustomers('method=get&id='.$inv->getId())?>"
+  href="<?=getUrlInputItemCustomers('method=get&id='.$inv->getId(). '&index='. $index)?>"
   class="btn btn-sm btn-warning me-1"
   title="Edit Item-Customer"
 >
   <i class="bi bi-pencil-square"></i>
 </a>
 <a
-  href="?type=itemcustomer&action=delete&id=<?= $inv->getId() ?>"
+  href="?type=itemcustomer&action=delete&id=<?= $inv->getId() ?>&index=<?=$index?>"
   class="btn btn-sm btn-danger"
   onclick="return confirm('Yakin ingin menghapus item ini?');"
   title="Delete Item-Customer"

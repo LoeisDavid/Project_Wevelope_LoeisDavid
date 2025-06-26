@@ -1,6 +1,10 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 $periode = $_GET['periode'] ?? 'harian';
 
 if($periode == 'harian'){

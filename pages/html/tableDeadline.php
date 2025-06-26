@@ -1,6 +1,10 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 // Handle delete action
 if (
     isset($_GET['type'], $_GET['action'], $_GET['id'])

@@ -1,12 +1,17 @@
 <?php
 include_once '../../Control/urlController.php';
+
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 $company = readCompanies();
-$pic = getDataStatusTruePic();
+$pic = sessionGetObjectTruePices();
 
 // var_dump($company);die();
 $id = $company['ID'] ?? null;
 $nama = $company['NAMA_PERUSAHAAN'] ?? "";
-$pic = $pic[0]->getNama() ?? "";
+$pic = $pic->getNama() ?? "";
 $alamat = $company['ALAMAT'] ?? "";
 $kota = $company['KOTA'] ?? '';
 $provinsi = $company['PROVINSI'] ?? '';
@@ -14,6 +19,9 @@ $kodePos = $company['KODE_POS'] ?? '';
 $negara = $company['NEGARA'] ?? '';
 $telepon = $company['TELEPON'] ?? '';
 $email = $company['EMAIL'] ?? '';
+$logo = $company['URLOGO'] ?? '';
+
+$company = new Company($id, $nama, $pic, $alamat, $kodePos,$kota, $provinsi, $negara, $telepon, $email, $logo);
 
 if($id){
 $_SESSION['COMPANY'] = [
@@ -61,6 +69,17 @@ $_SESSION['COMPANY'] = [
           </div>
           <div class="card-body">
             <dl class="row">
+
+            <dt class="col-sm-3">Logo Perusahaan</dt>
+<dd class="col-sm-9">
+  <?php if ($logo): ?>
+    <img src="<?= '../' . $logo ?>" alt="Logo Perusahaan" style="max-height: 100px;">
+  <?php else: ?>
+    <span class="text-muted">Belum ada logo</span>
+  <?php endif; ?>
+</dd>
+
+
               <dt class="col-sm-3">Nama Perusahaan</dt>
               <dd class="col-sm-9"><?= $nama?></dd>
 

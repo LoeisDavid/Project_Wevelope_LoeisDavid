@@ -12,8 +12,9 @@ class Company {
     private $negara;
     private $telepon;
     private $email;
+    private $urlLogo;
     
-    function __construct($id, $nama, $pic, $alamat, $kodePos, $kota, $provinsi, $negara, $telepon, $email){
+    function __construct($id, $nama, $pic, $alamat, $kodePos, $kota, $provinsi, $negara, $telepon, $email, $urlLogo){
         $this->id = $id;
         $this->nama = $nama;
         $this->pic = $pic;
@@ -24,6 +25,14 @@ class Company {
         $this->negara = $negara;
         $this->telepon = $telepon;
         $this->email = $email;
+        $this->urlLogo = $urlLogo;
+}
+
+function getUrlLogo(){
+    return $this->urlLogo;
+}
+function setUrlLogo($urlLogo){
+    $this->urlLogo = $urlLogo;
 }
 function getEmail(){
     return $this->email;

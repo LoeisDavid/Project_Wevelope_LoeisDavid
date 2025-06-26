@@ -1,6 +1,14 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle call
+$call = sessionGetCall('payment');
+
+// handle url
+
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 // Handle delete action
 $id = $_GET['id'] ?? null;
 // Fetch all data
@@ -24,16 +32,21 @@ if (
         $endDate = $startDate;
       }
 
-        $displayPayments = searchPayments($startDate,$endDate, $keyword);
+        sessionSetObjectPayments(searchPayments($startDate,$endDate, $keyword));
     } else {
-        $displayPayments = readPaymentByRangeDate($startDate, $endDate);
+        sessionSetObjectPayments(readPaymentByRangeDate($startDate, $endDate));
     }
+    sessionSetCall('payment',true);
     $isSearch = true;
 } else {
-    $displayPayments = readPayments();
+    if($call){
+      sessionSetObjectPayments(readPayments());
+      sessionSetCall('payment',false);
+    }
     $isSearch = false;
 }
 
+$displayPayments = sessionGetObjectPayments();
 $countPage = 5;
 
 $page=count($displayPayments)/$countPage;
@@ -141,7 +154,7 @@ exit();
               <div class="card">
                 <div class="card-header text-start clearfix">
                   <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Payments' ?></h3>
-                  <a href="inputPayment.php" class="btn btn-primary">
+                  <a href="<?=getUrlInputPayment('null=null')?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
                 </div>
@@ -160,10 +173,26 @@ exit();
 </thead>
 <tbody>
 
-                      <?php if (count($displayPayments) > 0): $i=0; ?>
-                        <?php foreach ($displayPayments as $inv): 
+                      <?php if (count($displayPayments) > 0): $i=0; $index=$countPage*$selectPage?>
+                        <?php foreach ($displayPayments as $row): 
                           $i++;
-                          $inv= new Payment($inv['ID'],$inv['DATE'], $inv['NOMINAL'], $inv['ID_INVOICE'], $inv['NOTES'], $inv['KODE']);
+                          $index++;
+
+                          if(is_object($row)){
+                          $inv = $row;
+                        } else {
+                          $inv = new Payment(
+            $row['ID'],
+            $row['DATE'],
+            $row['NOMINAL'],
+            $row['ID_INVOICE'],
+            $row['NOTES'],
+            $row['KODE']
+        );
+                        }
+
+                          
+                          
                           $invoice = readInvoiceById($inv->getInvoice());
                           $customer = readCustomerById($invoice->getCustomerId());
                           ?>
@@ -178,10 +207,10 @@ exit();
   
 
                               <div class="btn-group" role="group">
-                                <a href="<?=getUrlInputPayment('id='. $inv->getId())?>" class="btn btn-sm btn-warning" title="Lihat Detail">
+                                <a href="<?=getUrlInputPayment('id='. $inv->getId().' &index='. $index)?>" class="btn btn-sm btn-warning" title="Lihat Detail">
                                   <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="?type=payment&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
+                                <a href="?type=payment&amp;action=delete&amp;id=<?= $inv->getId() ?>&amp;index=<?=$index?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
                                   <i class="bi bi-trash"></i>
                                 </a>
                                 <a href="?id=<?= $inv->getId()?>" class="btn btn-success" target="_blank">

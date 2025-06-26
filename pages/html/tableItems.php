@@ -1,6 +1,13 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle call
+$call = sessionGetCall('item');
+
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 // Handle delete action
 if (
     isset($_GET['type'], $_GET['action'], $_GET['id'])
@@ -21,7 +28,6 @@ if (
 $countPage = 5;
 
 // Fetch all data
-$allitems = readItems();
 
 // Get filters from query string
 $keyword     = $_GET['keyword']    ?? '';
@@ -31,12 +37,19 @@ if (
     $keyword !== ''
 ) {
     
-        $displayitem = searchItems($keyword);
+        sessionSetObjectItems(searchItems($keyword));
         $isSearch = true;
+        sessionSetCall('item',true);
 } else {
-    $displayitem = $allitems;
+
+  if($call){
+    sessionSetObjectItems(readItems());
+    sessionSetCall('item',false);
+  }
     $isSearch = false;
 }
+
+$displayitem = sessionGetObjectItems();
 
 $page=count($displayitem)/$countPage;
 $selectPage= $_GET['page'] ?? 0;
@@ -117,7 +130,7 @@ $displayitem = $contain;
               <div class="card">
                 <div class="card-header text-start clearfix">
                   <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Items' ?></h3>
-                  <a href="inputItems.php" class="btn btn-primary">
+                  <a href="inputItems.php?null=null" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
                 </div>
@@ -133,10 +146,21 @@ $displayitem = $contain;
 </thead>
 <tbody>
 
-                      <?php if (count($displayitem) > 0): ?>
-                        <?php foreach ($displayitem as $inv): 
+                      <?php if (count($displayitem) > 0): $index=$countPage*$selectPage?>
+                        <?php foreach ($displayitem as $row): 
+                          $index++;        
+
+                          if(is_object($row)){
+                          $inv = $row;
+                        } else {
+                              $inv = new Item(
+                $row['ID'],
+                $row['NAME'],
+                $row['REF_NO'],
+                $row['PRICE']
+            );
+                        }
                           
-                          $inv= new Item($inv['ID'],$inv['NAME'], $inv['REF_NO'], $inv['PRICE']);
                           
                           ?>
                           <tr>
@@ -146,10 +170,10 @@ $displayitem = $contain;
 <td class="text-center align-middle">
 
                             
-                                <a href="<?=getUrlInputItems('=get&amp;id='. $inv->getId(). 'kondisi=update')?>" class="btn btn-sm btn-warning" title="Edit Item">
+                                <a href="<?=getUrlInputItems('=get&amp;id='. $inv->getId(). 'kondisi=update')?>&index=<?=$index?>" class="btn btn-sm btn-warning" title="Edit Item">
                                   <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a href="?type=item&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Item ini?');" title="Delete Item">
+                                <a href="?type=item&amp;action=delete&amp;id=<?= $inv->getId() ?>&index=<?= $index?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Item ini?');" title="Delete Item">
                                   <i class="bi bi-trash"></i>
                                 </a>
                               </div>

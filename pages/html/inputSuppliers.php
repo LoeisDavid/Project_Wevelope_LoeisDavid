@@ -1,14 +1,48 @@
 <?php
 include_once '../../Control/urlController.php';
-$id = $_GET['id'] ?? null;
-$name = $_GET['name'] ?? null;
-$ref_no = $_GET['ref_no'] ?? null;
 
-if($id){
-  $it = readItemById($id);
+// handle url
+$redirect = $_GET['redirect'] ?? null;
+$url = null;
+
+if(isset($redirect)){
+  $url = sessionGetRedirectUrl2();
+} else {
+  $url = sessionGetRedirectUrl();
+$uri = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl2($uri);
+}
+
+$id = $_GET['id'] ?? null;
+$name = null;
+$ref_no = null;
+$index = $_GET['index'] ?? null;
+$null = $_GET['null'] ?? null;
+
+if($null){
+  sessionSetPass(null, 'INDEX');
+} else
+if($index){
+  sessionSetPass($id, 'ID');
+  sessionSetPass($index, 'INDEX');
+  header('Location: ?');
+  exit();
+}
+
+if(sessionGetPass('INDEX')){
+  $index = sessionGetPass('INDEX')-1;
+  $id = sessionGetPass('ID');
+  $it = sessionGetObjectSuppliers()[$index];
+
+  if(!is_object($it)){
+    $it = new Supplier(
+            $it['ID'],
+            $it['NAME'],
+            $it['REF_NO']
+        );  
+  }
   $name = $it->getName();
   $ref_no = $it->getRefNo();
-  $price = $it->getPrice();
 }
 
 ?>
@@ -101,7 +135,7 @@ if($id){
 
     <div class="card-footer">
     <button type="submit" action="create" class="btn btn-success  float-end">Sumbit</button>
-<a href="<?=getUrlTableSuppliers()?>" class="btn btn-secondary">Cancel</a>
+<a href="<?=$url?>" class="btn btn-secondary">Cancel</a>
 
 
   </form>

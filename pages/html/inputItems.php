@@ -1,15 +1,49 @@
 <?php
 
 include '../../Control/urlController.php';
+
+// handle url
+$redirect = $_GET['redirect'] ?? null;
+$url = null;
+
+if(isset($redirect)){
+  $url = sessionGetRedirectUrl2();
+} else {
+  $url = sessionGetRedirectUrl();
+$uri = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl2($uri);
+}
+
 $id = $_GET['id'] ?? null;
 $name = $_GET['name'] ?? null;
 $ref_no = $_GET['ref_no']?? null;
 $price = $_GET['price'] ?? null;
 
 $kondisi = $_GET['kondisi'] ?? 'create';
+$index = $_GET['index'] ?? null;
+$null = $_GET['null'] ?? null;
 
-if($id){
-  $it = readItemById($id);
+if($null){
+  sessionSetPass(null, 'INDEX');
+} else
+if($index){
+  sessionSetPass($id, 'ID');
+  sessionSetPass($index, 'INDEX');
+  header('Location: ?');
+  exit();
+}
+if(sessionGetPass('INDEX')){
+  $index = sessionGetPass('INDEX')-1;
+  $it = sessionGetObjectItems()[$index];
+  if(!is_object($it)){
+    $it = new Item(
+            $it['ID'],
+            $it['NAME'],
+            $it['REF_NO'],
+            $it['PRICE']
+        );
+      }
+  $id = $it->getId();
   $name = $it->getName();
   $ref_no = $it->getRefNo();
   $price = $it->getPrice();
@@ -126,7 +160,7 @@ if($kondisi === 'create'){
 
     <div class="card-footer">
                       <button type="submit" class="btn btn-success  float-end" >Sumbit</button>
-                      <a href="<?= getUrlTableItems()?>" class="btn btn-secondary" >Cancel</a>
+                      <a href="<?= $url?>" class="btn btn-secondary" >Cancel</a>
                     </div>
     <div class="card-footer">
     </div>

@@ -1,6 +1,9 @@
 <?php
 include '../../Control/urlController.php';
 
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
 
 // Inisialisasi data item
 $customer_id = $_GET['customer'];
@@ -158,7 +161,7 @@ $countPage = 5;
                           $total=$grand;
                         }
                           
-                          $inv= new Invoice($inv['ID'],$inv['KODE'], $inv['DATE'], $inv['CUSTOMER_ID'], $inv['DEADLINE']);
+                          $inv= new Invoice($inv['ID'],$inv['KODE'], $inv['DATE'], $inv['CUSTOMER_ID'], $inv['DEADLINE'], $inv['NOTES']);
                           ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>
@@ -174,7 +177,7 @@ $countPage = 5;
                                 <a href="tableItemInv.php?invoice=<?= $inv->getId() ?>" class="btn btn-sm btn-info" title="Lihat Detail">
                                   <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="?type=invoice&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
+                                <a href="?type=invoice&amp;action=delete&amp;id=<?= $inv->getId() ?>&index=<?=$index?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
                                   <i class="bi bi-trash"></i>
                                 </a>
                               </div>

@@ -1,6 +1,18 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle url
+$redirect = $_GET['redirect'] ?? null;
+$url = null;
+
+if(isset($redirect)){
+  $url = sessionGetRedirectUrl2();
+} else {
+  $url = sessionGetRedirectUrl();
+$uri = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl2($uri);
+}
+
 $namaPerusahaan= $_POST['nama'] ?? '';
 $pic = '';
 $alamat= $_POST['alamat'] ?? '';
@@ -89,7 +101,7 @@ $id = $company->getId() ?? $_POST['id'] ?? null;
                   <!--begin::Body-->
                   <div class="card-body">
         <!--end::Header-->
-        <form method="post" action="<?=getUrlControl('type=company')?>">
+        <form method="post" action="<?=getUrlControl('type=company')?>" enctype="multipart/form-data">
 
         <div class="mb-3">
           <input type="text" value="<?= $id?>" name="id" hidden>
@@ -181,9 +193,14 @@ $id = $company->getId() ?? $_POST['id'] ?? null;
       />
     </div>
 
+    <div class="mb-3">
+    <label for="file">Pilih logo</label>
+  <input type="file" name="gambar" id="file" accept="image/*" required>
+    </div>
+
     <div class="card-footer">
                       <button type="submit" class="btn btn-success  float-end" >Sumbit</button>
-                      <a href="<?=getUrlSettingCompany()?>" class="btn btn-secondary" >Cancel</a>
+                      <a href="<?=$url?>" class="btn btn-secondary" >Cancel</a>
                     </div>
     <div class="card-footer">
     </div>

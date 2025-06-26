@@ -17,6 +17,9 @@ class Pic{
         $this->status = $status;
     }
 
+    function setStatus($status){
+        $this->status = $status;
+    }
     function getStatus(){
         return $this->status;
     }

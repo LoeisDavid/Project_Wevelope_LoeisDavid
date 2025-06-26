@@ -2,28 +2,71 @@
 
 include '../../Control/urlController.php';
 
-$id = $_GET['id'] ?? NULL;
-$items = readItems();
-$invoice = readInvoiceById($_GET['invoice']);
- $invoice_id = $invoice->getId();
+// handle url
+$redirect = $_GET['redirect'] ?? null;
+$url = null;
+
+if(isset($redirect)){
+  $url = sessionGetRedirectUrl2();
+} else {
+  $url = sessionGetRedirectUrl();
+$uri = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl2($uri);
+}
+
+$index_invoice = $_GET['invoice'] ?? null;
+$index = $_GET['index'] ?? null;
+
+if(isset($index_invoice )){
+  sessionSetPass($index_invoice, 'invoice');
+  sessionSetPass($index, 'INDEX');
+  header('Location: ?');
+  exit();
+}
+
+$index_invoice = sessionGetPass('invoice');
+$index = sessionGetPass('INDEX') ?? null;
+
+$items = sessionGetObjectItems();
+$id= null;
 $item_id = null;
 $qty = null;
 $price = null;
 $tanggal = null;
+$kode = null;
+$invoice = null;
+$invoice = sessionGetObjectInvoices()[$index_invoice-1];
+        if(!is_object($invoice)){
+    $invoice = new Invoice(
+            $invoice['ID'],
+            $invoice['KODE'],
+            $invoice['DATE'],
+            $invoice['CUSTOMER_ID'],
+            $invoice['DEADLINE'],
+            $invoice['NOTES']
+        );
+      }
+$invoice_id = $invoice->getId();
+$kode = $invoice->getKode();
 
-if(isset($id)){
-  $iteminv = readItemInvById($id);
-  $invoice = readInvoiceById($iteminv->getInvoiceId());
-  $invoice_id = $invoice->getId();
+if(isset($index)){
+  $iteminv = sessionGetObjectItemInv()[$index-1];
+    if(!is_object($iteminv)){
+    $iteminv = new ItemInv(
+            $iteminv['ID'],
+            $iteminv['INVOICE_ID'],
+            $iteminv['ITEM_ID'],
+            $iteminv['QTY'],
+            $iteminv['PRICE'],
+            $iteminv['TOTAL']
+        );
+      }
+  $id = $iteminv->getId();
   $item_id = $iteminv->getItemId(); 
   $qty = $iteminv->getQty();
 $price = $iteminv->getPrice();
-
-} else {
-  $kode = null;
 }
 
- $kode = $invoice->getKode();
 
 
 // $kode = readInvoiceById($_GET['invoice'])->getKode();
@@ -84,7 +127,7 @@ $price = $iteminv->getPrice();
                 <div class="border rounded p-3 mb-3">
                 <div class="mb-3">
                 <input type="text" value="<?= $id?>" name="id" hidden>
-                <input type="text" value="<?= $invoice_id?>" name="invoice_id" hidden>
+                <input type="text" value="<?= $invoice->getId()?>" name="invoice_id" hidden>
                     <label class="form-label">KODE INVOICE</label>
                     <input type="text" name="kode" class="form-control" value="<?= $kode ?>" disabled>
                   </div>
@@ -92,9 +135,18 @@ $price = $iteminv->getPrice();
                     <label class="form-label">Barang</label>
                     <select name="item_id" id="item_id" class="form-select" required>
       <option value="">-- Pilih Item --</option>
-      <?php foreach ($items as $item): 
+      <?php foreach ($items as $row): 
+        if(is_object($row)){
+                          $item = $row;
+                        } else {
+                              $item = new Item(
+                $row['ID'],
+                $row['NAME'],
+                $row['REF_NO'],
+                $row['PRICE']
+            );
+                        }
         
-        $item = new Item($item['ID'], $item['NAME'], $item['REF_NO'], $item['PRICE']);
         ?>
        <option value="<?= $item->getId() ?>" <?= $item->getId() == $item_id ? 'selected' : '' ?>>
                           <?= htmlspecialchars($item->getName()) ?>

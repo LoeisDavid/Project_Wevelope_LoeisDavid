@@ -2,14 +2,40 @@
 
 include '../../Control/urlController.php';
 
+// handle url
+$redirect = $_GET['redirect'] ?? false;
+$url = null;
+
+if($redirect){
+  $url = sessionGetRedirectUrl2();
+} else {
+  $url = sessionGetRedirectUrl();
+$uri = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl2($uri);
+}
+
 $id = $_GET['id'] ?? null;
 $name = $_GET['name'] ?? null;
 $ref_no = $_GET['ref_no']?? null;
 $price = $_GET['price'] ?? null;
 $customer_id = null;
 $it = null;
+$index = $_GET['index'] ?? null;
+$null = $_GET['null'] ?? null;
 
-if($id){
+if(isset($null)){
+  sessionSetPass(null, 'INDEX');
+} else
+if($index){
+  sessionSetPass($id, 'ID_itemcustomer');
+  sessionSetPass($index, 'INDEX_itemcustomer');
+  header('Location: ?');
+  exit();
+}
+
+if(sessionGetPass('ID_itemcustomer')){
+  $id = sessionGetPass('ID_itemcustomer');
+  $index = sessionGetPass('INDEX_itemcustomer');
   $customer_id = readItemCustomerById($id)->getCustomer();
 $it = readItemCustomerById($id)->getItem();
 $price = readItemCustomerById($id)->getHarga();
@@ -17,10 +43,11 @@ $price = readItemCustomerById($id)->getHarga();
 
 $customers = [];
 
-$items = readItems();
-$customers = readCustomers();
+$items = sessionGetObjectItems();
+$customers = sessionGetObjectCustomers();
 
-
+sessionSetPass(null, 'ID_itemcustomer');
+sessionSetPass($index, 'INDEX');
 ?>
 
 <!doctype html>
@@ -77,7 +104,7 @@ $customers = readCustomers();
         </div>
         <!--end::Header-->
         <!--begin::Form-->
-        <form class="needs-validation" novalidate method="post" action="<?= getUrlControl('type=itemcustomer')?>">
+        <form class="needs-validation" novalidate method="post" action="<?= getUrlControl('type=itemcustomer'. '&redirect='.$redirect)?>">
   <div class="card-body">
   <input type="text" value="<?= $id?>" name="id" hidden>
     <div class="row g-3">
@@ -86,8 +113,17 @@ $customers = readCustomers();
         <label for="item_id" class="form-label">Item</label>
         <select class="form-select" id="item_id" name="item_id" required>
           <option value="">-- Select Item --</option>
-          <?php foreach ($items as $item): 
-            $item = new Item($item['ID'], $item['NAME'], $item['REF_NO'], $item['PRICE']);
+          <?php foreach ($items as $row): 
+            if(is_object($row)){
+                          $item = $row;
+                        } else {
+                              $item = new Item(
+                $row['ID'],
+                $row['NAME'],
+                $row['REF_NO'],
+                $row['PRICE']
+            );
+                        }
             ?>
            <option value="<?= $item->getId() ?>" <?= $item->getId() == $it ? 'selected' : '' ?> data-price="<?= $item->getPrice() ?>">
         <?= htmlspecialchars($item->getName()) ?>
@@ -102,8 +138,19 @@ $customers = readCustomers();
         <label for="customer_id" class="form-label">Customer</label>
         <select class="form-select" id="customer_id" name="customer_id" required>
           <option value="">-- Select Customer --</option>
-          <?php foreach ($customers as $customer): 
-            $customer = new Customer($customer['ID'], $customer['NAME'],$customer['REF_NO']);
+          <?php foreach ($customers as $row): 
+            if(is_object($row)){
+                          $customer = $row;
+                        } else {
+                          $customer = new Customer(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO'],
+            $row['EMAIL'],
+            $row['ALAMAT'],
+            $row['TELEPON']
+        );
+      }
             ?>
             <option value="<?= $customer->getId() ?>" <?= $customer->getId() == $customer_id ? 'selected' : '' ?>>
         <?= htmlspecialchars($customer->getName()) ?>
@@ -129,7 +176,7 @@ $customers = readCustomers();
   <!-- Submit -->
   <div class="card-footer">
   <button type="submit" action="create" class="btn btn-info  float-end">Sumbit</button>
-    <a href="<?= getUrlTableItemCustomers()?>" class="btn btn-secondary">Cancel</a>
+    <a href="<?= $url?>" class="btn btn-secondary">Cancel</a>
   </div>
 </form>
 

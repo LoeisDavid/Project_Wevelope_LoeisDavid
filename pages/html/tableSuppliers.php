@@ -1,6 +1,14 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle call
+$call = sessionGetCall('supplier');
+
+// handle url
+
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 // Handle delete action
 if (
     isset($_GET['type'], $_GET['action'], $_GET['id'])
@@ -21,7 +29,6 @@ if (
 $countPage = 5;
 
 // Fetch all data
-$allSuppliers = readSuppliers();
 
 // Get filters from query string
 $keyword     = $_GET['keyword']    ?? '';
@@ -31,13 +38,21 @@ if (
     $keyword !== ''
 ) {
     
-        $displaySupplier = searchSuppliers($keyword);
+        sessionSetObjectSuppliers(searchSuppliers($keyword));
+        sessionSetCall('supplier',true);
         $isSearch = true;
 } else {
-    $displaySupplier = $allSuppliers;
-    $isSearch = false;
+
+  if($call){
+    sessionSetObjectSuppliers(readSuppliers());
+    sessionSetCall('supplier',false);
+  }
+
+  $isSearch = false;
+    
 }
 
+$displaySupplier = sessionGetObjectSuppliers();
 $page=count($displaySupplier)/$countPage;
 $selectPage= $_GET['page'] ?? 0;
 $offset = $selectPage*$countPage;
@@ -116,7 +131,7 @@ $displaySupplier = $contain;
               <div class="card">
                 <div class="card-header text-start clearfix">
                   <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Suppliers' ?></h3>
-                  <a href="inputSuppliers.php" class="btn btn-primary">
+                  <a href="<?=getUrlInputSuppliers('null=null')?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
                 </div>
@@ -131,22 +146,30 @@ $displaySupplier = $contain;
 </thead>
 <tbody>
 
-                      <?php if (count($displaySupplier) > 0): ?>
-                        <?php foreach ($displaySupplier as $inv): ;
-                        
-                        $inv = new Supplier($inv['ID'],$inv['NAME'], $inv['REF_NO']);
+                      <?php if (count($displaySupplier) > 0): $index=$countPage*$selectPage?>
+                        <?php foreach ($displaySupplier as $row): ;
+                        $index++;
 
+                        if(is_object($row)){
+                          $inv = $row;
+                        } else {
+                          $inv = new Supplier(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO']
+        );  
+                        }
+                        
                         ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getRefNo()) ?></td>
 <td class="text-start align-middle"><?= htmlspecialchars($inv->getName()) ?></td>
 <td class="text-center align-middle">
 
-                            
-                                <a href="<?=getUrlInputSuppliers('id='. $inv->getId())?>" class="btn btn-sm btn-warning" title="Edit Item">
+                                <a href="<?=getUrlInputSuppliers('id='. $inv->getId().' &index='. $index)?>" class="btn btn-sm btn-warning" title="Edit Item">
                                   <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <a href="?type=supplier&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Supplier ini?');" title="Delete Supplier">
+                                <a href="?type=supplier&amp;action=delete&amp;id=<?= $inv->getId() ?>&amp;index=<?=$index?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Supplier ini?');" title="Delete Supplier">
                                   <i class="bi bi-trash"></i>
                                 </a>
                               </div>

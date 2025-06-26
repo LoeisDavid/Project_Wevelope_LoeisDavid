@@ -1,50 +1,90 @@
 <?php
-
 include_once '../../Control/urlController.php';
 
-$customers = readCustomers(); // ambil semua customer
+// handle ?null
+$null = $_GET['null'] ?? null;
+if ($null === 'null') {
+    sessionSetPass(null, 'INDEX');
+    sessionSetPass(null, 'ID');
+    header('Location: ?');
+    exit();
+}
 
-$customerId = $_GET['customer'] ?? '';
-    $tanggal = $_GET['tanggal'] ?? '';
-    $kode = $_GET['kode'] ?? '';
-     $id = $_GET['id'] ?? '';
-    $deadline = $_GET['deadline'] ?? null;
+// handle ?index
+$index = $_GET['index'] ?? null;
+if ($index) {
+    sessionSetPass($index, 'INDEX');
 
-$invoice = readInvoiceById($id);
-
-     if($invoice){
-      $tanggal = $invoice->getDate();
-      $deadline = $invoice->getDeadline();
-     }
-
-// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-//   $action = 'create';
-//   $type = 'invoice';
-//     $customerId = $_POST['customer'] ?? '';
-//     $tanggal = $_POST['tanggal'] ?? '';
-//     $kode = $_POST['kode'] ?? ''; // Ambil input kode
-
-//     if ($customerId && $tanggal && $kode) { // Pastikan kode juga terisi
-//               // Buat invoice dengan kode, tanggal, dan customerId
-
-//               // var_dump($customerId, $tanggal, $kode);die();
-//               $contain= readInvoiceByKode($kode);
-//               if (!empty($contain)) {
-//                 setAlert('danger', 'Gagal menambahkan invoice.');
-//                 header("Location: ../html/inputInvoices.php?tanggal=$tanggal&customer=$customerId&kode=$kode");
-//                 exit();
-//             } else {
-//               createInvoice($customerId, $tanggal, $kode);
-//                 setAlert('success', 'invoice berhasil ditambahkan!');
-//                 header("Location: ../html/tableInvoice.php");
-//             exit();
-//             }
+    // ID bisa saja dikirim lewat URL atau ambil dari session
+    $id = $_GET['id'] ?? null;
+    sessionSetPass($id, 'ID');
     
-//     } else {
-//         $_SESSION['alert'] = ['type' => 'danger', 'message' => 'Mohon isi semua field'];
-//     }
-// }
+    header('Location: ?');
+    exit();
+}
+
+// handle ?from
+$from  = $_GET['from'] ?? null;
+$id = $_GET['id'] ?? null;
+if (isset($from)) {
+  sessionSetPass(null,'INDEX');
+    sessionSetPass($from, 'FROM');
+    sessionSetPass($id, 'ID');
+    header('Location: ?');
+    exit();
+}
+
+// handle ?redirect
+$redirect = $_GET['redirect'] ?? null;
+if (isset($redirect)) {
+    $url = sessionGetRedirectUrl2();
+} else {
+    $url = sessionGetRedirectUrl();
+    $uri = $_SERVER['REQUEST_URI'];
+    sessionSetRedirectUrl2($uri);
+}
+
+// Inisialisasi data awal
+$customers = sessionGetObjectCustomers();
+$customerId = $_GET['customer'] ?? '';
+$tanggal = $_GET['tanggal'] ?? '';
+$kode = $_GET['kode'] ?? '';
+$deadline = $_GET['deadline'] ?? null;
+$notes = null;
+
+// ambil dari session INDEX dan ID jika ada
+$indexSession = sessionGetPass('INDEX');
+$id = sessionGetPass('ID') ?? null;
+
+if ($indexSession) {
+    $index = $indexSession - 1;
+    $invoice = sessionGetObjectInvoices()[$index];
+        if(!is_object($invoice)){
+    $invoice = new Invoice(
+            $invoice['ID'],
+            $invoice['KODE'],
+            $invoice['DATE'],
+            $invoice['CUSTOMER_ID'],
+            $invoice['DEADLINE'],
+            $invoice['NOTES']
+        );
+      }
+    $id = $invoice->getId();
+    $customerId = $invoice->getCustomerId();
+    $kode = $invoice->getKode();
+    $tanggal = $invoice->getDate();
+    $deadline = $invoice->getDeadline();
+    $notes = $invoice->getNotes();
+} elseif (isset($id)) {
+    $invoice = readInvoiceById($id);
+    $customerId = $invoice->getCustomerId();
+    $kode = $invoice->getKode();
+    $tanggal = $invoice->getDate();
+    $deadline = $invoice->getDeadline();
+    $notes = $invoice->getNotes();
+}
 ?>
+
 
 <!doctype html>
 <html lang="en">
@@ -105,9 +145,20 @@ $invoice = readInvoiceById($id);
                 <label for="customer" class="form-label">Customer</label>
                 <select name="customer_id" id="customer" class="form-select" required>
                   <option value="">-- Pilih Customer --</option>
-                  <?php foreach ($customers as $cust): 
-                    
-                    $cust = new Customer($cust['ID'],$cust['NAME'], $cust['REF_NO']);
+                  <?php foreach ($customers as $row): 
+                    if(is_object($row)){
+                          $cust = $row;
+                        } else {
+                          $cust = new Customer(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO'],
+            $row['EMAIL'],
+            $row['ALAMAT'],
+            $row['TELEPON']
+        );
+      }
+                    $cust = new Customer($cust->getId(),$cust->getName(), $cust->getRefNo());
                     ?>
                     <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : ''?>><?= htmlspecialchars($cust->getName()) ?></option>
                   <?php endforeach; ?>
@@ -126,13 +177,11 @@ $invoice = readInvoiceById($id);
       <textarea rows="5"
         type="text"
         class="form-control"
-        id="notes"
         name="notes"
-        value="<?=$notes?>"
-      ></textarea>
+      ><?= $notes?></textarea>
     </div>
               <button type="submit" class="btn btn-primary float-end">Simpan Invoice</button>
-              <a href="<?= getUrlTableInvoice()?>" class="btn btn-secondary">Cancel</a>
+              <a href="<?= $url?>" class="btn btn-secondary">Cancel</a>
             </form>
         </div>
       </div>

@@ -1,6 +1,14 @@
 <?php
 include_once '../../Control/urlController.php';
 
+//handle call
+$call = sessionGetCall('invoice');
+$callCustomer = sessionGetCall('customer');
+
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 // Handle delete action
 if (
     isset($_GET['type'], $_GET['action'], $_GET['id'])
@@ -19,8 +27,11 @@ if (
 }
 
 // Fetch all data
-$allInvoices = readInvoices();
-$customers   = readCustomers();
+
+if($callCustomer){
+  sessionSetObjectCustomers(readCustomers());
+}
+$customers   = sessionGetObjectCustomers();
 
 // Get filters from query string
 $keyword     = $_GET['keyword']    ?? '';
@@ -44,17 +55,25 @@ if (
         $endDate = $startDate;
       }
 
-        $displayInvoices = searchInvoices($keyword,$startDate,$endDate, $customerId, $keyword);
+      sessionSetObjectInvoices(searchInvoices($keyword,$startDate,$endDate, $customerId, $keyword));
     } elseif ($customerId !== '') {
-        $displayInvoices = readInvoiceByCustomer($customerId);
+        sessionSetObjectInvoices(readInvoiceByCustomer($customerId));
     } else {
-        $displayInvoices = readInvoiceByRangeDate($startDate, $endDate);
+        sessionSetObjectInvoices(readInvoiceByRangeDate($startDate, $endDate));
     }
+    sessionSetCall('invoice',true);
     $isSearch = true;
 } else {
-    $displayInvoices = $allInvoices;
+
+  if($call){
+    sessionSetObjectInvoices(readInvoices());
+    sessionSetCall('invoice', false);
+  }
+
     $isSearch = false;
 }
+
+$displayInvoices = sessionGetObjectInvoices();
 
 $countPage = 5;
 
@@ -128,9 +147,20 @@ $displayInvoices = $contain;
         <label for="customer" class="form-label">Customer</label>
         <select name="customer" id="customer" class="form-select">
           <option value="">-- Pilih Customer --</option>
-          <?php foreach ($customers as $cust): 
+          <?php foreach ($customers as $row): 
             
-            $cust = new Customer($cust['ID'],$cust['NAME'], $cust['REF_NO']);
+            if(is_object($row)){
+                          $cust = $row;
+                        } else {
+                          $cust = new Customer(
+            $row['ID'],
+            $row['NAME'],
+            $row['REF_NO'],
+            $row['EMAIL'],
+            $row['ALAMAT'],
+            $row['TELEPON']
+        );
+                        }
             ?>
             <option value="<?= $cust->getId() ?>" <?= $cust->getId() == $customerId ? 'selected' : '' ?>>
               <?= htmlspecialchars($cust->getName()) ?>
@@ -173,7 +203,7 @@ $displayInvoices = $contain;
               <div class="card">
                 <div class="card-header text-start clearfix">
                   <h3 class="card-title mt-2 mx-3"><?= $isSearch ? 'Search Results' : 'All Invoices' ?></h3>
-                  <a href="<?= getUrlInputInvoices()?>" class="btn btn-primary">
+                  <a href="<?= getUrlInputInvoices('null=null')?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
                 </div>
@@ -192,10 +222,26 @@ $displayInvoices = $contain;
 </thead>
 <tbody>
 
-                      <?php if (count($displayInvoices) > 0): $index=0;?>
-                        <?php foreach ($displayInvoices as $inv):
-                        $status = invoiceStatusById($inv['ID']);
-                        $grand = invoiceGrandTotalById($inv['ID']);
+                      <?php if (count($displayInvoices) > 0): $index=$countPage*$selectPage;?>
+                        <?php foreach ($displayInvoices as $row):
+                        $index++;
+
+                        if(is_object($row)){
+                          $inv = $row;
+                        } else {
+                          $inv = new Invoice(
+            $row['ID'],
+            $row['KODE'],
+            $row['DATE'],
+            $row['CUSTOMER_ID'],
+            $row['DEADLINE'],
+            $row['NOTES']
+        );
+                        }
+
+                        
+                        $status = invoiceStatusById($inv->getId());
+                        $grand = invoiceGrandTotalById($inv->getId());
                          $warna = $status['status']=='Lunas' ? 'bg-success' : 'bg-danger';
                         if(!$grand){
                           $total=0;
@@ -203,7 +249,6 @@ $displayInvoices = $contain;
                           $total=$grand;
                         }
                           
-                          $inv= new Invoice($inv['ID'],$inv['KODE'], $inv['DATE'], $inv['CUSTOMER_ID'], $inv['DEADLINE']);
                           ?>
                           <tr>
                           <td class="text-start align-middle"><?= htmlspecialchars($inv->getKode()) ?></td>
@@ -217,10 +262,10 @@ $displayInvoices = $contain;
 <td class="text-center align-middle">
 
                               <div class="btn-group" role="group">
-                                <a href="<?=getUrlTableItemInv('invoice='.$inv->getId())?>" class="btn btn-sm btn-info" title="Lihat Detail">
+                                <a href="tableItemInv.php?invoice=<?=$index?>" class="btn btn-sm btn-info" title="Lihat Detail">
                                   <i class="bi bi-eye"></i>
                                 </a>
-                                <a href="?type=invoice&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
+                                <a href="?type=invoice&amp;action=delete&amp;id=<?= $inv->getId() ?>&index=<?= $index?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus invoice ini?');" title="Delete Invoice">
                                   <i class="bi bi-trash"></i>
                                 </a>
                               </div>

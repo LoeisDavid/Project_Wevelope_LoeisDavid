@@ -1,11 +1,6 @@
 <?php
 include_once 'Control/urlController.php';
-sessionSetObjectCustomers(readCustomers());
-sessionSetObjectItems(readItems());
-sessionSetObjectSuppliers(readSuppliers());
-sessionSetObjectInvoices(readInvoices());
-sessionSetObjectPayments(readPayments());
-sessionSetObjectItemCustomers(readItemCustomers());
-sessionSetObjectPices(readPics());
+readAllObject();
 header("Location: home.php");
+exit();
 ?>

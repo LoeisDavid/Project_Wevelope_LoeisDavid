@@ -1,22 +1,27 @@
 <?php
 include_once '../../Control/urlController.php';
 
+// handle call
+$call = sessionGetCall('pic');
+
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 // Handle delete action
 
 $id = $_GET['id'] ?? null;
 $action = $_GET['action'] ?? null;
-if($action == 'status'){
-  $pic = getDataStatusTruePic();
-        ubahStatus($pic[0]->getId(), !$pic[0]->getStatus());
-        ubahStatus($id, 1);
-        $action = null;
-} else if($id){
-  $_SESSION['PIC'] = ['ID' => $id];
-  header("Location: inputSettingPic.php");
-  exit();
-};
+$index = $_GET['index'] ?? null;
+$use = $_GET['action'] ?? null;
 
-$displayitem = readPics();
+if($use){
+  header('Location: ?');
+  exit();
+}
+
+$displayitem = sessionGetObjectPices();
+$truePic = sessionGetObjectTruePices();
 
 ?>
 <!doctype html>
@@ -67,7 +72,7 @@ $displayitem = readPics();
               <div class="card">
                 <div class="card-header text-start clearfix">
                   <h3 class="card-title mt-2 mx-3">PIC</h3>
-                  <a href="<?=getUrlInputSettingPic()?>" class="btn btn-primary">
+                  <a href="<?=getUrlInputSettingPic('null=null')?>" class="btn btn-primary">
                     <i class="bi bi-plus-circle"></i> Create New
                   </a>
                 </div>
@@ -85,10 +90,22 @@ $displayitem = readPics();
 </thead>
 <tbody>
 
-                      <?php if (count($displayitem) > 0): ?>
+                      <?php if (count($displayitem) > 0): $index=0; $indexUse=0?>
                         <?php foreach ($displayitem as $inv): 
-                          
-                          $inv= new Pic($inv['ID'],$inv['NAMA'], $inv['JABATAN'], $inv['NOMOR'],$inv['EMAIL'],$inv['STATUS']);
+                          $index++;
+
+                          if(is_object($inv)){
+                        } else {
+                           $inv= new Pic($inv['ID'],$inv['NAMA'], $inv['JABATAN'], $inv['NOMOR'],$inv['EMAIL'],$inv['STATUS']);
+                        }
+                         
+                          if($truePic){
+if($inv->getId() == $truePic->getId()){
+                            $inv->setStatus(true);
+                          } else {
+                            $inv->setStatus(false);
+                          }
+                          }
                           
                           ?>
                           <tr>
@@ -100,19 +117,19 @@ $displayitem = readPics();
 <td class="text-center align-middle">
 
                             
-                                <a href="?id=<?= $inv->getId()?>" class="btn btn-sm btn-warning" title="Edit Item">
+                                <a href="inputSettingPic.php?id=<?= $inv->getId()?>&index=<?=$index?>" class="btn btn-sm btn-warning" title="Edit Item">
                                   <i class="bi bi-pencil-square"></i>
                                 </a>
                                 <?php if($inv->getStatus()) : ?>
-                                <a href="?action=status&id=<?= $inv->getId()?>" class="btn btn-sm btn-success" title="Edit Item">
+                                <a href="?action=status&id=<?= $inv->getId()?>&index=<?=$index?>" class="btn btn-sm btn-success" title="Edit Item">
                                   <i class="bi bi-toggle-on"></i>
                                 </a>
                                 <?php else :?>
-                                  <a href="?action=status&id=<?= $inv->getId()?>" class="btn btn-sm btn-success" title="Edit Item">
+                                  <a href="?action=status&id=<?= $inv->getId()?>&index=<?=$index?>" class="btn btn-sm btn-success" title="Edit Item">
                                   <i class="bi bi-toggle-off"></i>
                                 </a>
                                   <?php endif?>
-                                <a href="?type=pic&amp;action=delete&amp;id=<?= $inv->getId() ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Item ini?');" title="Delete Item">
+                                <a href="?type=pic&amp;action=delete&amp;id=<?= $inv->getId() ?>&index=<?=$index?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus Item ini?');" title="Delete Item">
                                   <i class="bi bi-trash"></i>
                                 </a>
                               </div>

@@ -1,5 +1,5 @@
 <?php
-include 'Control/Control.php';
+include_once 'Control/urlController.php';
 
 // Ambil data dari repository
 $suppliers = readSuppliers();
@@ -7,8 +7,6 @@ $customers = readCustomers();
 $items = readItems();
 $itemCustomers = readItemCustomers();
 $invoices = readInvoices();
-
-session_destroy(); 
 ?>
 
 <!doctype html>

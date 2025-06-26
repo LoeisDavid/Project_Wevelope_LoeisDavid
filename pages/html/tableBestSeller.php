@@ -1,6 +1,10 @@
 <?php
 include_once '../../Control/Control.php';
 
+// handle url
+$url = $_SERVER['REQUEST_URI'];
+sessionSetRedirectUrl($url);
+
 // Handle delete action
 $items = itemBestSeller();
 $displayitem = [];

@@ -9,7 +9,7 @@ class Invoice {
     private $deadline;
 
     // Constructor
-    public function __construct($id, $kode, $date, $customerId, $deadline,$notes='') {
+    public function __construct($id, $kode, $date, $customerId, $deadline,$notes) {
         $this->id = $id;
         $this->kode = $kode;  // Menginisialisasi kode
         $this->date = $date;

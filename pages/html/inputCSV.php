@@ -1,79 +1,14 @@
 <?php
+
 include_once '../../Control/urlController.php';
-
-// handle url
-$null = $_GET['null'] ?? null;
-if($null == 'null'){
-  sessionSetPass(null, 'INDEX');
-    sessionSetPass(null, 'ID');
-  header('Location: ?');
-  exit();
-} else
-if($index){
-  sessionSetPass($id, 'ID');
-  sessionSetPass($index, 'INDEX');
-  header('Location: ?');
-  exit();
-}
-
 $redirect = $_GET['redirect'] ?? null;
-$url = null;
-$from  = $_GET['from'] ?? null;
-$id = $_GET['id'] ?? null;
-
-if(isset($from)){
-  sessionSetPass($from,'FROM');
-  sessionSetPass($id,'ID');
-  header('Location: ?');
-  exit();
-}
-
-if(isset($redirect)){
-  $url = sessionGetRedirectUrl2();
+if (isset($redirect)) {
+    $url = sessionGetRedirectUrl2();
 } else {
-  $url = sessionGetRedirectUrl();
-$uri = $_SERVER['REQUEST_URI'];
-sessionSetRedirectUrl2($uri);
+    $url = sessionGetRedirectUrl();
+    $uri = $_SERVER['REQUEST_URI'];
+    sessionSetRedirectUrl2($uri);
 }
-// $name = $_GET['name'] ?? null;
-// $ref_no = $_GET['ref_no'] ?? null;
-$name = null;
-$ref_no = null;
-$email = null;
-$telepon = null;
-$alamat = null;
-$index = $_GET['index'] ?? null;
-  $id = sessionGetPass('ID') ?? null;
-
-if(sessionGetPass('INDEX')){
-  $index = sessionGetPass('INDEX')-1;
-  $id = sessionGetPass('ID');
-  $customer = sessionGetObjectCustomers()[$index];
-  if(!is_object($customer)){
-    $customer = new Customer(
-            $customer['ID'],
-            $customer['NAME'],
-            $customer['REF_NO'],
-            $customer['EMAIL'],
-            $customer['ALAMAT'],
-            $customer['TELEPON']
-        );
-      }
-  $name = $customer->getName();
-  $ref_no = $customer->getRefNo();
-  $email = $customer->getEmail();
-  $alamat = $customer->getAlamat();
-  $telepon = $customer->getTelepon(); 
-} else if(isset($id)){
-  $customer = readCustomerById($id);
-  $name = $customer->getName();
-  $ref_no = $customer->getRefNo();
-  $email = $customer->getEmail();
-  $alamat = $customer->getAlamat();
-  $telepon = $customer->getTelepon();
-}
-
-
 ?>
 
 <!doctype html>
@@ -127,82 +62,44 @@ if(sessionGetPass('INDEX')){
           <div class="card-title">Customers input</div>
         </div>
 
-        <div class="card card-success card-outline mb-4">
-                  <!--begin::Header-->
-                  <!--end::Header-->
-                  <!--begin::Body-->
-                  <div class="card-body">
-  <form method="post" action="<?= getUrlControl('type=customer&action=create')?>">
+        <!--begin::Form Import CSV -->
+<div class="card card-success card-outline mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h3 class="card-title">Import Customers from CSV</h3>
+  </div>
 
-  <input type="text" value="<?= $id?>" name="id" hidden>
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data" action="<?= getUrlControl() ?>" class="needs-validation" novalidate>
+    <input name="csv" value="customer" hidden>
+    <input name="action" value="import" hidden>  
     <div class="mb-3">
-      <label for="ref_no" class="form-label">REF_NO</label>
-      <input
-        type="text"
-        class="form-control"
-        id="ref_no"
-        name="ref_no"
-        value="<?=$ref_no?>"
-      />
-    </div>
+        <label for="csv_file" class="form-label">Pilih File CSV</label>
+        <input type="file" class="form-control" name="file" id="csv_file" accept=".csv" required>
+        <div class="invalid-feedback">Harap pilih file CSV.</div>
+      </div>
 
-    <div class="mb-3">
-    <label for="ref_no" class="form-label">Name Customer</label>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="NAME"
-        name="name"
-        value="<?=$name ?>"
-        required
-      />
-    </div>
+      <div class="mb-3">
+        <label class="form-label">Format File CSV</label>
+        <div class="alert alert-secondary small" role="alert">
+          File harus memiliki kolom berikut (urutan penting):<br>
+          <code>REF_NO, NAME, EMAIL, TELEPON, ALAMAT</code><br>
+          Contoh:
+          <pre class="mb-0">C001,John Doe,john@example.com,08123456789,Jakarta</pre>
+        </div>
+      </div>
 
-    <div class="mb-3">
-    <label for="ref_no" class="form-label">Telepon</label>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="0888xxxxx"
-        name="telepon"
-        value="<?=$telepon ?>"
-        required
-      />
-    </div>
-
-    <div class="mb-3">
-    <label for="ref_no" class="form-label">Email</label>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="test@example.com"
-        name="email"
-        value="<?=$email ?>"
-        required
-      />
-    </div>
-
-    <div class="mb-3">
-    <label for="ref_no" class="form-label">Alamat</label>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="alamat"
-        name="alamat"
-        value="<?=$alamat ?>"
-        required
-      />
-    </div>
-
-    <button type="submit" class="btn btn-success  float-end">Sumbit</button>
-<a href="<?= $url?>" class="btn btn-secondary">Cancel</a>
-<input type="hidden" name="invoice_id" value="<?= $itemInvs->getInvoiceId() ?>">
-
-    </div>
-  </form>
+      <div class="d-flex justify-content-end">
+        <button type="submit" name="import" class="btn btn-success">
+          <i class="bi bi-upload"></i> Import CSV
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
-                  <!--end::Footer-->
-                </div>
+</div>
+</main>
+<!--end::Form Import CSV -->
+
         <!--end::Header-->
         <!--begin::Form-->
        
