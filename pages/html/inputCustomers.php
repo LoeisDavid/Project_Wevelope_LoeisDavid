@@ -34,6 +34,7 @@ if(isset($redirect)){
   $url = sessionGetRedirectUrl();
 $uri = $_SERVER['REQUEST_URI'];
 sessionSetRedirectUrl2($uri);
+var_dump(sessionGetRedirectUrl2());
 }
 // $name = $_GET['name'] ?? null;
 // $ref_no = $_GET['ref_no'] ?? null;

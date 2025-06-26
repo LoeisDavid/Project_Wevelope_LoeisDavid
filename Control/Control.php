@@ -207,6 +207,8 @@ if ($method === 'POST') {
             } else {
                 setAlert('danger', 'Gagal memperbarui item customer.');
                 $success = false;
+                header('Location: ../pages/html/inputItemCustomers.php');
+                exit();
             }
         }
     }
@@ -257,6 +259,8 @@ if ($method === 'POST') {
                 if (readCustomerByRefNo($ref_no)) {
                     setAlert('danger', 'Gagal memperbarui customer. Ref No sudah digunakan');
                 $success = false;
+                header('Location: ../pages/html/inputCustomers.php');
+                exit();
                 } else {
                     updateCustomer($_POST['id'], $ref_no, $_POST['name'], $alamat, $email, $telepon);
                 setAlert('success', 'Customer berhasil diperbarui!');
@@ -281,6 +285,8 @@ if ($method === 'POST') {
                 if (readCustomerByRefNo($ref_no)) {
                     setAlert('danger', 'Gagal memperbarui customer. Ref No sudah digunakan');
                 $success = false;
+                header('Location: ../pages/html/inputCustomers.php');
+                exit();
                 } else {
                     updateCustomer($_POST['id'], $ref_no, $_POST['name'], $alamat, $email, $telepon);
                 setAlert('success', 'Customer berhasil diperbarui!');
@@ -356,6 +362,8 @@ if ($method === 'POST') {
                 } else {
                     setAlert('danger', 'Gagal memperbarui supplier. Ref No sudah digunakan.');
                 $success = false;
+                header('Location: ../pages/html/inputSuppliers.php');
+                exit();
                 }
                 
             }
@@ -419,6 +427,8 @@ if ($method === 'POST') {
                 } else {
                     setAlert('danger', 'Gagal memperbarui item. Ref No sudah digunakan.');
                 $success = false;
+                header('Location: ../pages/html/inputItems.php');
+                exit();
                 }
                 
             }
@@ -456,6 +466,8 @@ if ($method === 'POST') {
         } else {
             setAlert('danger', 'Gagal menambahkan invoice.');
             $success = false;
+            header('Location: ../pages/html/inputInvoices.php');
+                exit();
         }
 
         
@@ -470,6 +482,8 @@ if ($method === 'POST') {
         } else {
             setAlert('danger', 'Gagal memperbarui invoice.');
             $success = false;
+            header('Location: ../pages/html/inputInvoices.php');
+                exit();
         }
         } else {
             if(!readInvoiceByKode($kode) || readInvoiceByKode($kode)->getId() == $id) {
@@ -488,6 +502,8 @@ if ($method === 'POST') {
         } else {
             setAlert('danger', 'Gagal memperbarui invoice.');
             $success = false;
+            header('Location: ../pages/html/inputInvoices.php');
+                exit();
         }
         }
         // var_dump(readInvoiceByKode($kode), $id);die();
@@ -528,6 +544,8 @@ if ($method === 'POST') {
         if(!($id && $invoice_id && $item_id && $price && $qty)){
             setAlert('danger', 'tidak ada yang diperbarui!');
            $success = false;
+           header('Location: ../pages/html/inputItemInv.php');
+                exit();
         } else {
             if (updateItemInv($id,$invoice_id, $item_id, $qty, $price)) {
             setAlert('success', 'Item dalam Invoice berhasil diperbarui!');
@@ -540,6 +558,8 @@ if ($method === 'POST') {
             } else {
                 setAlert('danger', 'Gagal memperbarui item invoice.');
                 $success = false;
+                header('Location: ../pages/html/inputItemInv.php');
+                exit();
             }
         }
     }
@@ -607,6 +627,8 @@ if ($method === 'POST') {
         } else {
             setAlert('danger', 'Gagal melakukan payment!');
                 $success = false;
+                header('Location: ../pages/html/inputPayment.php');
+                exit();
         }
         
     } else if ($action === 'update') {  
@@ -617,6 +639,8 @@ if ($method === 'POST') {
             if(!($id && $nominal && $invoice)){
             setAlert('danger', 'Payment tidak ditemukan!');
             $success = false;
+            header('Location: ../pages/html/inputPayment.php');
+                exit();
         } else {
             if (updatePayment($id,$kode,$nominal, $invoice, $date, $notes)) {
             setAlert('success', 'Payment berhasil diperbarui!');
@@ -632,11 +656,15 @@ if ($method === 'POST') {
             } else {
                 setAlert('danger', 'Gagal memperbarui payment!');
                 $success = false;
+                header('Location: ../pages/html/inputPayment.php');
+                exit();
             }
         }
         } else {
             setAlert('danger', 'Gagal memperbarui payment!');
                 $success = false;
+                header('Location: ../pages/html/inputPayment.php');
+                exit();
         }
         
     }
@@ -672,6 +700,8 @@ if ($method === 'POST') {
     } else {
        setAlert('danger', 'Gagal memperbarui Company.');
         $success = false;     
+        header('Location: ../pages/html/inputSettingCompany.php');
+                exit();
     }
         
     } else if ($type === 'pic') {
@@ -708,6 +738,8 @@ $use =  $_GET['use'] ?? null;
         } else {
                 setAlert('danger', 'Gagal menambahkan PIC!');
                 $success = false;
+                header('Location: ../pages/html/inputSettingPic.php');
+                exit();
         }
         
     } else if ($action === 'update') {  
@@ -735,6 +767,8 @@ $use =  $_GET['use'] ?? null;
         } else {
                 setAlert('danger', 'Gagal memperbarui PIC!');
                 $success = false;
+                header('Location: ../pages/html/inputSettingPic.php');
+                exit();
             }
         
     }    

@@ -46,21 +46,21 @@ if (
     $isSearch = false;
 }
 
-$displayPayments = sessionGetObjectPayments();
+$display = sessionGetObjectPayments();
 $countPage = 5;
 
-$page=count($displayPayments)/$countPage;
-$selectPage= $_GET['page'] ?? 0;
-$offset = $selectPage*$countPage;
-$contain= [];
+$page = ceil(count($display) / $countPage);
+$selectPage = $_GET['page'] ?? 0;
+$offset = $selectPage * $countPage;
 
+$contain = [];
 for ($i = 0; $i < $countPage; $i++) {
-  if ($offset >= count($displayPayments)) {
-      break;
-  } else {
-      $contain[] = $displayPayments[$offset];
-      $offset++;
-  }
+    if ($offset >= count($display)) {
+        break;
+    } else {
+        $contain[] = $display[$offset];
+        $offset++;
+    }
 }
 
 
@@ -230,26 +230,67 @@ exit();
                 </div>
                 <div class="card-footer text-start clearfix">
                   <ul class="pagination pagination-sm m-0 float-end">
-    <?php if($page > 1): ?>
-        <?php if($selectPage - 1 >= 0): ?>
-            <li class="page-item">
-                <a class="page-link" href="?page=<?= $selectPage - 1 ?>&keyword=<?= $keyword ?>">«</a>
-            </li>
-        <?php endif; ?>
+    <?php
+    // Hitung jumlah halaman maksimum yang ingin ditampilkan (misal: 7)
+    $totalPagesToShow = 7;
+    $start = max(0, $selectPage - 2);
+    $end = min($page - 1, $selectPage + 2);
 
-        <?php for($i = 0; $i < $page; $i++): ?>
-            <li class="page-item <?= ($i == $selectPage) ? 'active' : '' ?>">
-                <a class="page-link" href="?page=<?= $i ?>&keyword=<?= $keyword ?>">
-                    <?= htmlspecialchars($i + 1) ?>
-                </a>
-            </li>
-        <?php endfor; ?>
+    if ($page > $totalPagesToShow) {
+        if ($selectPage <= 2) {
+            $start = 0;
+            $end = 4;
+        } elseif ($selectPage >= $page - 3) {
+            $start = $page - 5;
+            $end = $page - 1;
+        }
+    } else {
+        $start = 0;
+        $end = $page - 1;
+    }
+    ?>
 
-        <?php if($selectPage + 1 < $page): ?>
-            <li class="page-item">
-                <a class="page-link" href="?page=<?= $selectPage + 1 ?>&keyword=<?= $keyword ?>">»</a>
-            </li>
+    <!-- Tombol ke halaman pertama -->
+    <?php if ($selectPage > 0): ?>
+        <li class="page-item">
+            <a class="page-link" href="?page=<?= $selectPage - 1 ?>&keyword=<?= $keyword ?>">«</a>
+        </li>
+    <?php endif; ?>
+
+    <!-- Halaman 1 -->
+    <?php if ($start > 0): ?>
+        <li class="page-item">
+            <a class="page-link" href="?page=0&keyword=<?= $keyword ?>">1</a>
+        </li>
+        <?php if ($start > 1): ?>
+            <li class="page-item disabled"><span class="page-link">...</span></li>
         <?php endif; ?>
+    <?php endif; ?>
+
+    <!-- Halaman Tengah -->
+    <?php for ($i = $start; $i <= $end; $i++): ?>
+        <li class="page-item <?= ($i == $selectPage) ? 'active' : '' ?>">
+            <a class="page-link" href="?page=<?= $i ?>&keyword=<?= $keyword ?>">
+                <?= $i + 1 ?>
+            </a>
+        </li>
+    <?php endfor; ?>
+
+    <!-- Halaman Terakhir -->
+    <?php if ($end < $page - 1): ?>
+        <?php if ($end < $page - 2): ?>
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+        <?php endif; ?>
+        <li class="page-item">
+            <a class="page-link" href="?page=<?= $page - 1 ?>&keyword=<?= $keyword ?>"><?= $page ?></a>
+        </li>
+    <?php endif; ?>
+
+    <!-- Tombol ke halaman selanjutnya -->
+    <?php if ($selectPage < $page - 1): ?>
+        <li class="page-item">
+            <a class="page-link" href="?page=<?= $selectPage + 1 ?>&keyword=<?= $keyword ?>">»</a>
+        </li>
     <?php endif; ?>
 </ul>
 
